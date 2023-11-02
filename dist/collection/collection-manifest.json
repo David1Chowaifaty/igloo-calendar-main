@@ -1,0 +1,34 @@
+{
+  "entries": [
+    "./components/igloo-calendar/igloo-calendar.js",
+    "./components/igloo-calendar/igl-application-info/igl-application-info.js",
+    "./components/igloo-calendar/igl-block-dates-view/igl-block-dates-view.js",
+    "./components/igloo-calendar/igl-book-property/igl-book-property.js",
+    "./components/igloo-calendar/igl-booking-event/igl-booking-event.js",
+    "./components/igloo-calendar/igl-booking-event-hover/igl-booking-event-hover.js",
+    "./components/igloo-calendar/igl-booking-room-rate-plan/igl-booking-room-rate-plan.js",
+    "./components/igloo-calendar/igl-booking-rooms/igl-booking-rooms.js",
+    "./components/igloo-calendar/igl-cal-body/igl-cal-body.js",
+    "./components/igloo-calendar/igl-cal-footer/igl-cal-footer.js",
+    "./components/igloo-calendar/igl-cal-header/igl-cal-header.js",
+    "./components/igloo-calendar/igl-date-range/igl-date-range.js",
+    "./components/igloo-calendar/igl-legends/igl-legends.js",
+    "./components/igloo-calendar/igl-pagetwo/igl-pagetwo.js",
+    "./components/igloo-calendar/igl-property-booked-by/igl-property-booked-by.js",
+    "./components/igloo-calendar/igl-to-be-assigned/igl-to-be-assigned.js",
+    "./components/igloo-calendar/igl-to-be-assigned/igl-tba-booking-view/igl-tba-booking-view.js",
+    "./components/igloo-calendar/igl-to-be-assigned/igl-tba-category-view/igl-tba-category-view.js",
+    "./components/ir-common/ir-common.js",
+    "./components/ir-date-picker/ir-date-picker.js",
+    "./components/ir-interceptor/ir-interceptor.js",
+    "./components/ir-toast/ir-toast.js",
+    "./components/ir-tooltip/ir-tooltip.js"
+  ],
+  "compiler": {
+    "name": "@stencil/core",
+    "version": "3.4.2",
+    "typescriptVersion": "5.0.4"
+  },
+  "collections": [],
+  "bundles": []
+}
