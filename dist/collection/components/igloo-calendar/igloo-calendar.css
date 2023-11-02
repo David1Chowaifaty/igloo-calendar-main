@@ -4482,7 +4482,7 @@ readers do not read off random characters that represent icons */
   display: block;
   position: relative;
   background-color: #ffffff;
-  height: 600px;
+  height: 100%;
   text-align: center;
 }
 

@@ -3,7 +3,7 @@ import { proxyCustomElement, HTMLElement, h, Host } from '@stencil/core/internal
 const onlineResources = [
   {
     isJS: true,
-    link: "dist/collection/assets/scripts/jquery.min.js",
+    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/jquery.min.js",
   },
   {
     isCSS: true,
@@ -37,19 +37,7 @@ const onlineResources = [
   },
   {
     isCSS: true,
-    link: "dist/collection/assets/feather/style.min.css",
-  },
-  {
-    isCSS: true,
-    link: "dist/collection/assets/fontawesome/css/all.min.css",
-  },
-  {
-    isCSS: true,
-    link: "dist/collection/assets/line-awesome/css/line-awesome.min.css",
-  },
-  {
-    isCSS: true,
-    link: "dist/collection/assets/scripts/daterangepicker/daterangepicker.css",
+    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/daterangepicker.css",
   },
   { isCSS: true, link: "https://x.igloorooms.com/assets/css/style.css" },
   {
@@ -62,11 +50,11 @@ const onlineResources = [
   },
   {
     isJS: true,
-    link: "dist/collection/assets/scripts/daterangepicker/moment.min.js",
+    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/moment.min.js",
   },
   {
     isJS: true,
-    link: "dist/collection/assets/scripts/daterangepicker/daterangepicker.js",
+    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/daterangepicker.js",
   },
 ];
 
