@@ -1,10 +1,10 @@
 import { proxyCustomElement, HTMLElement, h, Host } from '@stencil/core/internal/client';
 
 const onlineResources = [
-  {
-    isJS: true,
-    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/jquery.min.js",
-  },
+  // {
+  //   isJS: true,
+  //   link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/jquery.min.js",
+  // },
   {
     isCSS: true,
     link: "https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i%7CQuicksand:300,400,500,700",
@@ -48,14 +48,14 @@ const onlineResources = [
     isCSS: true,
     link: "https://x.igloorooms.com/app-assets/css/bootstrap-extended.css",
   },
-  {
-    isJS: true,
-    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/moment.min.js",
-  },
-  {
-    isJS: true,
-    link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/daterangepicker.js",
-  },
+  // {
+  //   isJS: true,
+  //   link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/moment.min.js",
+  // },
+  // {
+  //   isJS: true,
+  //   link: "https://x.igloorooms.com/manage/micro/app-assets/required/assets/scripts/daterangepicker/daterangepicker.js",
+  // },
 ];
 
 const IrCommon = /*@__PURE__*/ proxyCustomElement(class IrCommon extends HTMLElement {
