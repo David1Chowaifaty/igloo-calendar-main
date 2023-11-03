@@ -18,6 +18,7 @@ const IrInterceptor = /*@__PURE__*/ proxyCustomElement(class IrInterceptor exten
     this.handledEndpoints = [
       "/Get_Exposed_Booking_Availability",
       "/Get_Aggregated_UnAssigned_Rooms",
+      "/ReAllocate_Exposed_Room",
     ];
   }
   componentWillLoad() {
@@ -36,6 +37,12 @@ const IrInterceptor = /*@__PURE__*/ proxyCustomElement(class IrInterceptor exten
   handleRequest(config) {
     if (this.isHandledEndpoint(config.url)) {
       this.isLoading = true;
+      if (this.extractEndpoint(config.url) === "/ReAllocate_Exposed_Room") {
+        this.defaultMessage.loadingMessage = "Updating Event";
+      }
+      else {
+        this.defaultMessage.loadingMessage = "Fetching Data";
+      }
       this.showToast();
     }
     return config;

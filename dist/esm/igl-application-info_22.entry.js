@@ -10220,7 +10220,8 @@ const IglBookingEvent = class {
         else {
           const { pool, from_date, to_date, toRoomId } = event.detail;
           console.log(pool, from_date, to_date, toRoomId);
-          await this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date);
+          const result = await this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date);
+          this.bookingEvent.POOL = result.My_Result.POOL;
           // console.log(event.detail);
           // console.log("calll update here");
         }
@@ -12918,6 +12919,7 @@ const IrInterceptor = class {
     this.handledEndpoints = [
       "/Get_Exposed_Booking_Availability",
       "/Get_Aggregated_UnAssigned_Rooms",
+      "/ReAllocate_Exposed_Room",
     ];
   }
   componentWillLoad() {
@@ -12936,6 +12938,12 @@ const IrInterceptor = class {
   handleRequest(config) {
     if (this.isHandledEndpoint(config.url)) {
       this.isLoading = true;
+      if (this.extractEndpoint(config.url) === "/ReAllocate_Exposed_Room") {
+        this.defaultMessage.loadingMessage = "Updating Event";
+      }
+      else {
+        this.defaultMessage.loadingMessage = "Fetching Data";
+      }
       this.showToast();
     }
     return config;

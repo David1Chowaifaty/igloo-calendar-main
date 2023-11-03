@@ -13,6 +13,7 @@ export class IrInterceptor {
     this.handledEndpoints = [
       "/Get_Exposed_Booking_Availability",
       "/Get_Aggregated_UnAssigned_Rooms",
+      "/ReAllocate_Exposed_Room",
     ];
   }
   componentWillLoad() {
@@ -31,6 +32,12 @@ export class IrInterceptor {
   handleRequest(config) {
     if (this.isHandledEndpoint(config.url)) {
       this.isLoading = true;
+      if (this.extractEndpoint(config.url) === "/ReAllocate_Exposed_Room") {
+        this.defaultMessage.loadingMessage = "Updating Event";
+      }
+      else {
+        this.defaultMessage.loadingMessage = "Fetching Data";
+      }
       this.showToast();
     }
     return config;
@@ -122,7 +129,7 @@ export class IrInterceptor {
           "tags": [],
           "text": ""
         },
-        "defaultValue": "[\r\n    \"/Get_Exposed_Booking_Availability\",\r\n    \"/Get_Aggregated_UnAssigned_Rooms\",\r\n  ]"
+        "defaultValue": "[\r\n    \"/Get_Exposed_Booking_Availability\",\r\n    \"/Get_Aggregated_UnAssigned_Rooms\",\r\n    \"/ReAllocate_Exposed_Room\",\r\n  ]"
       }
     };
   }
