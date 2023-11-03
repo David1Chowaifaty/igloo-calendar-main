@@ -378,6 +378,7 @@ const IglBookProperty = /*@__PURE__*/ proxyCustomElement(class IglBookProperty e
           ? "002"
           : "003", DESCRIPTION: this.blockDatesData.RELEASE_AFTER_HOURS || "" }, releaseData));
     this.closeWindow();
+    window.location.reload();
   }
   async bookUser(assign_units) {
     this.setLoadingState(assign_units);
