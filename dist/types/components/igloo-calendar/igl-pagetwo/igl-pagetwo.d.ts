@@ -17,11 +17,13 @@ export declare class IglPagetwo {
   selectedRooms: any;
   isLoading: string;
   countryNodeList: any;
+  selectedGuestData: any;
   dataUpdateEvent: EventEmitter<IPageTwoDataUpdateProps>;
   buttonClicked: EventEmitter<{
     key: PageTwoButtonsTypes;
     data?: CustomEvent;
   }>;
+  selectedBookedByData: any;
   guestData: any;
   selectedUnits: {
     [key: string]: any;
@@ -30,5 +32,7 @@ export declare class IglPagetwo {
   initializeGuestData(): void;
   getRoomsListFromCategoryId(categoryId: any): any;
   handleOnApplicationInfoDataUpdateEvent(event: CustomEvent, index: number): void;
+  handleEventData(event: any, key: string, index: number): void;
+  isButtonDisabled(key: string): boolean;
   render(): any;
 }

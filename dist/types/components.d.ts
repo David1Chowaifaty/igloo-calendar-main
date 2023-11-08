@@ -94,6 +94,7 @@ export namespace Components {
         "isEditOrAddRoomEvent": boolean;
         "isLoading": string;
         "language": string;
+        "selectedGuestData": any;
         "selectedRooms": any;
         "showSplitBookingOption": boolean;
     }
@@ -522,6 +523,7 @@ declare namespace LocalJSX {
     data?: CustomEvent;
   }>) => void;
         "onDataUpdateEvent"?: (event: IglPagetwoCustomEvent<IPageTwoDataUpdateProps>) => void;
+        "selectedGuestData"?: any;
         "selectedRooms"?: any;
         "showSplitBookingOption"?: boolean;
     }

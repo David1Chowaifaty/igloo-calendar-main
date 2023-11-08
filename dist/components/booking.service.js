@@ -380,7 +380,9 @@ class BookingService {
                 cancelation: data.cancelation,
                 guarantee: data.guarantee,
               },
-              unit: { id: pr_id || data.roomId },
+              unit: typeof pr_id === "undefined" && data.roomId === ""
+                ? null
+                : { id: pr_id || data.roomId },
               occupancy: {
                 adult_nbr: data.adultCount,
                 children_nbr: data.childrenCount,
@@ -404,7 +406,7 @@ class BookingService {
             })),
           },
         };
-        console.log("haida lbody", body);
+        console.log("body", body);
         const { data } = await axios.post(`/DoReservation?Ticket=${token}`, body);
         if (data.ExceptionMsg !== "") {
           throw new Error(data.ExceptionMsg);

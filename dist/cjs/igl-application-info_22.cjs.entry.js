@@ -9512,7 +9512,9 @@ class BookingService {
                 cancelation: data.cancelation,
                 guarantee: data.guarantee,
               },
-              unit: { id: pr_id || data.roomId },
+              unit: typeof pr_id === "undefined" && data.roomId === ""
+                ? null
+                : { id: pr_id || data.roomId },
               occupancy: {
                 adult_nbr: data.adultCount,
                 children_nbr: data.childrenCount,
@@ -9536,7 +9538,7 @@ class BookingService {
             })),
           },
         };
-        console.log("haida lbody", body);
+        console.log("body", body);
         const { data } = await axios.post(`/DoReservation?Ticket=${token}`, body);
         if (data.ExceptionMsg !== "") {
           throw new Error(data.ExceptionMsg);
@@ -10100,6 +10102,7 @@ const IglBookProperty = class {
         ? this.bookingData.ID
         : undefined;
       await this.bookingService.bookUser(this.bookedByInfoData, assign_units, this.bookingData.defaultDateRange.fromDate, this.bookingData.defaultDateRange.toDate, this.guestData, this.dateRangeData.dateDifference, this.sourceOption, this.propertyid, this.currency, booking_nbr, this.bookingData.GUEST, arrivalTime, pr_id);
+      window.location.reload();
       //console.log("booking data ", this.bookingData);
     }
     catch (error) {
@@ -10132,7 +10135,7 @@ const IglBookProperty = class {
           ? "col-sm-12 col-md-6 col-lg-5 col-xl-4"
           : "col-sm-12 col-md-11 col-lg-9 col-xl-8") }, index.h("div", { class: "card mb-0 shadow-none p-0" }, index.h("div", { class: "card-header" }, index.h("h3", { class: "card-title text-left pb-1 font-medium-2" }, this.isPageBlockDates()
       ? this.bookingData.BLOCK_DATES_TITLE
-      : this.bookingData.TITLE), index.h("button", { type: "button", class: "close close-icon", onClick: () => this.closeWindow() }, index.h("i", { class: "ft-x" })))), this.isPageZero() && this.getPageZeroView(), this.isPageOne() && this.getPageOneView(), this.isPageTwo() && (index.h("igl-pagetwo", { countryNodeList: this.countryNodeList, isLoading: this.isLoading, selectedRooms: this.selectedRooms, bedPreferenceType: this.bedPreferenceType, dateRangeData: this.dateRangeData, bookingData: this.bookingData, showSplitBookingOption: this.showSplitBookingOption, language: this.language, bookedByInfoData: this.bookedByInfoData, isEditOrAddRoomEvent: this.isEventType("EDIT_BOOKING") || this.isEventType("ADD_ROOM"), onDataUpdateEvent: (event) => this.handlePageTwoDataUpdateEvent(event), onButtonClicked: (event) => this.handleButtonClicked(event) })), this.isPageBlockDates() ? this.getPageBlockDatesView() : null)));
+      : this.bookingData.TITLE), index.h("button", { type: "button", class: "close close-icon", onClick: () => this.closeWindow() }, index.h("i", { class: "ft-x" })))), this.isPageZero() && this.getPageZeroView(), this.isPageOne() && this.getPageOneView(), this.isPageTwo() && (index.h("igl-pagetwo", { selectedGuestData: this.guestData, countryNodeList: this.countryNodeList, isLoading: this.isLoading, selectedRooms: this.selectedRooms, bedPreferenceType: this.bedPreferenceType, dateRangeData: this.dateRangeData, bookingData: this.bookingData, showSplitBookingOption: this.showSplitBookingOption, language: this.language, bookedByInfoData: this.bookedByInfoData, isEditOrAddRoomEvent: this.isEventType("EDIT_BOOKING") || this.isEventType("ADD_ROOM"), onDataUpdateEvent: (event) => this.handlePageTwoDataUpdateEvent(event), onButtonClicked: (event) => this.handleButtonClicked(event) })), this.isPageBlockDates() ? this.getPageBlockDatesView() : null)));
   }
 };
 IglBookProperty.style = iglBookPropertyCss;
@@ -10226,8 +10229,8 @@ const IglBookingEvent = class {
           console.log(pool, from_date, to_date, toRoomId);
           const result = await this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date);
           this.bookingEvent.POOL = result.My_Result.POOL;
-          // console.log(event.detail);
-          // console.log("calll update here");
+          console.log(event.detail);
+          console.log("calll update here");
         }
       }
       if (event.detail.fromRoomId === this.getBookedRoomId()) {
@@ -11554,6 +11557,8 @@ const IglPagetwo = class {
     this.selectedRooms = undefined;
     this.isLoading = undefined;
     this.countryNodeList = undefined;
+    this.selectedGuestData = undefined;
+    this.selectedBookedByData = undefined;
     this.guestData = undefined;
     this.selectedUnits = {};
   }
@@ -11599,11 +11604,55 @@ const IglPagetwo = class {
       value: event.detail,
     });
   }
-  render() {
-    return (index.h(index.Host, { class: "scrollContent" }, index.h("div", { class: "row" }, index.h("div", { class: "col-6 text-left p-0" }, index.h("span", { class: "mr-1 font-weight-bold font-medium-1" }, this.dateRangeData.fromDateStr, " - ", this.dateRangeData.toDateStr), this.dateRangeData.dateDifference, " nights"), index.h("div", { class: "col-6 text-right" }, "Total price", " ", index.h("span", { class: "font-weight-bold font-medium-1" }, "$" + this.bookingData.TOTAL_PRICE || "$0.00"))), this.guestData.map((roomInfo, index$1) => (index.h("igl-application-info", { bedPreferenceType: this.bedPreferenceType, index: index$1, selectedUnits: this.selectedUnits[`c_${roomInfo.roomCategoryId}`], guestInfo: roomInfo, guestRefKey: index$1, bookingType: this.bookingData.event_type, roomsList: this.getRoomsListFromCategoryId(roomInfo.roomCategoryId), onDataUpdateEvent: (event) => this.handleOnApplicationInfoDataUpdateEvent(event, index$1) }))), this.isEditOrAddRoomEvent || this.showSplitBookingOption ? null : (index.h("igl-property-booked-by", { countryNodeList: this.countryNodeList, language: this.language, defaultData: this.bookedByInfoData, onDataUpdateEvent: (event) => this.dataUpdateEvent.emit({
+  handleEventData(event, key, index) {
+    if (key === "application-info") {
+      this.handleOnApplicationInfoDataUpdateEvent(event, index);
+    }
+    else {
+      this.selectedBookedByData = event.detail.data;
+      this.dataUpdateEvent.emit({
         key: "propertyBookedBy",
         value: event.detail,
-      }) })), this.isEditOrAddRoomEvent ? (index.h("div", { class: "row p-0 mb-1 mt-2" }, index.h("div", { class: "col-6" }, index.h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "cancel" }) }, "Cancel")), index.h("div", { class: "col-6" }, index.h("button", { disabled: this.isLoading === "save", type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "save" }) }, this.isLoading === "save" && (index.h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Save")))) : (index.h("div", { class: "row p-0 mb-1 mt-2" }, index.h("div", { class: "col-4" }, index.h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "back" }) }, "<< Back")), index.h("div", { class: "col-4" }, index.h("button", { disabled: this.isLoading === "book", type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "book" }) }, this.isLoading === "book" && (index.h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book")), index.h("div", { class: "col-4" }, index.h("button", { disabled: this.isLoading === "bookAndCheckIn", type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "bookAndCheckIn" }) }, this.isLoading === "bookAndCheckIn" && (index.h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book & check in"))))));
+      });
+    }
+  }
+  isButtonDisabled(key) {
+    const isValidProperty = (property, key, comparedBy) => {
+      if (!property) {
+        return true;
+      }
+      if (property === this.selectedGuestData) {
+        if (this.selectedGuestData.length !== this.guestData.length) {
+          return true;
+        }
+        for (const data of this.selectedGuestData) {
+          if (data.guestName === "" || data.preference === "") {
+            return true;
+          }
+        }
+        return false;
+      }
+      return property[key] === comparedBy || property[key] === undefined;
+    };
+    return (this.isLoading === key ||
+      isValidProperty(this.selectedGuestData, "guestName", "") ||
+      isValidProperty(this.selectedBookedByData, "isdCode", "") ||
+      isValidProperty(this.selectedBookedByData, "contactNumber", "") ||
+      isValidProperty(this.selectedBookedByData, "firstName", "") ||
+      isValidProperty(this.selectedBookedByData, "lastName", "") ||
+      isValidProperty(this.selectedBookedByData, "countryId", -1) ||
+      isValidProperty(this.selectedBookedByData, "selectedArrivalTime", "") ||
+      isValidProperty(this.selectedBookedByData, "email", ""));
+  }
+  render() {
+    return (index.h(index.Host, { class: "scrollContent" }, index.h("div", { class: "row" }, index.h("div", { class: "col-6 text-left p-0" }, index.h("span", { class: "mr-1 font-weight-bold font-medium-1" }, this.dateRangeData.fromDateStr, " - ", this.dateRangeData.toDateStr), this.dateRangeData.dateDifference, " nights"), index.h("div", { class: "col-6 text-right" }, "Total price", " ", index.h("span", { class: "font-weight-bold font-medium-1" }, "$" + this.bookingData.TOTAL_PRICE || "$0.00"))), this.guestData.map((roomInfo, index$1) => (index.h("igl-application-info", { bedPreferenceType: this.bedPreferenceType, index: index$1, selectedUnits: this.selectedUnits[`c_${roomInfo.roomCategoryId}`], guestInfo: roomInfo, guestRefKey: index$1, bookingType: this.bookingData.event_type, roomsList: this.getRoomsListFromCategoryId(roomInfo.roomCategoryId), onDataUpdateEvent: (event) => 
+      //this.handleOnApplicationInfoDataUpdateEvent(event, index)
+      this.handleEventData(event, "application-info", index$1) }))), this.isEditOrAddRoomEvent || this.showSplitBookingOption ? null : (index.h("igl-property-booked-by", { countryNodeList: this.countryNodeList, language: this.language, defaultData: this.bookedByInfoData, onDataUpdateEvent: (event) => 
+      // this.dataUpdateEvent.emit({
+      //   key: "propertyBookedBy",
+      //   value: event.detail,
+      // })
+      this.handleEventData(event, "propertyBookedBy", 0) })), this.isEditOrAddRoomEvent ? (index.h("div", { class: "row p-0 mb-1 mt-2" }, index.h("div", { class: "col-6" }, index.h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "cancel" }) }, "Cancel")), index.h("div", { class: "col-6" }, index.h("button", { disabled: this.isLoading === "save", type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "save" }) }, this.isLoading === "save" && (index.h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Save")))) : (index.h("div", { class: "row p-0 mb-1 mt-2" }, index.h("div", { class: "col-4" }, index.h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "back" }) }, "<< Back")), index.h("div", { class: "col-4" }, index.h("button", { disabled: this.isButtonDisabled("book"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "book" }) }, this.isLoading === "book" && (index.h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book")), index.h("div", { class: "col-4" }, index.h("button", { disabled: this.isButtonDisabled("bookAndCheckIn"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "bookAndCheckIn" }) }, this.isLoading === "bookAndCheckIn" && (index.h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book & check in"))))));
   }
 };
 IglPagetwo.style = iglPagetwoCss;

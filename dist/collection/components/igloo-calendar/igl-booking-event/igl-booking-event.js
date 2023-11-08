@@ -83,8 +83,8 @@ export class IglBookingEvent {
           console.log(pool, from_date, to_date, toRoomId);
           const result = await this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date);
           this.bookingEvent.POOL = result.My_Result.POOL;
-          // console.log(event.detail);
-          // console.log("calll update here");
+          console.log(event.detail);
+          console.log("calll update here");
         }
       }
       if (event.detail.fromRoomId === this.getBookedRoomId()) {

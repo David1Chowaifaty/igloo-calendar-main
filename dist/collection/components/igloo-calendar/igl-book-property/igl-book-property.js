@@ -383,6 +383,7 @@ export class IglBookProperty {
         ? this.bookingData.ID
         : undefined;
       await this.bookingService.bookUser(this.bookedByInfoData, assign_units, this.bookingData.defaultDateRange.fromDate, this.bookingData.defaultDateRange.toDate, this.guestData, this.dateRangeData.dateDifference, this.sourceOption, this.propertyid, this.currency, booking_nbr, this.bookingData.GUEST, arrivalTime, pr_id);
+      window.location.reload();
       //console.log("booking data ", this.bookingData);
     }
     catch (error) {
@@ -415,7 +416,7 @@ export class IglBookProperty {
           ? "col-sm-12 col-md-6 col-lg-5 col-xl-4"
           : "col-sm-12 col-md-11 col-lg-9 col-xl-8") }, h("div", { class: "card mb-0 shadow-none p-0" }, h("div", { class: "card-header" }, h("h3", { class: "card-title text-left pb-1 font-medium-2" }, this.isPageBlockDates()
       ? this.bookingData.BLOCK_DATES_TITLE
-      : this.bookingData.TITLE), h("button", { type: "button", class: "close close-icon", onClick: () => this.closeWindow() }, h("i", { class: "ft-x" })))), this.isPageZero() && this.getPageZeroView(), this.isPageOne() && this.getPageOneView(), this.isPageTwo() && (h("igl-pagetwo", { countryNodeList: this.countryNodeList, isLoading: this.isLoading, selectedRooms: this.selectedRooms, bedPreferenceType: this.bedPreferenceType, dateRangeData: this.dateRangeData, bookingData: this.bookingData, showSplitBookingOption: this.showSplitBookingOption, language: this.language, bookedByInfoData: this.bookedByInfoData, isEditOrAddRoomEvent: this.isEventType("EDIT_BOOKING") || this.isEventType("ADD_ROOM"), onDataUpdateEvent: (event) => this.handlePageTwoDataUpdateEvent(event), onButtonClicked: (event) => this.handleButtonClicked(event) })), this.isPageBlockDates() ? this.getPageBlockDatesView() : null)));
+      : this.bookingData.TITLE), h("button", { type: "button", class: "close close-icon", onClick: () => this.closeWindow() }, h("i", { class: "ft-x" })))), this.isPageZero() && this.getPageZeroView(), this.isPageOne() && this.getPageOneView(), this.isPageTwo() && (h("igl-pagetwo", { selectedGuestData: this.guestData, countryNodeList: this.countryNodeList, isLoading: this.isLoading, selectedRooms: this.selectedRooms, bedPreferenceType: this.bedPreferenceType, dateRangeData: this.dateRangeData, bookingData: this.bookingData, showSplitBookingOption: this.showSplitBookingOption, language: this.language, bookedByInfoData: this.bookedByInfoData, isEditOrAddRoomEvent: this.isEventType("EDIT_BOOKING") || this.isEventType("ADD_ROOM"), onDataUpdateEvent: (event) => this.handlePageTwoDataUpdateEvent(event), onButtonClicked: (event) => this.handleButtonClicked(event) })), this.isPageBlockDates() ? this.getPageBlockDatesView() : null)));
   }
   static get is() { return "igl-book-property"; }
   static get encapsulation() { return "scoped"; }
