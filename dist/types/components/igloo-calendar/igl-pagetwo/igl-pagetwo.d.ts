@@ -33,6 +33,7 @@ export declare class IglPagetwo {
   getRoomsListFromCategoryId(categoryId: any): any;
   handleOnApplicationInfoDataUpdateEvent(event: CustomEvent, index: number): void;
   handleEventData(event: any, key: string, index: number): void;
+  isGuestDataIncomplete(): boolean;
   isButtonDisabled(key: string): boolean;
   render(): any;
 }

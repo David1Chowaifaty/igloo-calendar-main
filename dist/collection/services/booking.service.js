@@ -193,7 +193,7 @@ export class BookingService {
     }
     return days;
   }
-  async bookUser(bookedByInfoData, assign_units, fromDate, toDate, guestData, totalNights, source, propertyid, currency, bookingNumber, defaultGuest, arrivalTime, pr_id) {
+  async bookUser(bookedByInfoData, check_in, fromDate, toDate, guestData, totalNights, source, propertyid, currency, bookingNumber, defaultGuest, arrivalTime, pr_id) {
     try {
       const token = JSON.parse(sessionStorage.getItem("token"));
       if (token) {
@@ -214,7 +214,8 @@ export class BookingService {
           guest = Object.assign(Object.assign({}, guest), { id: bookedByInfoData.id });
         }
         const body = {
-          assign_units,
+          assign_units: true,
+          check_in,
           booking: {
             booking_nbr: bookingNumber || "",
             from_date: fromDateStr,

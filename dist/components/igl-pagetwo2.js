@@ -80,21 +80,26 @@ const IglPagetwo = /*@__PURE__*/ proxyCustomElement(class IglPagetwo extends HTM
       });
     }
   }
+  isGuestDataIncomplete() {
+    if (this.selectedGuestData.length !== this.guestData.length) {
+      return true;
+    }
+    for (const data of this.selectedGuestData) {
+      if (data.guestName === "" ||
+        data.preference === "" ||
+        data.roomId === "") {
+        return true;
+      }
+    }
+    return false;
+  }
   isButtonDisabled(key) {
     const isValidProperty = (property, key, comparedBy) => {
       if (!property) {
         return true;
       }
       if (property === this.selectedGuestData) {
-        if (this.selectedGuestData.length !== this.guestData.length) {
-          return true;
-        }
-        for (const data of this.selectedGuestData) {
-          if (data.guestName === "" || data.preference === "") {
-            return true;
-          }
-        }
-        return false;
+        return this.isGuestDataIncomplete();
       }
       return property[key] === comparedBy || property[key] === undefined;
     };
@@ -116,7 +121,7 @@ const IglPagetwo = /*@__PURE__*/ proxyCustomElement(class IglPagetwo extends HTM
       //   key: "propertyBookedBy",
       //   value: event.detail,
       // })
-      this.handleEventData(event, "propertyBookedBy", 0) })), this.isEditOrAddRoomEvent ? (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-6" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "cancel" }) }, "Cancel")), h("div", { class: "col-6" }, h("button", { disabled: this.isLoading === "save", type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "save" }) }, this.isLoading === "save" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Save")))) : (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-4" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "back" }) }, "<< Back")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("book"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "book" }) }, this.isLoading === "book" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("bookAndCheckIn"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "bookAndCheckIn" }) }, this.isLoading === "bookAndCheckIn" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book & check in"))))));
+      this.handleEventData(event, "propertyBookedBy", 0) })), this.isEditOrAddRoomEvent ? (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-6" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "cancel" }) }, "Cancel")), h("div", { class: "col-6" }, h("button", { disabled: this.isLoading === "save" || this.isGuestDataIncomplete(), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "save" }) }, this.isLoading === "save" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Save")))) : (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-4" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "back" }) }, "<< Back")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("book"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "book" }) }, this.isLoading === "book" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("bookAndCheckIn"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "bookAndCheckIn" }) }, this.isLoading === "bookAndCheckIn" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book & check in"))))));
   }
   static get style() { return iglPagetwoCss; }
 }, [2, "igl-pagetwo", {

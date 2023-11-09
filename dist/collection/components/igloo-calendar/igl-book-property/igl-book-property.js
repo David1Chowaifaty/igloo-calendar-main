@@ -87,6 +87,9 @@ export class IglBookProperty {
         ratePlanName: this.bookingData.RATE_PLAN,
         roomId: this.bookingData.PR_ID,
         guestName: this.bookingData.NAME,
+        cancelation: this.bookingData.cancelation,
+        guarantee: this.bookingData.guarantee,
+        adult_child_offering: this.bookingData.adult_child_offering,
       },
     };
   }
@@ -241,7 +244,11 @@ export class IglBookProperty {
     event.stopPropagation();
     const opt = event.detail;
     if (opt.guestRefKey) {
-      this.guestData[opt.guestRefKey] = opt.data;
+      if (this.isEventType("BAR_BOOKING")) {
+        this.guestData[opt.guestRefKey] = Object.assign(Object.assign({}, opt.data), { roomId: this.bookingData.PR_ID });
+      }
+      else
+        this.guestData[opt.guestRefKey] = opt.data;
     }
   }
   handleBookedByInfoUpdate(event) {
@@ -329,7 +336,7 @@ export class IglBookProperty {
     event.stopPropagation();
     switch (event.detail.key) {
       case "save":
-        this.bookUser(true);
+        this.bookUser(false);
         break;
       case "cancel":
         this.closeWindow();
@@ -367,8 +374,8 @@ export class IglBookProperty {
     this.closeWindow();
     window.location.reload();
   }
-  async bookUser(assign_units) {
-    this.setLoadingState(assign_units);
+  async bookUser(check_in) {
+    this.setLoadingState(check_in);
     try {
       if (["003", "002", "004"].includes(this.bookingData.STATUS_CODE)) {
         this.eventsService.deleteEvent(this.bookingData.POOL);
@@ -380,9 +387,9 @@ export class IglBookProperty {
         ? this.bookingData.PR_ID
         : undefined;
       const booking_nbr = this.isEventType("EDIT_BOOKING")
-        ? this.bookingData.ID
+        ? this.bookingData.BOOKING_NUMBER
         : undefined;
-      await this.bookingService.bookUser(this.bookedByInfoData, assign_units, this.bookingData.defaultDateRange.fromDate, this.bookingData.defaultDateRange.toDate, this.guestData, this.dateRangeData.dateDifference, this.sourceOption, this.propertyid, this.currency, booking_nbr, this.bookingData.GUEST, arrivalTime, pr_id);
+      await this.bookingService.bookUser(this.bookedByInfoData, check_in, this.bookingData.defaultDateRange.fromDate, this.bookingData.defaultDateRange.toDate, this.guestData, this.dateRangeData.dateDifference, this.sourceOption, this.propertyid, this.currency, booking_nbr, this.bookingData.GUEST, arrivalTime, pr_id);
       window.location.reload();
       //console.log("booking data ", this.bookingData);
     }

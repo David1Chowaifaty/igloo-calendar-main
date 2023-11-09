@@ -90,7 +90,6 @@ const IglApplicationInfo = class {
   updateRoomList() {
     const units = [...this.selectedUnits];
     units[this.index] = -1;
-    console.log(units);
     this.filterdRoomList = this.roomsList.filter((e) => !units.includes(e.id));
   }
   updateData() {
@@ -101,10 +100,13 @@ const IglApplicationInfo = class {
     });
   }
   handleDataChange(key, value) {
-    this.guestData[key] = value;
-    if (key === "roomId") {
+    this.guestData[key] = +value;
+    if (value === "") {
+      this.guestData["roomName"] = value;
+    }
+    if (key === "roomId" && value !== "") {
       this.guestData["roomName"] =
-        this.filterdRoomList.find((room) => room.id === value).name || "";
+        this.filterdRoomList.find((room) => room.id === +value).name || "";
     }
     this.updateData();
   }
@@ -119,7 +121,7 @@ const IglApplicationInfo = class {
       this.bookingType === "ADD_ROOM" ||
       this.bookingType === "EDIT_BOOKING" ? (h("span", { class: "h5" }, this.guestInfo.roomCategoryName)) : null, h("span", { class: "ml-1 font-weight-bold" }, this.guestInfo.ratePlanName.replace(this.guestInfo.roomCategoryName + "/", ""), h("ir-tooltip", { class: "ml-1 mr-1", message: this.guestInfo.cancelation + this.guestInfo.guarantee })), h("span", null, this.guestInfo.adult_child_offering)), h("div", { class: "row m-0 p-0 align-items-center" }, h("div", { class: "col-5" }, h("input", { id: v4(), type: "email", class: "form-control", placeholder: "Guest first name & last name", name: "guestName", onInput: (event) => this.handleGuestNameChange(event), required: true, value: this.guestData.guestName })), this.bookingType === "PLUS_BOOKING" ||
       this.bookingType === "ADD_ROOM" ||
-      this.bookingType === "EDIT_BOOKING" ? (h("div", { class: "col-2 p-0" }, h("select", { class: "form-control input-sm pr-0", id: v4(), onChange: (event) => this.handleDataChange("roomId", parseInt(event.target.value)) }, h("option", { value: "", selected: this.guestData.roomId === "" }, "Assign units"), this.filterdRoomList.map((room) => (h("option", { value: room.id, selected: this.guestData.roomId === room.id }, room.name)))))) : null, h("div", { class: "col-3" }, h("select", { class: "form-control input-sm", id: v4(), onChange: (event) => this.handleDataChange("preference", event.target.value) }, h("option", { value: "", selected: this.guestData.preference === "" }, "No preference"), this.bedPreferenceType.map((data) => (h("option", { value: data.CODE_NAME, selected: this.guestData.preference === data.CODE_NAME }, data.CODE_VALUE_EN))))), h("div", { class: "col-2" }, "$", this.guestInfo.rate)))));
+      this.bookingType === "EDIT_BOOKING" ? (h("div", { class: "col-2 p-0" }, h("select", { class: "form-control input-sm pr-0", id: v4(), onChange: (event) => this.handleDataChange("roomId", event.target.value) }, h("option", { value: "", selected: this.guestData.roomId === "" }, "Assign units"), this.filterdRoomList.map((room) => (h("option", { value: room.id, selected: +this.guestData.roomId === room.id }, room.name)))))) : null, h("div", { class: "col-3" }, h("select", { class: "form-control input-sm", id: v4(), onChange: (event) => this.handleDataChange("preference", event.target.value) }, h("option", { value: "", selected: this.guestData.preference === "" }, "No preference"), this.bedPreferenceType.map((data) => (h("option", { value: data.CODE_NAME, selected: this.guestData.preference === data.CODE_NAME }, data.CODE_VALUE_EN))))), h("div", { class: "col-2" }, "$", this.guestInfo.rate)))));
   }
   static get watchers() { return {
     "selectedUnits": ["handleSelctedUnits"]
@@ -9188,7 +9190,7 @@ const status = {
 function getDefaultData(cell, stayStatus) {
   var _a;
   if (["003", "002", "004"].includes(cell.STAY_STATUS_CODE)) {
-    // console.log("blocked cells",cell);
+    //console.log("blocked cells", cell);
     return {
       ID: cell.POOL,
       NOTES: cell.My_Block_Info.NOTES,
@@ -9211,9 +9213,9 @@ function getDefaultData(cell, stayStatus) {
       TO_DATE_STR: cell.My_Block_Info.format.to_date,
     };
   }
-  //console.log("booked cells",cell);
+  //console.log("booked cells", cell);
   return {
-    ID: cell.booking.booking_nbr,
+    ID: cell.POOL,
     TO_DATE: cell.DATE,
     FROM_DATE: cell.DATE,
     NO_OF_DAYS: 1,
@@ -9234,10 +9236,14 @@ function getDefaultData(cell, stayStatus) {
     POOL: cell.POOL,
     GUEST: cell.booking.guest,
     rooms: cell.booking.rooms,
+    BOOKING_NUMBER: cell.booking.booking_nbr,
+    cancelation: cell.room.rateplan.cancelation,
+    guarantee: cell.room.rateplan.guarantee,
     TOTAL_PRICE: cell.room.total,
     COUNTRY: cell.booking.guest.country_id,
     FROM_DATE_STR: cell.booking.format.from_date,
     TO_DATE_STR: cell.booking.format.to_date,
+    adult_child_offering: cell.room.rateplan.selected_variation.adult_child_offering,
   };
 }
 function updateBookingWithStayData(data, cell) {
@@ -9455,7 +9461,7 @@ class BookingService {
     }
     return days;
   }
-  async bookUser(bookedByInfoData, assign_units, fromDate, toDate, guestData, totalNights, source, propertyid, currency, bookingNumber, defaultGuest, arrivalTime, pr_id) {
+  async bookUser(bookedByInfoData, check_in, fromDate, toDate, guestData, totalNights, source, propertyid, currency, bookingNumber, defaultGuest, arrivalTime, pr_id) {
     try {
       const token = JSON.parse(sessionStorage.getItem("token"));
       if (token) {
@@ -9476,7 +9482,8 @@ class BookingService {
           guest = Object.assign(Object.assign({}, guest), { id: bookedByInfoData.id });
         }
         const body = {
-          assign_units,
+          assign_units: true,
+          check_in,
           booking: {
             booking_nbr: bookingNumber || "",
             from_date: fromDateStr,
@@ -9805,6 +9812,9 @@ const IglBookProperty = class {
         ratePlanName: this.bookingData.RATE_PLAN,
         roomId: this.bookingData.PR_ID,
         guestName: this.bookingData.NAME,
+        cancelation: this.bookingData.cancelation,
+        guarantee: this.bookingData.guarantee,
+        adult_child_offering: this.bookingData.adult_child_offering,
       },
     };
   }
@@ -9959,7 +9969,11 @@ const IglBookProperty = class {
     event.stopPropagation();
     const opt = event.detail;
     if (opt.guestRefKey) {
-      this.guestData[opt.guestRefKey] = opt.data;
+      if (this.isEventType("BAR_BOOKING")) {
+        this.guestData[opt.guestRefKey] = Object.assign(Object.assign({}, opt.data), { roomId: this.bookingData.PR_ID });
+      }
+      else
+        this.guestData[opt.guestRefKey] = opt.data;
     }
   }
   handleBookedByInfoUpdate(event) {
@@ -10047,7 +10061,7 @@ const IglBookProperty = class {
     event.stopPropagation();
     switch (event.detail.key) {
       case "save":
-        this.bookUser(true);
+        this.bookUser(false);
         break;
       case "cancel":
         this.closeWindow();
@@ -10083,8 +10097,8 @@ const IglBookProperty = class {
     this.closeWindow();
     window.location.reload();
   }
-  async bookUser(assign_units) {
-    this.setLoadingState(assign_units);
+  async bookUser(check_in) {
+    this.setLoadingState(check_in);
     try {
       if (["003", "002", "004"].includes(this.bookingData.STATUS_CODE)) {
         this.eventsService.deleteEvent(this.bookingData.POOL);
@@ -10096,9 +10110,9 @@ const IglBookProperty = class {
         ? this.bookingData.PR_ID
         : undefined;
       const booking_nbr = this.isEventType("EDIT_BOOKING")
-        ? this.bookingData.ID
+        ? this.bookingData.BOOKING_NUMBER
         : undefined;
-      await this.bookingService.bookUser(this.bookedByInfoData, assign_units, this.bookingData.defaultDateRange.fromDate, this.bookingData.defaultDateRange.toDate, this.guestData, this.dateRangeData.dateDifference, this.sourceOption, this.propertyid, this.currency, booking_nbr, this.bookingData.GUEST, arrivalTime, pr_id);
+      await this.bookingService.bookUser(this.bookedByInfoData, check_in, this.bookingData.defaultDateRange.fromDate, this.bookingData.defaultDateRange.toDate, this.guestData, this.dateRangeData.dateDifference, this.sourceOption, this.propertyid, this.currency, booking_nbr, this.bookingData.GUEST, arrivalTime, pr_id);
       window.location.reload();
       //console.log("booking data ", this.bookingData);
     }
@@ -10793,7 +10807,7 @@ const IglBookingEventHover = class {
     });
   }
   getInfoElement() {
-    return (h("div", { class: `iglPopOver infoBubble ${this.bubbleInfoTop ? "bubbleInfoAbove" : ""} text-left` }, h("div", { class: "row p-0 m-0 pb-1" }, h("div", { class: "pl-0 col-8 font-weight-bold font-medium-1" }, this.getBookingId()), h("div", { class: "pr-0 col-4 text-right" }, getCurrencySymbol(this.currency.code), this.getTotalPrice())), h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "In: "), this.getCheckInDate(), " -", " ", h("span", { class: "font-weight-bold" }, "Out: "), this.getCheckOutDate())), this.getArrivalTime() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "Arrival time: "), this.getArrivalTime()))), this.getTotalOccupants() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "Occupancy: "), this.getTotalOccupants()))), this.getPhoneNumber() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12 text-wrap" }, h("span", { class: "font-weight-bold" }, "Phone: "), this.renderPhone()))), this.getRatePlan() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "Rate plan: "), this.getRatePlan()))), this.getGuestNote() ? (h("div", { class: "row p-0 m-0" }, h("div", { class: "col-12 pl-0 pr-0 text-wrap" }, h("sapn", { class: "font-weight-bold" }, "Note: "), this.getGuestNote()))) : null, this.getInternalNote() ? (h("div", { class: "row p-0 m-0" }, h("div", { class: "col-12 pl-0 pr-0 text-wrap" }, h("span", { class: "font-weight-bold" }, "Internal remark: "), this.getInternalNote()))) : null, h("div", { class: "row p-0 m-0 mt-2" }, h("div", { class: "full-width btn-group btn-group-sm font-small-3", role: "group" }, h("button", { type: "button", class: "btn btn-primary mr-1", onClick: (_) => {
+    return (h("div", { class: `iglPopOver infoBubble ${this.bubbleInfoTop ? "bubbleInfoAbove" : ""} text-left` }, h("div", { class: "row p-0 m-0 pb-1" }, h("div", { class: "pl-0 col-8 font-weight-bold font-medium-1" }, this.bookingEvent.BOOKING_NUMBER), h("div", { class: "pr-0 col-4 text-right" }, getCurrencySymbol(this.currency.code), this.getTotalPrice())), h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "In: "), this.getCheckInDate(), " -", " ", h("span", { class: "font-weight-bold" }, "Out: "), this.getCheckOutDate())), this.getArrivalTime() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "Arrival time: "), this.getArrivalTime()))), this.getTotalOccupants() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "Occupancy: "), this.getTotalOccupants()))), this.getPhoneNumber() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12 text-wrap" }, h("span", { class: "font-weight-bold" }, "Phone: "), this.renderPhone()))), this.getRatePlan() && (h("div", { class: "row p-0 m-0" }, h("div", { class: "pl-0 pr-0 col-12" }, h("span", { class: "font-weight-bold" }, "Rate plan: "), this.getRatePlan()))), this.getGuestNote() ? (h("div", { class: "row p-0 m-0" }, h("div", { class: "col-12 pl-0 pr-0 text-wrap" }, h("sapn", { class: "font-weight-bold" }, "Note: "), this.getGuestNote()))) : null, this.getInternalNote() ? (h("div", { class: "row p-0 m-0" }, h("div", { class: "col-12 pl-0 pr-0 text-wrap" }, h("span", { class: "font-weight-bold" }, "Internal remark: "), this.getInternalNote()))) : null, h("div", { class: "row p-0 m-0 mt-2" }, h("div", { class: "full-width btn-group btn-group-sm font-small-3", role: "group" }, h("button", { type: "button", class: "btn btn-primary mr-1", onClick: (_) => {
         this.handleEditBooking();
       }, disabled: !this.bookingEvent.IS_EDITABLE }, h("i", { class: "ft ft-edit font-small-3" }), " Edit"), h("button", { type: "button", class: "btn btn-primary mr-1", onClick: (_) => {
         this.handleAddRoom();
@@ -10934,7 +10948,7 @@ const IglBookingRoomRatePlan = class {
     this.gotoSplitPageTwoEvent.emit({ key: "gotoSplitPage", data: "" });
   }
   render() {
-    return (h(Host, null, h("div", { class: "row m-0 p-0" }, h("div", { class: "col-md-6 col-sm-12 p-0 align-self-center" }, h("span", null, this.ratePlanData.name), h("ir-tooltip", { message: this.ratePlanData.cancelation + this.ratePlanData.guarantee })), h("div", { class: "col-md-6 col-sm-12 row pr-0" }, h("div", { class: "col-4" }, h("fieldset", { class: "position-relative" }, h("select", { class: "form-control input-sm", id: v4(), onChange: (evt) => this.handleDataChange("adult_child_offering", evt) }, this.ratePlanData.variations.map((variation) => (h("option", { value: variation.adult_child_offering, selected: this.selectedData.adultCount ===
+    return (h(Host, null, h("div", { class: "row m-0 p-0" }, h("div", { class: "col-md-6 col-sm-12 p-0 align-self-center" }, h("span", null, this.ratePlanData.name), h("ir-tooltip", { message: this.ratePlanData.cancelation + this.ratePlanData.guarantee })), h("div", { class: "col-md-6 col-sm-12 row pr-0" }, h("div", { class: "col-4" }, h("fieldset", { class: "position-relative" }, h("select", { class: "form-control input-sm", id: v4(), onChange: (evt) => this.handleDataChange("adult_child_offering", evt) }, this.ratePlanData.variations.map((variation) => (h("option", { value: variation.adult_child_offering, selected: this.selectedData.adult_child_offering ===
         variation.adult_child_offering }, variation.adult_child_offering)))))), h("div", { class: "row col-6 m-0 p-0" }, h("fieldset", { class: "position-relative has-icon-left col-6 m-0 p-0" }, h("input", { type: "text", class: "form-control input-sm", value: this.selectedData.rateType === 1
         ? this.selectedData.rate
         : this.selectedData.rate / this.dateDifference, id: v4(), placeholder: "Rate", onInput: (event) => this.handleInput(event) }), h("span", { class: "form-control-position" }, getCurrencySymbol(this.currency.code))), h("fieldset", { class: "position-relative m-0 p-0" }, h("select", { class: "form-control input-sm", id: v4(), onChange: (evt) => this.handleDataChange("rateType", evt) }, this.ratePricingMode.map((data) => (h("option", { value: data.CODE_NAME, selected: this.selectedData.rateType === +data.CODE_NAME }, data.CODE_VALUE_EN)))))), this.bookingType === "PLUS_BOOKING" ||
@@ -11613,21 +11627,26 @@ const IglPagetwo = class {
       });
     }
   }
+  isGuestDataIncomplete() {
+    if (this.selectedGuestData.length !== this.guestData.length) {
+      return true;
+    }
+    for (const data of this.selectedGuestData) {
+      if (data.guestName === "" ||
+        data.preference === "" ||
+        data.roomId === "") {
+        return true;
+      }
+    }
+    return false;
+  }
   isButtonDisabled(key) {
     const isValidProperty = (property, key, comparedBy) => {
       if (!property) {
         return true;
       }
       if (property === this.selectedGuestData) {
-        if (this.selectedGuestData.length !== this.guestData.length) {
-          return true;
-        }
-        for (const data of this.selectedGuestData) {
-          if (data.guestName === "" || data.preference === "") {
-            return true;
-          }
-        }
-        return false;
+        return this.isGuestDataIncomplete();
       }
       return property[key] === comparedBy || property[key] === undefined;
     };
@@ -11649,7 +11668,7 @@ const IglPagetwo = class {
       //   key: "propertyBookedBy",
       //   value: event.detail,
       // })
-      this.handleEventData(event, "propertyBookedBy", 0) })), this.isEditOrAddRoomEvent ? (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-6" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "cancel" }) }, "Cancel")), h("div", { class: "col-6" }, h("button", { disabled: this.isLoading === "save", type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "save" }) }, this.isLoading === "save" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Save")))) : (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-4" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "back" }) }, "<< Back")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("book"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "book" }) }, this.isLoading === "book" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("bookAndCheckIn"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "bookAndCheckIn" }) }, this.isLoading === "bookAndCheckIn" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book & check in"))))));
+      this.handleEventData(event, "propertyBookedBy", 0) })), this.isEditOrAddRoomEvent ? (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-6" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "cancel" }) }, "Cancel")), h("div", { class: "col-6" }, h("button", { disabled: this.isLoading === "save" || this.isGuestDataIncomplete(), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "save" }) }, this.isLoading === "save" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Save")))) : (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-4" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: "back" }) }, "<< Back")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("book"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "book" }) }, this.isLoading === "book" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled("bookAndCheckIn"), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: "bookAndCheckIn" }) }, this.isLoading === "bookAndCheckIn" && (h("i", { class: "la la-circle-o-notch spinner mx-1" })), "Book & check in"))))));
   }
 };
 IglPagetwo.style = iglPagetwoCss;
@@ -11993,8 +12012,6 @@ const IglTbaBookingView = class {
   //   this.initializeToolTips();
   // }
   componentShouldUpdate(newValue, oldValue, propName) {
-    // Implement your custom logic here
-    // console.log(propName, newValue, oldValue)
     if (propName === "selectedDate" && newValue !== oldValue) {
       this.highlightSection = false;
       this.selectedRoom = -1;
@@ -12004,11 +12021,9 @@ const IglTbaBookingView = class {
       this.selectedRoom = -1;
       return true;
     }
-    // Default behavior, allow update
     return true;
   }
   componentWillLoad() {
-    //console.log("eventIndex", this.eventIndex);
     if (this.categoryIndex === 0 && this.eventIndex === 0) {
       setTimeout(() => {
         this.handleHighlightAvailability();
@@ -12030,7 +12045,6 @@ const IglTbaBookingView = class {
       if (this.selectedRoom) {
         await this.toBeAssignedService.assignUnit(this.eventData.BOOKING_NUMBER, this.eventData.ID, this.selectedRoom);
         let assignEvent = Object.assign(Object.assign({}, this.eventData), { PR_ID: this.selectedRoom });
-        /* Here need to work on saving to db on success run below 2 lines */
         this.calendarData.bookingEvents.push(assignEvent);
         this.addToBeAssignedEvent.emit({
           key: "tobeAssignedEvents",

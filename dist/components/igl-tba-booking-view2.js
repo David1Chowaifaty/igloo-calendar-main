@@ -200,8 +200,6 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
   //   this.initializeToolTips();
   // }
   componentShouldUpdate(newValue, oldValue, propName) {
-    // Implement your custom logic here
-    // console.log(propName, newValue, oldValue)
     if (propName === "selectedDate" && newValue !== oldValue) {
       this.highlightSection = false;
       this.selectedRoom = -1;
@@ -211,11 +209,9 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
       this.selectedRoom = -1;
       return true;
     }
-    // Default behavior, allow update
     return true;
   }
   componentWillLoad() {
-    //console.log("eventIndex", this.eventIndex);
     if (this.categoryIndex === 0 && this.eventIndex === 0) {
       setTimeout(() => {
         this.handleHighlightAvailability();
@@ -237,7 +233,6 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
       if (this.selectedRoom) {
         await this.toBeAssignedService.assignUnit(this.eventData.BOOKING_NUMBER, this.eventData.ID, this.selectedRoom);
         let assignEvent = Object.assign(Object.assign({}, this.eventData), { PR_ID: this.selectedRoom });
-        /* Here need to work on saving to db on success run below 2 lines */
         this.calendarData.bookingEvents.push(assignEvent);
         this.addToBeAssignedEvent.emit({
           key: "tobeAssignedEvents",
