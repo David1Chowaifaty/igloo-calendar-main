@@ -94,6 +94,7 @@ const IglApplicationInfo = class {
   updateRoomList() {
     const units = [...this.selectedUnits];
     units[this.index] = -1;
+    console.log(units);
     this.filterdRoomList = this.roomsList.filter((e) => !units.includes(e.id));
   }
   updateData() {
@@ -12040,6 +12041,7 @@ const IglTbaBookingView = class {
           data: [assignEvent],
         });
         this.assignRoomEvent.emit({ key: "assignRoom", data: assignEvent });
+        window.location.reload();
       }
     }
     catch (error) {

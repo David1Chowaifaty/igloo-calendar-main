@@ -21,6 +21,7 @@ export class IglApplicationInfo {
   updateRoomList() {
     const units = [...this.selectedUnits];
     units[this.index] = -1;
+    console.log(units);
     this.filterdRoomList = this.roomsList.filter((e) => !units.includes(e.id));
   }
   updateData() {

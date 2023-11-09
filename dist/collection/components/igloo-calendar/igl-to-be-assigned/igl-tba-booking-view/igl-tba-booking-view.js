@@ -72,6 +72,7 @@ export class IglTbaBookingView {
           data: [assignEvent],
         });
         this.assignRoomEvent.emit({ key: "assignRoom", data: assignEvent });
+        window.location.reload();
       }
     }
     catch (error) {

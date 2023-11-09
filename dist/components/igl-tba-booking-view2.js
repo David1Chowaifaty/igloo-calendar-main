@@ -244,6 +244,7 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
           data: [assignEvent],
         });
         this.assignRoomEvent.emit({ key: "assignRoom", data: assignEvent });
+        window.location.reload();
       }
     }
     catch (error) {
