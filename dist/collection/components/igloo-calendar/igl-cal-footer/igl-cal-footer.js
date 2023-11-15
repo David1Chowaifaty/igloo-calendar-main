@@ -48,7 +48,8 @@ export class IglCalFooter {
           "resolved": "String",
           "references": {
             "String": {
-              "location": "global"
+              "location": "global",
+              "id": "global::String"
             }
           }
         },

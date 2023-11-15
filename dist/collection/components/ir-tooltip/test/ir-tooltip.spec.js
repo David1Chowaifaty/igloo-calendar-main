@@ -1,5 +1,5 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { IrTooltip } from '../ir-tooltip';
+import { newSpecPage } from "@stencil/core/testing";
+import { IrTooltip } from "../ir-tooltip";
 describe('ir-tooltip', () => {
   it('renders', async () => {
     const page = await newSpecPage({

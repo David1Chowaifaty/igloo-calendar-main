@@ -1,5 +1,5 @@
-import { EventEmitter } from "../../../stencil-public-runtime";
-import { ICountry } from "../../../models/IBooking";
+import { EventEmitter } from '../../../stencil-public-runtime';
+import { ICountry } from '../../../models/IBooking';
 export declare class IglBookingEventHover {
   bookingEvent: {
     [key: string]: any;
@@ -7,6 +7,7 @@ export declare class IglBookingEventHover {
   bubbleInfoTop: boolean;
   currency: any;
   countryNodeList: ICountry[];
+  is_vacation_rental: boolean;
   isLoading: string;
   showBookingPopup: EventEmitter;
   hideBubbleInfo: EventEmitter;

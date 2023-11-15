@@ -1,5 +1,5 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { IglPagetwo } from '../igl-pagetwo';
+import { newSpecPage } from "@stencil/core/testing";
+import { IglPagetwo } from "../igl-pagetwo";
 describe('igl-pagetwo', () => {
   it('renders', async () => {
     const page = await newSpecPage({

@@ -4620,3 +4620,6 @@ readers do not read off random characters that represent icons */
 .badge-light {
   background-color: #e0e0e0;
 }
+.min-width-full {
+  min-width: 100%;
+}

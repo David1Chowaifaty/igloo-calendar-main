@@ -1,4 +1,4 @@
-import { EventEmitter } from "../../../../stencil-public-runtime";
+import { EventEmitter } from '../../../../stencil-public-runtime';
 export declare class IglTbaBookingView {
   highlightToBeAssignedBookingEvent: EventEmitter;
   addToBeAssignedEvent: EventEmitter;
@@ -24,6 +24,7 @@ export declare class IglTbaBookingView {
   private highlightSection;
   private allRoomsList;
   private toBeAssignedService;
+  private bookingService;
   onSelectRoom(evt: any): void;
   componentShouldUpdate(newValue: string, oldValue: string, propName: string): boolean;
   componentWillLoad(): void;

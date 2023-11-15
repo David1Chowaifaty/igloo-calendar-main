@@ -92,7 +92,8 @@ export class IrDatePicker {
           "resolved": "Date",
           "references": {
             "Date": {
-              "location": "global"
+              "location": "global",
+              "id": "global::Date"
             }
           }
         },
@@ -111,7 +112,8 @@ export class IrDatePicker {
           "resolved": "Date",
           "references": {
             "Date": {
-              "location": "global"
+              "location": "global",
+              "id": "global::Date"
             }
           }
         },
@@ -358,7 +360,8 @@ export class IrDatePicker {
           "resolved": "Duration | DurationInputObject | FromTo | number | string",
           "references": {
             "moment": {
-              "location": "global"
+              "location": "global",
+              "id": "global::moment"
             }
           }
         },
@@ -390,7 +393,8 @@ export class IrDatePicker {
           "resolved": "{ start: Moment; end: Moment; }",
           "references": {
             "moment": {
-              "location": "global"
+              "location": "global",
+              "id": "global::moment"
             }
           }
         }

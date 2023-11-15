@@ -1,4 +1,4 @@
-import { newE2EPage } from '@stencil/core/testing';
+import { newE2EPage } from "@stencil/core/testing";
 describe('ir-interceptor', () => {
   it('renders', async () => {
     const page = await newE2EPage();

@@ -1,25 +1,26 @@
 import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/core/internal/client';
 import { a as axios } from './axios.js';
 import { b as dateToFormattedString, d as dateDifference } from './utils.js';
+import { B as BookingService, a as transformNewBooking } from './booking.service.js';
 import { v as v4 } from './v4.js';
 
 class ToBeAssignedService {
   async getUnassignedDates(propertyid, from_date, to_date) {
     try {
-      const token = JSON.parse(sessionStorage.getItem("token"));
+      const token = JSON.parse(sessionStorage.getItem('token'));
       if (token) {
         const { data } = await axios.post(`/Get_UnAssigned_Dates?Ticket=${token}`, {
           propertyid,
           from_date,
           to_date,
         });
-        if (data.ExceptionMsg !== "") {
+        if (data.ExceptionMsg !== '') {
           throw new Error(data.ExceptionMsg);
         }
         return this.convertUnassignedDates(data.My_Result);
       }
       else {
-        throw new Error("Invalid Token");
+        throw new Error('Invalid Token');
       }
     }
     catch (error) {
@@ -29,19 +30,19 @@ class ToBeAssignedService {
   }
   async getUnassignedRooms(propertyid, specific_date, roomInfo, formattedLegendData) {
     try {
-      const token = JSON.parse(sessionStorage.getItem("token"));
+      const token = JSON.parse(sessionStorage.getItem('token'));
       if (token) {
         const { data } = await axios.post(`/Get_Aggregated_UnAssigned_Rooms?Ticket=${token}`, {
           propertyid,
           specific_date,
         });
-        if (data.ExceptionMsg !== "") {
+        if (data.ExceptionMsg !== '') {
           throw new Error(data.ExceptionMsg);
         }
         return this.transformToAssignable(data, roomInfo, formattedLegendData);
       }
       else {
-        throw new Error("Invalid Token");
+        throw new Error('Invalid Token');
       }
     }
     catch (error) {
@@ -51,20 +52,21 @@ class ToBeAssignedService {
   }
   async assignUnit(booking_nbr, identifier, pr_id) {
     try {
-      const token = JSON.parse(sessionStorage.getItem("token"));
+      const token = JSON.parse(sessionStorage.getItem('token'));
       if (token) {
         const { data } = await axios.post(`/Assign_Exposed_Room?Ticket=${token}`, {
           booking_nbr,
           identifier,
           pr_id,
         });
-        if (data.ExceptionMsg !== "") {
+        if (data.ExceptionMsg !== '') {
           throw new Error(data.ExceptionMsg);
         }
+        console.log(data);
         return data;
       }
       else {
-        throw new Error("Invalid token");
+        throw new Error('Invalid token');
       }
     }
     catch (error) {
@@ -74,7 +76,7 @@ class ToBeAssignedService {
   }
   cleanSpacesAndSpecialChars(str) {
     const regex = /[^a-zA-Z0-9]+/g;
-    return str.replace(regex, "");
+    return str.replace(regex, '');
   }
   transformToAssignable(data, roomInfo, formattedLegendData) {
     const result = [];
@@ -88,14 +90,14 @@ class ToBeAssignedService {
           FROM_DATE: room.unassigned_date,
           TO_DATE: room.unassigned_date,
           BOOKING_NUMBER: room.book_nbr,
-          STATUS: "IN-HOUSE",
+          STATUS: 'IN-HOUSE',
           defaultDateRange: {
             fromDate: undefined,
             toDate: undefined,
             fromDateTimeStamp: 0,
             toDateTimeStamp: 0,
-            fromDateStr: "",
-            toDateStr: "",
+            fromDateStr: '',
+            toDateStr: '',
             dateDifference: 0,
           },
           NO_OF_DAYS: 1,
@@ -112,19 +114,16 @@ class ToBeAssignedService {
     return result;
   }
   addDefaultDateRange(roomCategory) {
-    roomCategory.defaultDateRange.fromDate = new Date(roomCategory.FROM_DATE + "T00:00:00");
+    roomCategory.defaultDateRange.fromDate = new Date(roomCategory.FROM_DATE + 'T00:00:00');
     roomCategory.defaultDateRange.fromDateStr = dateToFormattedString(roomCategory.defaultDateRange.fromDate);
-    roomCategory.defaultDateRange.fromDateTimeStamp =
-      roomCategory.defaultDateRange.fromDate.getTime();
-    roomCategory.defaultDateRange.toDate = new Date(roomCategory.TO_DATE + "T00:00:00");
+    roomCategory.defaultDateRange.fromDateTimeStamp = roomCategory.defaultDateRange.fromDate.getTime();
+    roomCategory.defaultDateRange.toDate = new Date(roomCategory.TO_DATE + 'T00:00:00');
     roomCategory.defaultDateRange.toDateStr = dateToFormattedString(roomCategory.defaultDateRange.toDate);
-    roomCategory.defaultDateRange.toDateTimeStamp =
-      roomCategory.defaultDateRange.toDate.getTime();
+    roomCategory.defaultDateRange.toDateTimeStamp = roomCategory.defaultDateRange.toDate.getTime();
     roomCategory.defaultDateRange.dateDifference = roomCategory.NO_OF_DAYS;
   }
   getRoomTypeId(roomName, roomInfo) {
-    return (roomInfo.find((room) => this.cleanSpacesAndSpecialChars(room.name) ===
-      this.cleanSpacesAndSpecialChars(roomName)).id || null);
+    return roomInfo.find(room => this.cleanSpacesAndSpecialChars(room.name) === this.cleanSpacesAndSpecialChars(roomName)).id || null;
   }
   updateAvailableRooms(room, roomCategory, formattedLegendData, roomsInfo) {
     const rooms = [];
@@ -133,17 +132,17 @@ class ToBeAssignedService {
         const days = dateDifference(unit.from_date, unit.to_date);
         rooms.push({
           RT_ID: roomCategory.RT_ID,
-          STATUS: "PENDING-CONFIRMATION",
+          STATUS: 'PENDING-CONFIRMATION',
           FROM_DATE: unit.from_date,
           roomName: unit.name,
           PR_ID: unit.pr_id,
           TO_DATE: unit.to_date,
           NO_OF_DAYS: days,
-          ID: "NEW_TEMP_EVENT",
-          NAME: "",
-          NOTES: "",
-          BALANCE: "",
-          INTERNAL_NOTE: "",
+          ID: 'NEW_TEMP_EVENT',
+          NAME: '',
+          NOTES: '',
+          BALANCE: '',
+          INTERNAL_NOTE: '',
           hideBubble: true,
           legendData: formattedLegendData,
           roomsInfo,
@@ -156,7 +155,7 @@ class ToBeAssignedService {
   }
   convertUnassignedDates(dates) {
     let convertedDates = {};
-    dates.forEach((date) => {
+    dates.forEach(date => {
       convertedDates[new Date(date.date).getTime()] = {
         categories: {},
         dateStr: date.description,
@@ -179,6 +178,7 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
     this.highlightSection = false;
     this.allRoomsList = [];
     this.toBeAssignedService = new ToBeAssignedService();
+    this.bookingService = new BookingService();
     this.calendarData = undefined;
     this.selectedDate = undefined;
     this.eventData = {};
@@ -200,12 +200,12 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
   //   this.initializeToolTips();
   // }
   componentShouldUpdate(newValue, oldValue, propName) {
-    if (propName === "selectedDate" && newValue !== oldValue) {
+    if (propName === 'selectedDate' && newValue !== oldValue) {
       this.highlightSection = false;
       this.selectedRoom = -1;
       return true; // Prevent update for a specific prop value
     }
-    else if (propName === "eventData" && newValue !== oldValue) {
+    else if (propName === 'eventData' && newValue !== oldValue) {
       this.selectedRoom = -1;
       return true;
     }
@@ -226,20 +226,23 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
   //   container: 'body'
   // });
   // }
+  //
   async handleAssignUnit(event) {
     try {
       event.stopImmediatePropagation();
       event.stopPropagation();
       if (this.selectedRoom) {
         await this.toBeAssignedService.assignUnit(this.eventData.BOOKING_NUMBER, this.eventData.ID, this.selectedRoom);
-        let assignEvent = Object.assign(Object.assign({}, this.eventData), { PR_ID: this.selectedRoom });
-        this.calendarData.bookingEvents.push(assignEvent);
+        const booking = await this.bookingService.getExoposedBooking(this.eventData.BOOKING_NUMBER, 'en');
+        let assignEvent = transformNewBooking(booking);
+        const newEvent = Object.assign(Object.assign({}, this.eventData), assignEvent[0]);
+        this.calendarData.bookingEvents.push(newEvent);
+        //console.log(newEvent);
         this.addToBeAssignedEvent.emit({
-          key: "tobeAssignedEvents",
-          data: [assignEvent],
+          key: 'tobeAssignedEvents',
+          data: [newEvent],
         });
-        this.assignRoomEvent.emit({ key: "assignRoom", data: assignEvent });
-        window.location.reload();
+        this.assignRoomEvent.emit({ key: 'assignRoom', data: newEvent });
       }
     }
     catch (error) {
@@ -248,7 +251,7 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
   }
   handleHighlightAvailability() {
     this.highlightToBeAssignedBookingEvent.emit({
-      key: "highlightBookingId",
+      key: 'highlightBookingId',
       data: { bookingId: this.eventData.ID },
     });
     if (!this.selectedDate) {
@@ -256,7 +259,7 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
     }
     let filteredEvents = [];
     let allRoomsList = [];
-    filteredEvents = this.eventData.availableRooms.map((room) => {
+    filteredEvents = this.eventData.availableRooms.map(room => {
       allRoomsList.push({
         calendar_cell: null,
         id: room.PR_ID,
@@ -266,13 +269,13 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
     });
     this.allRoomsList = allRoomsList;
     this.addToBeAssignedEvent.emit({
-      key: "tobeAssignedEvents",
+      key: 'tobeAssignedEvents',
       data: filteredEvents,
     });
     this.scrollPageToRoom.emit({
-      key: "scrollPageToRoom",
+      key: 'scrollPageToRoom',
       id: this.categoryId,
-      refClass: "category_" + this.categoryId,
+      refClass: 'category_' + this.categoryId,
     });
     // ID: "NEW_TEMP_EVENT",
     // STATUS: "PENDING_CONFIRMATION"
@@ -283,11 +286,11 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
     event.stopPropagation();
     this.highlightSection = false;
     this.highlightToBeAssignedBookingEvent.emit({
-      key: "highlightBookingId",
-      data: { bookingId: "----" },
+      key: 'highlightBookingId',
+      data: { bookingId: '----' },
     });
-    this.onSelectRoom({ target: { value: "" } });
-    this.addToBeAssignedEvent.emit({ key: "tobeAssignedEvents", data: [] });
+    this.onSelectRoom({ target: { value: '' } });
+    this.addToBeAssignedEvent.emit({ key: 'tobeAssignedEvents', data: [] });
     this.renderView();
   }
   highlightBookingEvent(event) {
@@ -307,7 +310,7 @@ const IglTbaBookingView = /*@__PURE__*/ proxyCustomElement(class IglTbaBookingVi
     // this.initializeToolTips();
   }
   render() {
-    return (h(Host, null, h("div", { class: "bookingContainer", onClick: () => this.handleHighlightAvailability() }, h("div", { class: `guestTitle ${this.highlightSection ? "selectedOrder" : ""} pointer font-small-3`, "data-toggle": "tooltip", "data-placement": "top", "data-original-title": "Click to assign unit" }, `Book# ${this.eventData.BOOKING_NUMBER} , ${this.eventData.NAME}`), h("div", { class: "row m-0 p-0 actionsContainer" }, h("div", { class: "d-inline-block p-0 selectContainer" }, h("select", { class: "form-control input-sm", id: v4(), onChange: (evt) => this.onSelectRoom(evt) }, h("option", { value: "", selected: this.selectedRoom == -1 }, "Assign unit"), this.allRoomsList.map((room) => (h("option", { value: room.id, selected: this.selectedRoom == room.id }, room.name))))), this.highlightSection ? (h("div", { class: "d-inline-block text-right buttonsContainer" }, h("button", { type: "button", class: "btn btn-secondary btn-sm", onClick: (evt) => this.handleCloseAssignment(evt) }, "X"), h("button", { type: "button", class: "btn btn-primary btn-sm", onClick: (evt) => this.handleAssignUnit(evt), disabled: this.selectedRoom === -1 }, "Assign"))) : null), h("hr", null))));
+    return (h(Host, null, h("div", { class: "bookingContainer", onClick: () => this.handleHighlightAvailability() }, h("div", { class: `guestTitle ${this.highlightSection ? 'selectedOrder' : ''} pointer font-small-3`, "data-toggle": "tooltip", "data-placement": "top", "data-original-title": "Click to assign unit" }, `Book# ${this.eventData.BOOKING_NUMBER} , ${this.eventData.NAME}`), h("div", { class: "row m-0 p-0 actionsContainer" }, h("div", { class: "d-inline-block p-0 selectContainer" }, h("select", { class: "form-control input-sm", id: v4(), onChange: evt => this.onSelectRoom(evt) }, h("option", { value: "", selected: this.selectedRoom == -1 }, "Assign unit"), this.allRoomsList.map(room => (h("option", { value: room.id, selected: this.selectedRoom == room.id }, room.name))))), this.highlightSection ? (h("div", { class: "d-inline-block text-right buttonsContainer" }, h("button", { type: "button", class: "btn btn-secondary btn-sm", onClick: evt => this.handleCloseAssignment(evt) }, "X"), h("button", { type: "button", class: "btn btn-primary btn-sm", onClick: evt => this.handleAssignUnit(evt), disabled: this.selectedRoom === -1 }, "Assign"))) : null), h("hr", null))));
   }
   static get style() { return iglTbaBookingViewCss; }
 }, [2, "igl-tba-booking-view", {

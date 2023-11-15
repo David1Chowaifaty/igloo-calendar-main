@@ -1,5 +1,5 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { IrDatePicker } from '../ir-date-picker';
+import { newSpecPage } from "@stencil/core/testing";
+import { IrDatePicker } from "../ir-date-picker";
 describe('ir-date-picker', () => {
   it('renders', async () => {
     const page = await newSpecPage({

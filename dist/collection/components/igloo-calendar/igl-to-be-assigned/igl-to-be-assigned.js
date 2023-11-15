@@ -1,4 +1,4 @@
-import { Host, h, Fragment, } from "@stencil/core";
+import { Host, h, Fragment } from "@stencil/core";
 import { ToBeAssignedService } from "../../../services/toBeAssigned.service";
 import { dateToFormattedString } from "../../../utils/utils";
 export class IglToBeAssigned {
@@ -11,7 +11,7 @@ export class IglToBeAssigned {
     this.propertyid = undefined;
     this.from_date = undefined;
     this.to_date = undefined;
-    this.loadingMessage = "Fetching For Unassigned Rooms";
+    this.loadingMessage = 'Fetching unassigned units';
     this.calendarData = undefined;
     this.showDatesList = false;
     this.renderAgain = false;
@@ -25,7 +25,7 @@ export class IglToBeAssigned {
     try {
       let categorisedRooms = {};
       const result = await this.toBeAssignedService.getUnassignedRooms(this.propertyid, dateToFormattedString(new Date(+key)), calendarData.roomsInfo, calendarData.formattedLegendData);
-      result.forEach((room) => {
+      result.forEach(room => {
         if (!categorisedRooms.hasOwnProperty(room.RT_ID)) {
           categorisedRooms[room.RT_ID] = [room];
         }
@@ -43,19 +43,22 @@ export class IglToBeAssigned {
     try {
       this.isLoading = true;
       this.today.setHours(0, 0, 0, 0);
-      this.calendarData.roomsInfo.forEach((category) => {
+      this.calendarData.roomsInfo.forEach(category => {
         this.categoriesData[category.id] = {
           name: category.name,
           roomsList: category.physicalrooms,
-          roomIds: category.physicalrooms.map((room) => {
+          roomIds: category.physicalrooms.map(room => {
             return room.id;
           }),
         };
       });
       this.selectedDate = null;
       this.unassignedDates = await this.toBeAssignedService.getUnassignedDates(this.propertyid, dateToFormattedString(new Date()), this.to_date);
-      const firstKey = Object.keys(this.unassignedDates)[0];
-      await this.updateCategories(firstKey, this.calendarData);
+      console.log(this.unassignedDates);
+      if (Object.keys(this.unassignedDates).length > 0) {
+        const firstKey = Object.keys(this.unassignedDates)[0];
+        await this.updateCategories(firstKey, this.calendarData);
+      }
       this.data = this.unassignedDates;
       this.orderedDatesList = Object.keys(this.data).sort((a, b) => parseInt(a) - parseInt(b));
       if (!this.selectedDate && this.orderedDatesList.length) {
@@ -63,7 +66,7 @@ export class IglToBeAssigned {
       }
     }
     catch (error) {
-      console.error("Error fetching unassigned dates:", error);
+      console.error('Error fetching unassigned dates:', error);
       //  toastr.error(error);
     }
     finally {
@@ -80,10 +83,10 @@ export class IglToBeAssigned {
       this.isLoading = true;
       this.showUnassignedDate();
       await this.updateCategories(dateStamp, this.calendarData);
-      this.addToBeAssignedEvent.emit({ key: "tobeAssignedEvents", data: [] });
+      this.addToBeAssignedEvent.emit({ key: 'tobeAssignedEvents', data: [] });
       this.selectedDate = dateStamp;
       this.showBookingPopup.emit({
-        key: "calendar",
+        key: 'calendar',
         data: parseInt(dateStamp) - 86400000,
       });
       this.isLoading = false; // goto 1 days before.. // calendar moves another 1 day
@@ -94,21 +97,21 @@ export class IglToBeAssigned {
   }
   getDay(dt) {
     const currentDate = new Date(dt);
-    const locale = "default"; //'en-US';
+    const locale = 'default'; //'en-US';
     const dayOfWeek = this.getLocalizedDayOfWeek(currentDate, locale);
     // const monthName = currentDate.toLocaleString("default", { month: 'short' })
-    return (dayOfWeek + " " + currentDate.getDate() + ", " + currentDate.getFullYear());
+    return dayOfWeek + ' ' + currentDate.getDate() + ', ' + currentDate.getFullYear();
   }
   getLocalizedDayOfWeek(date, locale) {
-    const options = { weekday: "short" };
+    const options = { weekday: 'short' };
     return date.toLocaleDateString(locale, options);
   }
-  handleOptionEvent(key, data = "") {
+  handleOptionEvent(key, data = '') {
     this.highlightToBeAssignedBookingEvent.emit({
-      key: "highlightBookingId",
-      data: { bookingId: "----" },
+      key: 'highlightBookingId',
+      data: { bookingId: '----' },
     });
-    this.addToBeAssignedEvent.emit({ key: "tobeAssignedEvents", data: [] });
+    this.addToBeAssignedEvent.emit({ key: 'tobeAssignedEvents', data: [] });
     this.optionEvent.emit({ key, data });
   }
   showUnassignedDate() {
@@ -118,10 +121,8 @@ export class IglToBeAssigned {
     // toBeAssignedEvents
   }
   getCategoryView() {
-    if (this.orderedDatesList.length &&
-      this.selectedDate &&
-      this.data[this.selectedDate]) {
-      return Object.entries(this.data[this.selectedDate].categories).map(([id, eventDatas], ind) => (h("igl-tba-category-view", { calendarData: this.calendarData, selectedDate: this.selectedDate, categoryId: id, categoryIndex: ind, categoriesData: this.categoriesData, eventDatas: eventDatas, onAssignUnitEvent: (evt) => this.handleAssignUnit(evt) })));
+    if (this.orderedDatesList.length && this.selectedDate && this.data[this.selectedDate]) {
+      return Object.entries(this.data[this.selectedDate].categories).map(([id, eventDatas], ind) => (h("igl-tba-category-view", { calendarData: this.calendarData, selectedDate: this.selectedDate, categoryId: id, categoryIndex: ind, categoriesData: this.categoriesData, eventDatas: eventDatas, onAssignUnitEvent: evt => this.handleAssignUnit(evt) })));
     }
     else {
       return null;
@@ -132,22 +133,20 @@ export class IglToBeAssigned {
     const data = opt.data;
     event.stopImmediatePropagation();
     event.stopPropagation();
-    if (opt.key === "assignUnit") {
-      this.data[data.selectedDate].categories[data.RT_ID] = this.data[data.selectedDate].categories[data.RT_ID].filter((eventData) => eventData.ID != data.assignEvent.ID);
-      this.calendarData = data.calendarData; // RAJA
-      // this.calendarData.bookingEvents.push(data.assignEvent);
-      if (!this.data[data.selectedDate].categories[data.RT_ID].length) {
-        delete this.data[data.selectedDate].categories[data.RT_ID];
-        if (!Object.keys(this.data[data.selectedDate].categories).length) {
-          delete this.data[data.selectedDate];
-          this.orderedDatesList = this.orderedDatesList.filter((dateStamp) => dateStamp != data.selectedDate);
-          this.selectedDate = this.orderedDatesList.length
-            ? this.orderedDatesList[0]
-            : null;
-        }
-      }
+    if (opt.key === 'assignUnit') {
+      // this.data[data.selectedDate].categories[data.RT_ID] = this.data[data.selectedDate].categories[data.RT_ID].filter(eventData => eventData.ID != data.assignEvent.ID);
+      // // this.calendarData = data.calendarData; // RAJA
+      // // this.calendarData.bookingEvents.push(data.assignEvent);
+      // if (!this.data[data.selectedDate].categories[data.RT_ID].length) {
+      //   delete this.data[data.selectedDate].categories[data.RT_ID];
+      //   if (!Object.keys(this.data[data.selectedDate].categories).length) {
+      //     delete this.data[data.selectedDate];
+      //     this.orderedDatesList = this.orderedDatesList.filter(dateStamp => dateStamp != data.selectedDate);
+      //     this.selectedDate = this.orderedDatesList.length ? this.orderedDatesList[0] : null;
+      //   }
+      // }
       this.reduceAvailableUnitEvent.emit({
-        key: "reduceAvailableDays",
+        key: 'reduceAvailableDays',
         data: { selectedDate: data.selectedDate },
       });
       this.renderView();
@@ -157,8 +156,7 @@ export class IglToBeAssigned {
     this.renderAgain = !this.renderAgain;
   }
   render() {
-    return (h(Host, { class: "tobeAssignedContainer pr-1 text-left" }, h("div", null, h("div", null, h("div", { class: "stickyHeader" }, h("div", { class: "tobeAssignedHeader pt-1" }, "Assignments"), h("div", { class: "closeBtn pt-1", onClick: () => this.handleOptionEvent("closeSideMenu") }, h("i", { class: "ft-chevrons-left" })), h("hr", null), this.isLoading ? (h("p", null, this.loadingMessage)) : (h(Fragment, null, this.orderedDatesList.length ? (h("div", { class: `text-center ` + (this.showDatesList ? "show" : "") }, h("div", { onClick: () => this.showUnassignedDate() }, h("span", { class: "font-weight-bold" }, this.data[this.selectedDate].dateStr), h("i", { class: "la la-angle-down ml-2" })), this.showDatesList ? (h("div", { class: "dropdown-menu dropdown-menu-right full-width" }, this.orderedDatesList.map((ordDate) => (h("div", { class: "pointer dropdown-item pointer", onClick: () => this.showForDate(ordDate) }, this.data[ordDate].dateStr))))) : null)) : ("All bookings assigned")))), !this.isLoading && (h("div", { class: "scrollabledArea" }, this.orderedDatesList.length ? (Object.keys(this.data[this.selectedDate].categories)
-      .length ? (this.getCategoryView()) : (h("div", { class: "mt-1" }, "All assigned for this day."))) : null))))));
+    return (h(Host, { class: "tobeAssignedContainer pr-1 text-left" }, h("div", null, h("div", null, h("div", { class: "stickyHeader" }, h("div", { class: "tobeAssignedHeader pt-1" }, "Assignments"), h("div", { class: "closeBtn pt-1", onClick: () => this.handleOptionEvent('closeSideMenu') }, h("i", { class: "ft-chevrons-left" })), h("hr", null), this.isLoading ? (h("p", null, this.loadingMessage)) : (h(Fragment, null, this.orderedDatesList.length ? (h("div", { class: `text-center ` + (this.showDatesList ? 'show' : '') }, h("div", { onClick: () => this.showUnassignedDate() }, h("span", { class: "font-weight-bold" }, this.data[this.selectedDate].dateStr), h("i", { class: "la la-angle-down ml-2" })), this.showDatesList ? (h("div", { class: "dropdown-menu dropdown-menu-right full-width" }, this.orderedDatesList.map(ordDate => (h("div", { class: "pointer dropdown-item pointer", onClick: () => this.showForDate(ordDate) }, this.data[ordDate].dateStr))))) : null)) : ('All bookings assigned')))), !this.isLoading && (h("div", { class: "scrollabledArea" }, this.orderedDatesList.length ? (Object.keys(this.data[this.selectedDate].categories).length ? (this.getCategoryView()) : (h("div", { class: "mt-1" }, "All assigned for this day."))) : null))))));
   }
   static get is() { return "igl-to-be-assigned"; }
   static get encapsulation() { return "scoped"; }
@@ -241,7 +239,7 @@ export class IglToBeAssigned {
         },
         "attribute": "loading-message",
         "reflect": false,
-        "defaultValue": "\"Fetching For Unassigned Rooms\""
+        "defaultValue": "'Fetching unassigned units'"
       },
       "calendarData": {
         "type": "unknown",

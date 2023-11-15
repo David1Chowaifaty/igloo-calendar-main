@@ -1,10 +1,10 @@
-import { Host, h, } from "@stencil/core";
+import { Host, h } from "@stencil/core";
 import { BookingService } from "../../../services/booking.service";
 export class IglBlockDatesView {
   constructor() {
     this.blockDatesData = {
       RELEASE_AFTER_HOURS: 0,
-      OPTIONAL_REASON: "",
+      OPTIONAL_REASON: '',
       OUT_OF_SERVICE: false,
     }; // Change of property name might require updates in booking-event-hover
     this.releaseList = [];
@@ -45,7 +45,7 @@ export class IglBlockDatesView {
   }
   emitData() {
     this.dataUpdateEvent.emit({
-      key: "blockDatesData",
+      key: 'blockDatesData',
       data: Object.assign({}, this.blockDatesData),
     });
   }
@@ -59,18 +59,15 @@ export class IglBlockDatesView {
     else {
       dt.setHours(dt.getHours() + this.blockDatesData.RELEASE_AFTER_HOURS, dt.getMinutes(), 0, 0);
     }
-    return (dt.toLocaleString("default", { month: "short" }) +
-      " " +
-      dt.getDate() +
-      ", " +
-      dt.getHours() +
-      ":" +
-      dt.getMinutes());
+    return dt.toLocaleString('default', { month: 'short' }) + ' ' + dt.getDate() + ', ' + this.formatNumber(dt.getHours()) + ':' + this.formatNumber(dt.getMinutes());
+  }
+  formatNumber(value) {
+    return value < 10 ? `0${value}` : value;
   }
   handleOutOfService(evt) {
     this.blockDatesData.OUT_OF_SERVICE = evt.target.checked;
     if (this.blockDatesData.OUT_OF_SERVICE) {
-      this.blockDatesData.OPTIONAL_REASON = "";
+      this.blockDatesData.OPTIONAL_REASON = '';
       this.blockDatesData.RELEASE_AFTER_HOURS = 0;
     }
     this.renderPage();
@@ -80,8 +77,7 @@ export class IglBlockDatesView {
     this.renderAgain = !this.renderAgain;
   }
   render() {
-    return (h(Host, null, h("div", { class: "row m-0 p-0 ml-1 mb-1" }, h("div", { class: "col-12 text-left p-0" }, h("span", { class: "pr-1" }, h("span", { class: "text-bold-700 font-medium-1" }, "From: "), this.fromDate), " ", h("span", { class: "text-bold-700 font-medium-1" }, "To: "), this.toDate)), h("div", { class: "col mb-1 text-left" }, h("div", { class: "mb-1" }, h("label", { class: "p-0 text-bold-700 font-medium-1 m-0 align-middle" }, "Reason:"), h("div", { class: "p-0 m-0 pr-1 controlContainer checkBoxContainer d-inline-block align-middle" }, h("input", { class: "form-control", type: "checkbox", checked: this.blockDatesData.OUT_OF_SERVICE, id: "userinput6", onChange: (event) => this.handleOutOfService(event) })), " ", h("span", { class: "align-middle" }, "Out of service")), !this.blockDatesData.OUT_OF_SERVICE ? (h("div", null, h("div", { class: "mb-1 d-flex w-100 align-items-center" }, h("span", { class: "align-middle" }, "or "), h("div", { class: "d-inline-flex col pr-0 align-middle" }, h("input", { class: "form-control", type: "text", placeholder: "Optional reason", id: "optReason", value: this.blockDatesData.OPTIONAL_REASON, onInput: (event) => this.handleOptionalReason(event) }))), h("div", { class: "mb-1 w-100 pr-0 " }, h("span", { class: "text-bold-700 font-medium-1" }, "Automatic release in:", " "), h("div", { class: "d-inline-block" }, h("select", { class: "form-control input-sm", id: "zSmallSelect", onChange: (evt) => this.handleReleaseAfterChange(evt) }, this.releaseList.map((releaseItem) => (h("option", { value: +releaseItem.CODE_NAME, selected: this.blockDatesData.RELEASE_AFTER_HOURS ==
-        +releaseItem.CODE_NAME }, releaseItem.CODE_VALUE_EN))))), this.blockDatesData.RELEASE_AFTER_HOURS ? (h("div", { class: "d-inline-block releaseTime" }, h("em", null, "on ", this.getReleaseHoursString()))) : null))) : null)));
+    return (h(Host, null, h("div", { class: "row m-0 p-0 ml-1 mb-1" }, h("div", { class: "col-12 text-left p-0" }, h("span", { class: "pr-1" }, h("span", { class: "text-bold-700 font-medium-1" }, "From: "), this.fromDate), ' ', h("span", { class: "text-bold-700 font-medium-1" }, "To: "), this.toDate)), h("div", { class: "col mb-1 text-left" }, h("div", { class: "mb-1" }, h("label", { class: "p-0 text-bold-700 font-medium-1 m-0 align-middle" }, "Reason:"), h("div", { class: "p-0 m-0 pr-1 controlContainer checkBoxContainer d-inline-block align-middle" }, h("input", { class: "form-control", type: "checkbox", checked: this.blockDatesData.OUT_OF_SERVICE, id: "userinput6", onChange: event => this.handleOutOfService(event) })), ' ', h("span", { class: "align-middle" }, "Out of service")), !this.blockDatesData.OUT_OF_SERVICE ? (h("div", null, h("div", { class: "mb-1 d-flex w-100 align-items-center" }, h("span", { class: "align-middle" }, "or "), h("div", { class: "d-inline-flex col pr-0 align-middle" }, h("input", { class: "form-control", type: "text", placeholder: "Optional reason", id: "optReason", value: this.blockDatesData.OPTIONAL_REASON, onInput: event => this.handleOptionalReason(event) }))), h("div", { class: "mb-1 w-100 pr-0 " }, h("span", { class: "text-bold-700 font-medium-1" }, "Automatic release in: "), h("div", { class: "d-inline-block" }, h("select", { class: "form-control input-sm", id: "zSmallSelect", onChange: evt => this.handleReleaseAfterChange(evt) }, this.releaseList.map(releaseItem => (h("option", { value: +releaseItem.CODE_NAME, selected: this.blockDatesData.RELEASE_AFTER_HOURS == +releaseItem.CODE_NAME }, releaseItem.CODE_VALUE_EN))))), this.blockDatesData.RELEASE_AFTER_HOURS ? (h("div", { class: "d-inline-block releaseTime" }, h("em", null, "on ", this.getReleaseHoursString()))) : null))) : null)));
   }
   static get is() { return "igl-block-dates-view"; }
   static get encapsulation() { return "scoped"; }

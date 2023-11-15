@@ -13,7 +13,7 @@
     <script src="dist/collection/assets/scripts/daterangepicker/moment.min.js"></script>
     <script src="dist/collection/assets/scripts/daterangepicker/daterangepicker.js"></script>
 
-    <script type="module" src="dist/igloo-calendar/igloo-calendar.esm.js"></script>
+    <script type="module" src="dist/ir-webcmp/ir-webcmp.esm.js"></script>
 </head>
 
 <body>
@@ -22,9 +22,11 @@
     <script>
         const calendar = document.querySelector("igloo-calendar");
         setTimeout(() => {
+            const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDA2ODQ5NDUsIkNMQUlNLTAxIjoicktLMi9DY1dQQnM9IiwiQ0xBSU0tMDIiOiI5UStMQm93VTl6az0iLCJDTEFJTS0wMyI6Ilp3Tys5azJoTzUwPSIsIkNMQUlNLTA0IjoiRThLMEFsdS9NdkV4Ui9JTys2Tk4rZz09In0.9j3IY0PtRqkcyDCeMoKubUn7iHXAx4trBZ5E1e5pAZc"
             sessionStorage.removeItem('token');
+            sessionStorage.setItem('token', JSON.stringify(token))
             calendar.propertyid = "42";
-            calendar.ticket = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE2OTk2MjA2OTYsIkNMQUlNLTAxIjoicktLMi9DY1dQQnM9IiwiQ0xBSU0tMDIiOiI5UStMQm93VTl6az0iLCJDTEFJTS0wMyI6Ilp3Tys5azJoTzUwPSIsIkNMQUlNLTA0Ijoiek5Gdzc1RThFVjdNMWt3aTdZNStMbFQ5dGF6VkRyOFl2aE5NWll3QytwND0ifQ.HlXEt6jMDOl9zG6qdBi12whhy3kaIRfJxBe2A_9UpkM";
+            calendar.ticket = token;
 
         }, 300)
     </script>

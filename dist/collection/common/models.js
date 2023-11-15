@@ -24,9 +24,8 @@ export class guestInfo {
     this.language = '';
   }
 }
-export class guestInfoValidation extends guestInfo {
+export class guestInfoValidation {
   constructor() {
-    super(...arguments);
     this.firstNameValid = false;
     this.lastNameValid = false;
     this.emailValid = false;

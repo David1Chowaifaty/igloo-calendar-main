@@ -1,5 +1,5 @@
-import { newSpecPage } from '@stencil/core/testing';
-import { IrInterceptor } from '../ir-interceptor';
+import { newSpecPage } from "@stencil/core/testing";
+import { IrInterceptor } from "../ir-interceptor";
 describe('ir-interceptor', () => {
   it('renders', async () => {
     const page = await newSpecPage({

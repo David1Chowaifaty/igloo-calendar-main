@@ -1,5 +1,5 @@
-import { Host, h } from '@stencil/core';
-import { onlineResources } from '../../common/ir.common.resources';
+import { Host, h } from "@stencil/core";
+import { onlineResources } from "../../common/ir.common.resources";
 export class IrCommon {
   constructor() {
     this.extraResources = '';
