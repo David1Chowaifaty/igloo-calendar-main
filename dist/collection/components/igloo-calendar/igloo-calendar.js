@@ -47,7 +47,9 @@ export class IglooCalendar {
   }
   async ticketChanged() {
     sessionStorage.setItem('token', JSON.stringify(this.ticket));
-    this.initializeApp();
+    setTimeout(() => {
+      this.initializeApp();
+    }, 200);
   }
   async componentWillLoad() {
     if (this.baseurl) {
