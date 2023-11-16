@@ -1,6 +1,4 @@
-'use strict';
-
-const moment = require('./moment-27049970.js');
+import { h as hooks } from './moment-5e85be7a.js';
 
 function bind(fn, thisArg) {
   return function wrap() {
@@ -3320,12 +3318,12 @@ function getReleaseHoursString(releaseDate) {
   };
 }
 function computeEndDate(startDate, numberOfDays) {
-  const dateObj = moment.hooks(startDate, "D_M_YYYY");
+  const dateObj = hooks(startDate, "D_M_YYYY");
   dateObj.add(numberOfDays, "days");
   return dateObj.format("YYYY-MM-DD");
 }
 function convertDMYToISO(date) {
-  const dateObj = moment.hooks(date, "D_M_YYYY");
+  const dateObj = hooks(date, "D_M_YYYY");
   return dateObj.format("YYYY-MM-DD");
 }
 
@@ -3387,12 +3385,12 @@ async function getStayStatus() {
 function getDefaultData(cell, stayStatus) {
   var _a;
   if (['003', '002', '004'].includes(cell.STAY_STATUS_CODE)) {
-    //console.log("blocked cells", cell);
+    //console.log('blocked cells', cell);
     return {
       ID: cell.POOL,
-      NOTES: cell.My_Block_Info.NOTES,
+      NOTES: '',
       BALANCE: '',
-      NAME: stayStatus.find(st => st.code === cell.STAY_STATUS_CODE).value || '',
+      NAME: cell.My_Block_Info.NOTES !== '' ? cell.My_Block_Info.NOTES : stayStatus.find(st => st.code === cell.STAY_STATUS_CODE).value || '',
       RELEASE_AFTER_HOURS: cell.My_Block_Info.DESCRIPTION,
       PR_ID: cell.My_Block_Info.pr_id,
       ENTRY_DATE: cell.My_Block_Info.BLOCKED_TILL_DATE,
@@ -3443,6 +3441,7 @@ function getDefaultData(cell, stayStatus) {
     FROM_DATE_STR: cell.booking.format.from_date,
     TO_DATE_STR: cell.booking.format.to_date,
     adult_child_offering: cell.room.rateplan.selected_variation.adult_child_offering,
+    NOTES: cell.booking.remark,
   };
 }
 function updateBookingWithStayData(data, cell) {
@@ -3504,6 +3503,7 @@ function transformNewBooking(data) {
       origin: data.origin,
       channel_booking_nbr: data.channel_booking_nbr,
       is_direct: data.is_direct,
+      NOTES: data.remark,
     });
   });
   return bookings;
@@ -3512,9 +3512,9 @@ async function transformNewBLockedRooms(data) {
   const stayStatus = await getStayStatus();
   return {
     ID: data.POOL,
-    NOTES: data.NOTES,
+    NOTES: '',
     BALANCE: '',
-    NAME: stayStatus.find(st => st.code === data.STAY_STATUS_CODE).value || '',
+    NAME: data.NOTES !== '' ? data.NOTES : stayStatus.find(st => st.code === data.STAY_STATUS_CODE).value || '',
     RELEASE_AFTER_HOURS: data.DESCRIPTION,
     PR_ID: data.pr_id,
     ENTRY_DATE: data.BLOCKED_TILL_DATE,
@@ -3533,8 +3533,8 @@ async function transformNewBLockedRooms(data) {
   };
 }
 function calculateDaysBetweenDates(from_date, to_date) {
-  const startDate = moment.hooks(from_date, 'YYYY-MM-DD');
-  const endDate = moment.hooks(to_date, 'YYYY-MM-DD');
+  const startDate = hooks(from_date, 'YYYY-MM-DD');
+  const endDate = hooks(to_date, 'YYYY-MM-DD');
   const daysDiff = endDate.diff(startDate, 'days');
   return daysDiff;
 }
@@ -3872,17 +3872,6 @@ class BookingService {
   }
 }
 
-exports.BookingService = BookingService;
-exports.axios = axios;
-exports.computeEndDate = computeEndDate;
-exports.convertDMYToISO = convertDMYToISO;
-exports.dateDifference = dateDifference;
-exports.dateToFormattedString = dateToFormattedString;
-exports.findCountry = findCountry;
-exports.formatLegendColors = formatLegendColors;
-exports.getCurrencySymbol = getCurrencySymbol;
-exports.getReleaseHoursString = getReleaseHoursString;
-exports.transformNewBLockedRooms = transformNewBLockedRooms;
-exports.transformNewBooking = transformNewBooking;
+export { BookingService as B, axios as a, transformNewBooking as b, getCurrencySymbol as c, dateToFormattedString as d, dateDifference as e, findCountry as f, getReleaseHoursString as g, formatLegendColors as h, convertDMYToISO as i, computeEndDate as j, transformNewBLockedRooms as t };
 
-//# sourceMappingURL=booking.service-a46a895e.js.map
+//# sourceMappingURL=booking.service-a9fa9711.js.map
