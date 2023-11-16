@@ -2823,7 +2823,9 @@ const IglooCalendar = class {
       booking_service.axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
-      this.initializeApp();
+      setTimeout(() => {
+        this.initializeApp();
+      }, 200);
     }
   }
   initializeApp() {

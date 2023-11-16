@@ -103,7 +103,9 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
-      this.initializeApp();
+      setTimeout(() => {
+        this.initializeApp();
+      }, 200);
     }
   }
   initializeApp() {

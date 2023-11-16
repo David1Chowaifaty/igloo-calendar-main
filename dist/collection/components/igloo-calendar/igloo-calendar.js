@@ -56,7 +56,9 @@ export class IglooCalendar {
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
-      this.initializeApp();
+      setTimeout(() => {
+        this.initializeApp();
+      }, 200);
     }
   }
   initializeApp() {
