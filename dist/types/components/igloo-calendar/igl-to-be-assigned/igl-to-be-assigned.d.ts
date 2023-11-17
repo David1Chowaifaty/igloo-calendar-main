@@ -39,9 +39,11 @@ export declare class IglToBeAssigned {
   showUnassignedDate(): void;
   getToBeAssignedEntities(): void;
   getCategoryView(): any[];
-  handleAssignUnit(event: CustomEvent<{
-    [key: string]: any;
-  }>): void;
+  handleAssignUnit(event: any): Promise<void>;
+  removeEventFromCategory(assignmentDetails: any): void;
+  emitUnitReductionEvent(selectedDate: any): void;
+  updateSelectedDateCategories(selectedDate: any): Promise<void>;
+  checkAndCleanEmptyCategories(assignmentDetails: any): void;
   renderView(): void;
   render(): any;
 }
