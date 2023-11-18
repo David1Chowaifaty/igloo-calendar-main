@@ -19,8 +19,8 @@ export declare class IglToBeAssigned {
   showDatesList: boolean;
   renderAgain: boolean;
   orderedDatesList: any[];
-  isGotoToBeAssignedDate: boolean;
-  isLoading: boolean;
+  private isGotoToBeAssignedDate;
+  private isLoading;
   private selectedDate;
   private data;
   private today;

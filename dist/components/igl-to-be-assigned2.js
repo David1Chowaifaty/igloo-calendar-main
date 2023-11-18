@@ -15,6 +15,8 @@ const IglToBeAssigned = /*@__PURE__*/ proxyCustomElement(class IglToBeAssigned e
     this.showBookingPopup = createEvent(this, "showBookingPopup", 7);
     this.addToBeAssignedEvent = createEvent(this, "addToBeAssignedEvent", 7);
     this.highlightToBeAssignedBookingEvent = createEvent(this, "highlightToBeAssignedBookingEvent", 7);
+    this.isGotoToBeAssignedDate = false;
+    this.isLoading = true;
     this.selectedDate = null;
     this.data = {};
     this.today = new Date();
@@ -28,8 +30,6 @@ const IglToBeAssigned = /*@__PURE__*/ proxyCustomElement(class IglToBeAssigned e
     this.showDatesList = false;
     this.renderAgain = false;
     this.orderedDatesList = [];
-    this.isGotoToBeAssignedDate = undefined;
-    this.isLoading = true;
   }
   componentWillLoad() {
     this.reArrangeData();
@@ -79,10 +79,13 @@ const IglToBeAssigned = /*@__PURE__*/ proxyCustomElement(class IglToBeAssigned e
     }
   }
   async componentDidLoad() {
-    if (!this.isGotoToBeAssignedDate && Object.keys(this.unassignedDates).length > 0) {
-      const firstKey = Object.keys(this.unassignedDates)[0];
-      this.showForDate(firstKey);
-    }
+    setTimeout(() => {
+      if (!this.isGotoToBeAssignedDate && Object.keys(this.unassignedDates).length > 0) {
+        console.log(this.isGotoToBeAssignedDate);
+        const firstKey = Object.keys(this.unassignedDates)[0];
+        this.showForDate(firstKey);
+      }
+    }, 100);
   }
   async gotoDate(event) {
     this.isGotoToBeAssignedDate = true;
@@ -208,9 +211,7 @@ const IglToBeAssigned = /*@__PURE__*/ proxyCustomElement(class IglToBeAssigned e
     "calendarData": [1040],
     "showDatesList": [32],
     "renderAgain": [32],
-    "orderedDatesList": [32],
-    "isGotoToBeAssignedDate": [32],
-    "isLoading": [32]
+    "orderedDatesList": [32]
   }, [[8, "gotoToBeAssignedDate", "gotoDate"]]]);
 function defineCustomElement() {
   if (typeof customElements === "undefined") {
