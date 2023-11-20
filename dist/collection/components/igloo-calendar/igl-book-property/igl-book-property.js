@@ -395,7 +395,7 @@ export class IglBookProperty {
       if (check_in || this.isEventType('EDIT_BOOKING')) {
         const newBookings = transformNewBooking(result);
         booking.data = newBookings;
-        this.bookingCreated.emit(booking);
+        //this.bookingCreated.emit(booking);
       }
       //window.location.reload();
       //console.log("booking data ", this.bookingData);

@@ -19,6 +19,7 @@ const IglBookingEvent = /*@__PURE__*/ proxyCustomElement(class IglBookingEvent e
     this.showInfoPopup = false;
     this.bubbleInfoTopSide = false;
     this.eventsService = new EventsService();
+    this.isStreatch = false;
     /* Resize props */
     this.resizeSide = '';
     this.isDragging = false;
@@ -83,7 +84,7 @@ const IglBookingEvent = /*@__PURE__*/ proxyCustomElement(class IglBookingEvent e
         }
         else {
           const { pool, from_date, to_date, toRoomId } = event.detail;
-          if (this.checkIfSlotOccupied(toRoomId, from_date, to_date)) {
+          if (this.checkIfSlotOccupied(toRoomId, from_date, to_date) && !this.isStreatch) {
             this.element.style.top = `${this.dragInitPos.top}px`;
             this.element.style.left = `${this.dragInitPos.left}px`;
             this.dragEndPos = Object.assign(Object.assign({}, this.dragInitPos), { id: this.getBookingId(), fromRoomId: this.getBookedRoomId() });
@@ -220,6 +221,7 @@ const IglBookingEvent = /*@__PURE__*/ proxyCustomElement(class IglBookingEvent e
     this.resizeSide = side;
     this.isDragging = true;
     this.showEventInfo(false); // Hide bubble;
+    this.isStreatch = side !== 'move';
     if (side === 'move') {
       this.initialX = event.clientX || event.touches[0].clientX;
       this.initialY = event.clientY || event.touches[0].clientY;

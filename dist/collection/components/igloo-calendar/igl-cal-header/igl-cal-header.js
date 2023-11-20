@@ -12,6 +12,7 @@ export class IglCalHeader {
     this.calendarData = undefined;
     this.today = undefined;
     this.propertyid = undefined;
+    this.unassignedDates = {};
     this.to_date = undefined;
     this.renderAgain = false;
     this.unassignedRoomsNumber = {};
@@ -19,13 +20,16 @@ export class IglCalHeader {
   componentWillLoad() {
     try {
       this.initializeRoomsList();
-      if (!this.calendarData.is_vacation_rental) {
+      if (!this.calendarData.is_vacation_rental && Object.keys(this.unassignedDates).length > 0) {
         this.fetchAndAssignUnassignedRooms();
       }
     }
     catch (error) {
       console.error('Error in componentWillLoad:', error);
     }
+  }
+  handleCalendarDataChanged() {
+    this.fetchAndAssignUnassignedRooms();
   }
   initializeRoomsList() {
     this.roomsList = [];
@@ -35,7 +39,7 @@ export class IglCalHeader {
   }
   async fetchAndAssignUnassignedRooms() {
     //const days = await this.toBeAssignedService.getUnassignedDates(this.propertyid, dateToFormattedString(new Date()), this.to_date);
-    const days = this.calendarData.unassignedDates;
+    const days = this.unassignedDates;
     await this.assignRoomsToDate(days);
   }
   async assignRoomsToDate(days) {
@@ -43,7 +47,6 @@ export class IglCalHeader {
       const result = await this.toBeAssignedService.getUnassignedRooms(this.propertyid, dateToFormattedString(new Date(+day)), this.calendarData.roomsInfo, this.calendarData.formattedLegendData);
       this.unassignedRoomsNumber = Object.assign(Object.assign({}, this.unassignedRoomsNumber), { [transformDateFormatWithMoment(days[day].dateStr)]: result.length });
     }
-    console.log(this.unassignedRoomsNumber);
   }
   handleReduceAvailableUnitEvent(event) {
     const opt = event.detail;
@@ -211,6 +214,22 @@ export class IglCalHeader {
         "attribute": "propertyid",
         "reflect": false
       },
+      "unassignedDates": {
+        "type": "unknown",
+        "mutable": false,
+        "complexType": {
+          "original": "{}",
+          "resolved": "{}",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "defaultValue": "{}"
+      },
       "to_date": {
         "type": "string",
         "mutable": false,
@@ -285,6 +304,12 @@ export class IglCalHeader {
       }];
   }
   static get elementRef() { return "element"; }
+  static get watchers() {
+    return [{
+        "propName": "unassignedDates",
+        "methodName": "handleCalendarDataChanged"
+      }];
+  }
   static get listeners() {
     return [{
         "name": "reduceAvailableUnitEvent",

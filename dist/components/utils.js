@@ -86,7 +86,13 @@ function convertDMYToISO(date) {
   const dateObj = hooks(date, 'D_M_YYYY');
   return dateObj.format('YYYY-MM-DD');
 }
+function addTwoMonthToDate(date) {
+  return hooks(date).add(2, 'months').format('YYYY-MM-DD');
+}
+function getNextDay(date) {
+  return hooks(date).add(1, 'days').format('YYYY-MM-DD');
+}
 
-export { convertDateToTime as a, dateDifference as b, convertDateToCustomFormat as c, dateToFormattedString as d, getCurrencySymbol as e, findCountry as f, getReleaseHoursString as g, formatLegendColors as h, convertDMYToISO as i, computeEndDate as j };
+export { convertDateToTime as a, dateDifference as b, convertDateToCustomFormat as c, dateToFormattedString as d, getCurrencySymbol as e, findCountry as f, getReleaseHoursString as g, formatLegendColors as h, addTwoMonthToDate as i, getNextDay as j, convertDMYToISO as k, computeEndDate as l };
 
 //# sourceMappingURL=utils.js.map

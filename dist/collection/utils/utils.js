@@ -105,4 +105,10 @@ export function convertDMYToISO(date) {
   const dateObj = moment(date, 'D_M_YYYY');
   return dateObj.format('YYYY-MM-DD');
 }
+export function addTwoMonthToDate(date) {
+  return moment(date).add(2, 'months').format('YYYY-MM-DD');
+}
+export function getNextDay(date) {
+  return moment(date).add(1, 'days').format('YYYY-MM-DD');
+}
 //# sourceMappingURL=utils.js.map
