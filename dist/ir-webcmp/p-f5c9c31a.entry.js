@@ -1,0 +1,2 @@
+import{r as s,h as t}from"./p-76093323.js";const r=class{constructor(t){s(this,t);this.rows=3;this.cols=5;this.text="";this.label="<label>";this.placeholder="<placeholder>"}connectedCallback(){}disconnectedCallback(){}render(){return t("div",{class:"form-group"},t("label",null,this.label),t("textarea",{rows:this.rows,class:"form-control",placeholder:this.placeholder}))}};export{r as ir_textarea};
+//# sourceMappingURL=p-f5c9c31a.entry.js.map

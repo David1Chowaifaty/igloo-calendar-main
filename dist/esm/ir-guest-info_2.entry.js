@@ -1,4 +1,4 @@
-import { r as registerInstance, c as createEvent, h } from './index-9daf58c7.js';
+import { r as registerInstance, c as createEvent, h } from './index-c87e82be.js';
 import { h as hooks } from './moment-5e85be7a.js';
 import { b as _formatAmount, _ as _formatDate, c as _getDay } from './functions-d0f70e87.js';
 
