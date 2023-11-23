@@ -721,14 +721,18 @@ const IglBookingEvent = class {
         }
         else {
           const { pool, from_date, to_date, toRoomId } = event.detail;
-          if (this.checkIfSlotOccupied(toRoomId, from_date, to_date) && !this.isStreatch) {
-            this.element.style.top = `${this.dragInitPos.top}px`;
-            this.element.style.left = `${this.dragInitPos.left}px`;
-            this.dragEndPos = Object.assign(Object.assign({}, this.dragInitPos), { id: this.getBookingId(), fromRoomId: this.getBookedRoomId() });
-            this.dragOverEventData.emit({ id: 'DRAG_OVER_END', data: this.dragEndPos });
+          if (pool) {
+            this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date).catch(() => {
+              if (this.isStreatch) {
+                this.element.style.left = `${this.initialLeft}px`;
+                this.element.style.width = `${this.initialWidth}px`;
+              }
+              else {
+                this.element.style.top = `${this.dragInitPos.top}px`;
+                this.element.style.left = `${this.dragInitPos.left}px`;
+              }
+            });
           }
-          const result = await this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date);
-          this.bookingEvent.POOL = result.My_Result.POOL;
         }
       }
       if (event.detail.fromRoomId === this.getBookedRoomId()) {
@@ -736,7 +740,9 @@ const IglBookingEvent = class {
         this.renderAgain();
       }
     }
-    catch (error) { }
+    catch (error) {
+      console.log('something went wrong');
+    }
   }
   checkIfSlotOccupied(toRoomId, from_date, to_date) {
     const fromTime = new Date(from_date).getTime();
@@ -965,7 +971,7 @@ const IglBookingEvent = class {
         let numberOfDays = Math.round(this.finalWidth / this.dayWidth);
         let initialStayDays = this.getStayDays();
         if (initialStayDays != numberOfDays) {
-          this.setStayDays(numberOfDays);
+          //this.setStayDays(numberOfDays);
           if (this.resizeSide == 'leftSide') {
             this.element.style.left = `${this.initialLeft + (initialStayDays - numberOfDays) * this.dayWidth}px`;
             // set FROM_DATE = TO_DATE - numberOfDays
@@ -978,7 +984,7 @@ const IglBookingEvent = class {
               x: +this.element.style.left.replace('px', ''),
               y: +this.element.style.top.replace('px', ''),
               pool: this.bookingEvent.POOL,
-              nbOfDays: this.bookingEvent.NO_OF_DAYS,
+              nbOfDays: numberOfDays,
             },
           });
           this.element.style.width = `${numberOfDays * this.dayWidth - this.eventSpace}px`;
@@ -6790,7 +6796,7 @@ const IglooCalendar = class {
                   result = JSON.parse(PAYLOAD);
                 }
                 console.log(result, REASON);
-                const resasons = ['DORESERVATION', 'BLOCK_EXPOSED_UNIT', 'ASSIGN_EXPOSED_ROOM', 'REALLOCATE_EXPOSED_ROOM_BLOCK', 'REALLOCATE_EXPOSED_ROOM_BOOK'];
+                const resasons = ['DORESERVATION', 'BLOCK_EXPOSED_UNIT', 'ASSIGN_EXPOSED_ROOM', 'REALLOCATE_EXPOSED_ROOM_BLOCK'];
                 if (resasons.includes(REASON)) {
                   let transformedBooking;
                   if (REASON === 'BLOCK_EXPOSED_UNIT' || REASON === 'REALLOCATE_EXPOSED_ROOM_BLOCK') {
@@ -6901,6 +6907,9 @@ const IglooCalendar = class {
     let newMonths = [...results.months];
     newMonths.shift();
     this.calendarData = Object.assign(Object.assign({}, this.calendarData), { days: this.days, monthsInfo: [...this.calendarData.monthsInfo, ...newMonths], bookingEvents: [...this.calendarData.bookingEvents, ...newBookings] });
+    const data = await this.toBeAssignedService.getUnassignedDates(this.propertyid, nextDay, nextTwoMonths);
+    this.unassignedDates = Object.assign(Object.assign({}, this.unassignedDates), data);
+    this.calendarData.unassignedDates = Object.assign(Object.assign({}, this.calendarData.unassignedDates), data);
   }
   scrollToElement(goToDate) {
     this.scrollContainer = this.scrollContainer || this.element.querySelector('.calendarScrollContainer');
@@ -6933,9 +6942,9 @@ const IglooCalendar = class {
       }
     });
     this.calendarData = Object.assign(Object.assign({}, this.calendarData), { bookingEvents: bookings });
-    setTimeout(() => {
-      this.scrollToElement(this.transformDateForScroll(new Date(data[0].FROM_DATE)));
-    }, 200);
+    // setTimeout(() => {
+    //   this.scrollToElement(this.transformDateForScroll(new Date(data[0].FROM_DATE)));
+    // }, 200);
   }
   // @Listen('bookingCreated')
   // onBookingCreation(event: CustomEvent<{ pool?: string; data: RoomBookingDetails[] }>) {
@@ -7368,18 +7377,16 @@ const IrDatePicker = class {
 };
 IrDatePicker.style = irDatePickerCss;
 
-const irInterceptorCss = ".sc-ir-interceptor-h{--viewport-padding:25px;position:fixed;top:0;right:0;display:flex;flex-direction:column;padding:var(--viewport-padding);gap:10px;max-width:60vw;margin:0;list-style:none;z-index:2147483647;outline:none;pointer-events:none}.toast-container.sc-ir-interceptor{background-color:white;border-radius:6px;box-shadow:hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;padding:15px 30px;display:grid;grid-template-areas:'title action';grid-template-columns:auto max-content;column-gap:15px;align-items:center;overflow:hidden}.toast-container[data-state='open'].sc-ir-interceptor{animation:slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards}.toast-container[data-state='closed'].sc-ir-interceptor{pointer-events:none;animation:fadeOut 150ms ease-in forwards}p.sc-ir-interceptor{margin:0;padding:0;grid-area:title;font-weight:500;color:#1c2024;font-size:15px}.x-mark-container.sc-ir-interceptor,.check-mark-container.sc-ir-interceptor{display:flex;align-items:center;justify-content:center;height:1.5rem;width:1.5rem;border-radius:50%}.x-mark-container.sc-ir-interceptor{background:red}.check-mark-container.sc-ir-interceptor{background:rgb(9, 153, 9)}.loader.sc-ir-interceptor{width:1.25rem;height:1.25rem;border:2.5px solid #3f3f3f;border-bottom-color:transparent;border-radius:50%;display:inline-block;box-sizing:border-box;animation:rotation 1s linear infinite}.loadingScreenContainer.sc-ir-interceptor{position:fixed;top:0;left:0;height:100vh;width:100vw;z-index:100;background:rgba(0, 0, 0, 0.2)}@keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}@keyframes fadeOut{0%{opacity:1}100%{opacity:0}}@keyframes slideIn{0%{transform:translateX(calc(100% + var(--viewport-padding)));opacity:0}100%{transform:translateX(0);opacity:1}}";
+const irInterceptorCss = ".sc-ir-interceptor-h{--viewport-padding:25px;position:fixed;top:0;right:0;display:flex;flex-direction:column;padding:var(--viewport-padding);gap:10px;max-width:60vw;margin:0;list-style:none;z-index:2147483647;outline:none;pointer-events:none}.toast-container.sc-ir-interceptor{background-color:white;border-radius:6px;box-shadow:hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;padding:15px 30px;display:grid;grid-template-areas:'title action';grid-template-columns:auto max-content;column-gap:15px;align-items:center;overflow:hidden}.toast-container[data-state='open'].sc-ir-interceptor{animation:slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards}.toast-container[data-state='closed'].sc-ir-interceptor{pointer-events:none;animation:fadeOut 150ms ease-in forwards}p.sc-ir-interceptor{margin:0;padding:0;grid-area:title;font-weight:500;color:#1c2024;font-size:15px}.x-mark-container.sc-ir-interceptor,.check-mark-container.sc-ir-interceptor{display:flex;align-items:center;justify-content:center;height:1.5rem;width:1.5rem;border-radius:50%}.x-mark-container.sc-ir-interceptor{background:red}.check-mark-container.sc-ir-interceptor{background:rgb(9, 153, 9)}.loadingScreenContainer.sc-ir-interceptor{position:fixed;top:0;left:0;height:100vh;width:100vw;z-index:100000;background:rgba(0, 0, 0, 0.2);pointer-events:all}@keyframes fadeOut{0%{opacity:1}100%{opacity:0}}@keyframes slideIn{0%{transform:translateX(calc(100% + var(--viewport-padding)));opacity:0}100%{transform:translateX(0);opacity:1}}";
 
 const IrInterceptor = class {
   constructor(hostRef) {
     registerInstance(this, hostRef);
     this.isShown = false;
     this.isLoading = false;
-    this.isSuccess = false;
     this.isUnassignedUnit = false;
     this.defaultMessage = {
       loadingMessage: 'Fetching Data',
-      successMessage: 'Success',
       errorMessage: 'Something Went Wrong',
     };
     this.handledEndpoints = ['/Get_Exposed_Booking_Availability', '/ReAllocate_Exposed_Room'];
@@ -7420,8 +7427,8 @@ const IrInterceptor = class {
       this.handleError(response.data.ExceptionMsg);
       throw new Error(response.data.ExceptionMsg);
     }
-    if (this.isHandledEndpoint(response.config.url)) {
-      this.handleCompletion('Success', true);
+    else {
+      this.handleCompletion('', true);
     }
     return response;
   }
@@ -7451,17 +7458,17 @@ const IrInterceptor = class {
     }
   }
   handleCompletion(message, success) {
-    this.isSuccess = success;
-    this.defaultMessage = Object.assign(Object.assign({}, this.defaultMessage), { [success ? 'successMessage' : 'errorMessage']: message });
+    if (!success) {
+      this.defaultMessage = Object.assign(Object.assign({}, this.defaultMessage), { errorMessage: message });
+    }
     this.hideToastAfterDelay(success);
   }
   renderMessage() {
-    if (this.isLoading)
-      return this.defaultMessage.loadingMessage;
-    return this.isSuccess ? this.defaultMessage.successMessage : this.defaultMessage.errorMessage;
+    return this.defaultMessage.errorMessage;
   }
   render() {
-    return (h(Host, null, this.isLoading && this.isShown && (h("div", { class: "loadingScreenContainer" }, h("div", { class: "loadingContainer" }, h("ir-loading-screen", null)))), h("div", { class: "toast-container", "data-state": !this.isLoading && this.isShown && !this.isSuccess ? 'open' : 'closed' }, !this.isLoading && this.isShown && !this.isSuccess && (h(Fragment, null, h("div", { class: "x-mark-container" }, h("svg", { width: "15", height: "15", viewBox: "0 0 15 15", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, h("path", { d: "M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z", fill: "white", "fill-rule": "evenodd", "clip-rule": "evenodd" }))), h("p", null, this.renderMessage()))))));
+    const show = !this.isLoading && this.isShown;
+    return (h(Host, null, this.isLoading && this.isShown && (h("div", { class: "loadingScreenContainer" }, h("div", { class: "loadingContainer" }, h("ir-loading-screen", null)))), h("div", { class: "toast-container", "data-state": show ? 'open' : 'closed' }, show && (h(Fragment, null, h("div", { class: "x-mark-container" }, h("svg", { width: "15", height: "15", viewBox: "0 0 15 15", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, h("path", { d: "M11.7816 4.03157C12.0062 3.80702 12.0062 3.44295 11.7816 3.2184C11.5571 2.99385 11.193 2.99385 10.9685 3.2184L7.50005 6.68682L4.03164 3.2184C3.80708 2.99385 3.44301 2.99385 3.21846 3.2184C2.99391 3.44295 2.99391 3.80702 3.21846 4.03157L6.68688 7.49999L3.21846 10.9684C2.99391 11.193 2.99391 11.557 3.21846 11.7816C3.44301 12.0061 3.80708 12.0061 4.03164 11.7816L7.50005 8.31316L10.9685 11.7816C11.193 12.0061 11.5571 12.0061 11.7816 11.7816C12.0062 11.557 12.0062 11.193 11.7816 10.9684L8.31322 7.49999L11.7816 4.03157Z", fill: "white", "fill-rule": "evenodd", "clip-rule": "evenodd" }))), h("p", null, this.renderMessage()))))));
   }
 };
 IrInterceptor.style = irInterceptorCss;

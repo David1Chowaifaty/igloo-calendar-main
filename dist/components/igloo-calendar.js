@@ -4010,7 +4010,7 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
                   result = JSON.parse(PAYLOAD);
                 }
                 console.log(result, REASON);
-                const resasons = ['DORESERVATION', 'BLOCK_EXPOSED_UNIT', 'ASSIGN_EXPOSED_ROOM', 'REALLOCATE_EXPOSED_ROOM_BLOCK', 'REALLOCATE_EXPOSED_ROOM_BOOK'];
+                const resasons = ['DORESERVATION', 'BLOCK_EXPOSED_UNIT', 'ASSIGN_EXPOSED_ROOM', 'REALLOCATE_EXPOSED_ROOM_BLOCK'];
                 if (resasons.includes(REASON)) {
                   let transformedBooking;
                   if (REASON === 'BLOCK_EXPOSED_UNIT' || REASON === 'REALLOCATE_EXPOSED_ROOM_BLOCK') {
@@ -4121,6 +4121,9 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
     let newMonths = [...results.months];
     newMonths.shift();
     this.calendarData = Object.assign(Object.assign({}, this.calendarData), { days: this.days, monthsInfo: [...this.calendarData.monthsInfo, ...newMonths], bookingEvents: [...this.calendarData.bookingEvents, ...newBookings] });
+    const data = await this.toBeAssignedService.getUnassignedDates(this.propertyid, nextDay, nextTwoMonths);
+    this.unassignedDates = Object.assign(Object.assign({}, this.unassignedDates), data);
+    this.calendarData.unassignedDates = Object.assign(Object.assign({}, this.calendarData.unassignedDates), data);
   }
   scrollToElement(goToDate) {
     this.scrollContainer = this.scrollContainer || this.element.querySelector('.calendarScrollContainer');
@@ -4153,9 +4156,9 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
       }
     });
     this.calendarData = Object.assign(Object.assign({}, this.calendarData), { bookingEvents: bookings });
-    setTimeout(() => {
-      this.scrollToElement(this.transformDateForScroll(new Date(data[0].FROM_DATE)));
-    }, 200);
+    // setTimeout(() => {
+    //   this.scrollToElement(this.transformDateForScroll(new Date(data[0].FROM_DATE)));
+    // }, 200);
   }
   // @Listen('bookingCreated')
   // onBookingCreation(event: CustomEvent<{ pool?: string; data: RoomBookingDetails[] }>) {
