@@ -20,6 +20,7 @@ export class IglBookProperty {
     this.bookingService = new BookingService();
     this.eventsService = new EventsService();
     this.propertyid = undefined;
+    this.allowedBookingSources = undefined;
     this.language = undefined;
     this.countryNodeList = undefined;
     this.showPaymentDetails = false;
@@ -28,6 +29,7 @@ export class IglBookProperty {
     this.sourceOption = {
       code: '',
       description: '',
+      tag: '',
     };
     this.splitBookingId = '';
     this.renderAgain = false;
@@ -54,7 +56,7 @@ export class IglBookProperty {
     this.dateRangeData = Object.assign({}, this.bookingData.defaultDateRange);
     try {
       const setupEntries = await this.fetchSetupEntries();
-      this.setSourceOptions(setupEntries.bookingSource);
+      this.setSourceOptions(this.allowedBookingSources);
       this.setOtherProperties(setupEntries);
       if (this.isEventType('EDIT_BOOKING')) {
         this.setEditingRoomInfo();
@@ -71,13 +73,21 @@ export class IglBookProperty {
   }
   setSourceOptions(bookingSource) {
     this.sourceOptions = bookingSource.map(source => ({
-      id: source.CODE_NAME,
-      value: source.CODE_VALUE_EN,
+      id: source.code,
+      value: source.description,
+      tag: source.tag,
     }));
-    this.sourceOption = {
-      code: bookingSource[0].CODE_NAME,
-      description: bookingSource[0].CODE_VALUE_EN,
-    };
+    if (this.isEventType('EDIT_BOOKING')) {
+      this.sourceOption = Object.assign({}, this.bookingData.SOURCE);
+      console.log(this.sourceOption);
+    }
+    else {
+      this.sourceOption = {
+        code: bookingSource[0].code,
+        description: bookingSource[0].description,
+        tag: bookingSource[0].tag,
+      };
+    }
   }
   setOtherProperties(res) {
     this.ratePricingMode = res.ratePricingMode;
@@ -268,9 +278,11 @@ export class IglBookProperty {
     return this.sourceOption === srcIndex ? 'active' : '';
   }
   handleSourceDropDown(selectedOption) {
+    const selectedSource = this.sourceOptions.find(opt => opt.id === selectedOption.target.value.toString());
     this.sourceOption = {
       code: selectedOption.target.value,
-      description: this.sourceOptions.find(opt => opt.id === selectedOption.target.value.toString()).value || '',
+      description: selectedSource.value || '',
+      tag: selectedSource.tag,
     };
   }
   renderPage() {
@@ -457,6 +469,23 @@ export class IglBookProperty {
           "text": ""
         },
         "attribute": "propertyid",
+        "reflect": false
+      },
+      "allowedBookingSources": {
+        "type": "any",
+        "mutable": false,
+        "complexType": {
+          "original": "any",
+          "resolved": "any",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "allowed-booking-sources",
         "reflect": false
       },
       "language": {

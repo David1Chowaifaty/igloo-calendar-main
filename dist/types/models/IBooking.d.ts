@@ -60,7 +60,6 @@ export interface IEntries {
 }
 export interface ISetupEntries {
   arrivalTime: IEntries[];
-  bookingSource: IEntries[];
   ratePricingMode: IEntries[];
   bedPreferenceType: IEntries[];
 }
@@ -237,6 +236,12 @@ export interface RoomBookingDetails {
   adult_child_offering: string;
   ARRIVAL_TIME: string;
   NOTES: string;
+  SOURCE: ISource;
+}
+export interface ISource {
+  code: string;
+  description: string;
+  tag: string;
 }
 export interface RoomBlockDetails {
   ID: string;
