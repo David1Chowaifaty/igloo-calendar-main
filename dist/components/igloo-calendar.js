@@ -4260,20 +4260,18 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
     const startDate = hooks(dates.start).toDate();
     const defaultFromDate = hooks(this.from_date).toDate();
     const endDate = dates.end.toDate();
-    const defaultToDate = hooks(this.to_date).toDate();
+    const defaultToDate = this.calendarData.endingDate;
     if (startDate.getTime() < new Date(this.from_date).getTime()) {
       await this.addDatesToCalendar(hooks(startDate).format('YYYY-MM-DD'), hooks(this.from_date).add(-1, 'days').format('YYYY-MM-DD'));
       this.scrollToElement(this.transformDateForScroll(startDate));
     }
-    else if (startDate.getTime() > defaultFromDate.getTime() && startDate.getTime() < defaultToDate.getTime() && endDate.getTime() < defaultToDate.getTime()) {
+    else if (startDate.getTime() > defaultFromDate.getTime() && startDate.getTime() < defaultToDate && endDate.getTime() < defaultToDate) {
       this.scrollToElement(this.transformDateForScroll(startDate));
     }
-    else if (startDate.getTime() > defaultToDate.getTime()) {
+    else if (startDate.getTime() > defaultToDate) {
       const nextDay = getNextDay(new Date(this.calendarData.endingDate));
       await this.addDatesToCalendar(nextDay, hooks(endDate).add(30, 'days').format('YYYY-MM-DD'));
-      setTimeout(() => {
-        this.scrollToElement(this.transformDateForScroll(startDate));
-      }, 100);
+      this.scrollToElement(this.transformDateForScroll(startDate));
     }
   }
   closeSideMenu() {
