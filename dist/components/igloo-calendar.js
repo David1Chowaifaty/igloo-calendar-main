@@ -1,7 +1,7 @@
 import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/core/internal/client';
 import { a as axios } from './axios.js';
 import { B as BookingService } from './booking.service.js';
-import { h as formatLegendColors, d as dateToFormattedString, i as addTwoMonthToDate, j as getNextDay, k as convertDMYToISO, l as computeEndDate } from './utils.js';
+import { h as formatLegendColors, d as dateToFormattedString, i as getNextDay, j as addTwoMonthToDate, k as convertDMYToISO, l as computeEndDate } from './utils.js';
 import { E as EventsService } from './events.service.js';
 import { h as hooks } from './moment.js';
 import { T as ToBeAssignedService } from './toBeAssigned.service.js';
@@ -4209,10 +4209,10 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
         if (opt.data.start !== undefined && opt.data.end !== undefined) {
           this.handleDateSearch(opt.data);
         }
-        else {
-          let dt = new Date();
-          this.scrollToElement(dt.getDate() + '_' + (dt.getMonth() + 1) + '_' + dt.getFullYear());
-        }
+        // else {
+        //   let dt = new Date();
+        //   this.scrollToElement(dt.getDate() + '_' + (dt.getMonth() + 1) + '_' + dt.getFullYear());
+        // }
         break;
       case 'search':
         break;
@@ -4262,14 +4262,18 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
     const endDate = dates.end.toDate();
     const defaultToDate = hooks(this.to_date).toDate();
     if (startDate.getTime() < new Date(this.from_date).getTime()) {
-      await this.addDatesToCalendar(hooks(startDate).format('YYYY-MM-DD'), this.from_date);
+      await this.addDatesToCalendar(hooks(startDate).format('YYYY-MM-DD'), hooks(this.from_date).add(-1, 'days').format('YYYY-MM-DD'));
+      this.scrollToElement(this.transformDateForScroll(startDate));
     }
     else if (startDate.getTime() > defaultFromDate.getTime() && startDate.getTime() < defaultToDate.getTime() && endDate.getTime() < defaultToDate.getTime()) {
       this.scrollToElement(this.transformDateForScroll(startDate));
     }
     else if (startDate.getTime() > defaultToDate.getTime()) {
-      await this.addDatesToCalendar(this.to_date, hooks(endDate).add(20, 'days').format('YYYY-MM-DD'));
-      this.scrollToElement(this.transformDateForScroll(startDate));
+      const nextDay = getNextDay(new Date(this.calendarData.endingDate));
+      await this.addDatesToCalendar(nextDay, hooks(endDate).add(30, 'days').format('YYYY-MM-DD'));
+      setTimeout(() => {
+        this.scrollToElement(this.transformDateForScroll(startDate));
+      }, 100);
     }
   }
   closeSideMenu() {

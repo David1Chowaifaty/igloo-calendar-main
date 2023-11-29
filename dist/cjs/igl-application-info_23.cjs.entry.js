@@ -7040,10 +7040,10 @@ const IglooCalendar = class {
         if (opt.data.start !== undefined && opt.data.end !== undefined) {
           this.handleDateSearch(opt.data);
         }
-        else {
-          let dt = new Date();
-          this.scrollToElement(dt.getDate() + '_' + (dt.getMonth() + 1) + '_' + dt.getFullYear());
-        }
+        // else {
+        //   let dt = new Date();
+        //   this.scrollToElement(dt.getDate() + '_' + (dt.getMonth() + 1) + '_' + dt.getFullYear());
+        // }
         break;
       case 'search':
         break;
@@ -7093,14 +7093,18 @@ const IglooCalendar = class {
     const endDate = dates.end.toDate();
     const defaultToDate = moment.hooks(this.to_date).toDate();
     if (startDate.getTime() < new Date(this.from_date).getTime()) {
-      await this.addDatesToCalendar(moment.hooks(startDate).format('YYYY-MM-DD'), this.from_date);
+      await this.addDatesToCalendar(moment.hooks(startDate).format('YYYY-MM-DD'), moment.hooks(this.from_date).add(-1, 'days').format('YYYY-MM-DD'));
+      this.scrollToElement(this.transformDateForScroll(startDate));
     }
     else if (startDate.getTime() > defaultFromDate.getTime() && startDate.getTime() < defaultToDate.getTime() && endDate.getTime() < defaultToDate.getTime()) {
       this.scrollToElement(this.transformDateForScroll(startDate));
     }
     else if (startDate.getTime() > defaultToDate.getTime()) {
-      await this.addDatesToCalendar(this.to_date, moment.hooks(endDate).add(20, 'days').format('YYYY-MM-DD'));
-      this.scrollToElement(this.transformDateForScroll(startDate));
+      const nextDay = booking_service.getNextDay(new Date(this.calendarData.endingDate));
+      await this.addDatesToCalendar(nextDay, moment.hooks(endDate).add(30, 'days').format('YYYY-MM-DD'));
+      setTimeout(() => {
+        this.scrollToElement(this.transformDateForScroll(startDate));
+      }, 100);
     }
   }
   closeSideMenu() {
