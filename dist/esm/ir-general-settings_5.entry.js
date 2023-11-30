@@ -1,4 +1,4 @@
-import { r as registerInstance, c as createEvent, h } from './index-c87e82be.js';
+import { r as registerInstance, c as createEvent, h } from './index-b828b70a.js';
 
 const IrGeneralSettings = class {
   constructor(hostRef) {

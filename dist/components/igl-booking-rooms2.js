@@ -20,7 +20,17 @@ const IglBookingRooms = /*@__PURE__*/ proxyCustomElement(class IglBookingRooms e
     this.roomsDistributions = [];
   }
   componentWillLoad() {
-    this.totalRooms = this.roomTypeData.physicalrooms.length;
+    this.totalRooms = this.roomTypeData.inventory || 0;
+    if (!this.selectedRooms.length) {
+      this.selectedRooms = new Array(this.totalRooms).fill(0);
+    }
+    if (!this.roomsDistributions.length) {
+      this.roomsDistributions = new Array(this.totalRooms).fill(this.totalRooms);
+    }
+  }
+  handleRoomTypeDataChange(newValue) {
+    console.log(newValue);
+    this.totalRooms = newValue.inventory || 0;
     if (!this.selectedRooms.length) {
       this.selectedRooms = new Array(this.totalRooms).fill(0);
     }
@@ -75,6 +85,9 @@ const IglBookingRooms = /*@__PURE__*/ proxyCustomElement(class IglBookingRooms e
       }
     })));
   }
+  static get watchers() { return {
+    "roomTypeData": ["handleRoomTypeDataChange"]
+  }; }
   static get style() { return iglBookingRoomsCss; }
 }, [2, "igl-booking-rooms", {
     "roomTypeData": [1040],
@@ -85,6 +98,8 @@ const IglBookingRooms = /*@__PURE__*/ proxyCustomElement(class IglBookingRooms e
     "currency": [8],
     "selectedRooms": [32],
     "roomsDistributions": [32]
+  }, undefined, {
+    "roomTypeData": ["handleRoomTypeDataChange"]
   }]);
 function defineCustomElement() {
   if (typeof customElements === "undefined") {

@@ -12,7 +12,17 @@ export class IglBookingRooms {
     this.roomsDistributions = [];
   }
   componentWillLoad() {
-    this.totalRooms = this.roomTypeData.physicalrooms.length;
+    this.totalRooms = this.roomTypeData.inventory || 0;
+    if (!this.selectedRooms.length) {
+      this.selectedRooms = new Array(this.totalRooms).fill(0);
+    }
+    if (!this.roomsDistributions.length) {
+      this.roomsDistributions = new Array(this.totalRooms).fill(this.totalRooms);
+    }
+  }
+  handleRoomTypeDataChange(newValue) {
+    console.log(newValue);
+    this.totalRooms = newValue.inventory || 0;
     if (!this.selectedRooms.length) {
       this.selectedRooms = new Array(this.totalRooms).fill(0);
     }
@@ -203,6 +213,12 @@ export class IglBookingRooms {
           "resolved": "{ [key: string]: any; }",
           "references": {}
         }
+      }];
+  }
+  static get watchers() {
+    return [{
+        "propName": "roomTypeData",
+        "methodName": "handleRoomTypeDataChange"
       }];
   }
 }

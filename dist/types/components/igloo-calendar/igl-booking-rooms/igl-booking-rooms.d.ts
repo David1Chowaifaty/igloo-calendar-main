@@ -18,6 +18,7 @@ export declare class IglBookingRooms {
   private validBookingTypes;
   private totalRooms;
   componentWillLoad(): void;
+  handleRoomTypeDataChange(newValue: any): void;
   onRoomDataUpdate(event: CustomEvent<{
     [key: string]: any;
   }>, index: number): void;

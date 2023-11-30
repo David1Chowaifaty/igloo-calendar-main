@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-211b4e17.js');
+const index = require('./index-968b54ae.js');
 const moment = require('./moment-27049970.js');
 const functions = require('./functions-378ebfbf.js');
 const booking_service = require('./booking.service-77abd42e.js');

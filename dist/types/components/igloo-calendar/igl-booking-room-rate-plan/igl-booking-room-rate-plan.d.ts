@@ -21,7 +21,9 @@ export declare class IglBookingRoomRatePlan {
     [key: string]: any;
   };
   private initialRateValue;
+  getAvailableRooms(assignable_units: any[]): any[];
   componentWillLoad(): void;
+  disableForm(): any;
   getSelectedOffering(value: any): any;
   ratePlanDataChanged(): Promise<void>;
   handleRateDaysUpdate(): any;

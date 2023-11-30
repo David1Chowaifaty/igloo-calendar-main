@@ -1,4 +1,4 @@
-import { r as registerInstance, c as createEvent, h } from './index-c87e82be.js';
+import { r as registerInstance, c as createEvent, h } from './index-b828b70a.js';
 
 const irDropdownCss = ".dropdown-menu{position:absolute !important;top:100%;right:0;z-index:1000;display:none;}.dropdown.nav-item.show .dropdown-menu{display:block;}";
 

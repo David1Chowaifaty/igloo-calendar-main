@@ -1,4 +1,4 @@
-import { r as registerInstance, h } from './index-c87e82be.js';
+import { r as registerInstance, h } from './index-b828b70a.js';
 
 const IrSpan = class {
   constructor(hostRef) {

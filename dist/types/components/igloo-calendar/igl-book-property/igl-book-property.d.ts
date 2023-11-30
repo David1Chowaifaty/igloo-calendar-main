@@ -1,6 +1,7 @@
 import { EventEmitter } from '../../../stencil-public-runtime';
 import { RoomBlockDetails, RoomBookingDetails } from '../../../models/IBooking';
 import { IPageTwoDataUpdateProps, PageTwoButtonsTypes } from '../../../models/models';
+import { FooterButtonType } from '../../../models/igl-book-property';
 export declare class IglBookProperty {
   propertyid: number;
   allowedBookingSources: any;
@@ -30,6 +31,9 @@ export declare class IglBookProperty {
   selectedUnits: {
     [key: string]: any;
   };
+  selectedRooms: {
+    [key: string]: any;
+  };
   closeBookingWindow: EventEmitter<{
     [key: string]: any;
   }>;
@@ -45,7 +49,6 @@ export declare class IglBookProperty {
   private page;
   private showSplitBookingOption;
   private sourceOptions;
-  private selectedRooms;
   private guestData;
   private bookedByInfoData;
   private blockDatesData;
@@ -65,16 +68,12 @@ export declare class IglBookProperty {
   getDefaultPage(): string;
   getBookingPreferenceRoomId(): any;
   getSplitBookings(): any;
-  isEventType(key: string): boolean;
   closeWindow(): void;
-  isEditBooking(): boolean;
+  isEventType(key: string): boolean;
   onRoomsDataUpdate(event: CustomEvent<{
     [key: string]: any;
   }>): void;
-  getRoomCategoryKey(roomCategoryId: string): string;
-  getRatePlanKey(ratePlanId: string): string;
   shouldClearData(key: string | undefined): boolean;
-  isEditBookingEvent(key: string | undefined): boolean;
   initializeRoomCategoryIfNeeded(roomCategoryKey: string): void;
   setSelectedRoomData(roomCategoryKey: string, ratePlanKey: string, data: any): void;
   hasSelectedRoomData(roomCategoryKey: string, ratePlanKey: string): boolean;
@@ -109,8 +108,7 @@ export declare class IglBookProperty {
   getSplitBookingList(): any;
   getSourceNode(): any;
   getRoomsListFromCategoryId(categoryId: any): any;
-  getPageZeroView(): any;
-  getPageOneView(): any;
+  handleButtonFooterClicked(event: CustomEvent<FooterButtonType>): void;
   getPageBlockDatesView(): any;
   handleButtonClicked(event: CustomEvent<{
     key: PageTwoButtonsTypes;
