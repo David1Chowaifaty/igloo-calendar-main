@@ -6,9 +6,12 @@ export class IglBookingOverviewPage {
     this.showSplitBookingOption = undefined;
     this.eventType = undefined;
     this.currency = undefined;
+    this.adultChildConstraints = undefined;
     this.ratePricingMode = undefined;
     this.dateRangeData = undefined;
-    this.selectedRooms = {};
+    this.selectedRooms = undefined;
+    this.bookingDataDefaultDateRange = undefined;
+    this.sourceOptions = undefined;
   }
   getSplitBookings() {
     return (this.bookingData.hasOwnProperty('splitBookingEvents') && this.bookingData.splitBookingEvents) || [];
@@ -18,7 +21,7 @@ export class IglBookingOverviewPage {
   }
   render() {
     var _a;
-    return (h(Host, null, h("div", { class: "col text-left" }, (_a = this.bookingData.roomsInfo) === null || _a === void 0 ? void 0 : _a.map(roomInfo => (h("igl-booking-rooms", { currency: this.currency, ratePricingMode: this.ratePricingMode, dateDifference: this.dateRangeData.dateDifference, bookingType: this.bookingData.event_type, roomTypeData: roomInfo, class: "mt-2 mb-1", defaultData: this.selectedRooms['c_' + roomInfo.id], onDataUpdateEvent: evt => this.roomsDataUpdate.emit(evt.detail) })))), h("igl-book-property-footer", { class: 'p-0 mb-1 mt-2', onButtonClicked: evt => this.buttonClicked.emit(evt.detail), eventType: this.bookingData.event_type, disabled: Object.keys(this.selectedRooms).length === 0 })));
+    return (h(Host, null, h("igl-book-property-header", { splitBookingId: this.showSplitBookingOption, bookingData: this.bookingData, sourceOptions: this.sourceOptions, message: this.message, bookingDataDefaultDateRange: this.bookingDataDefaultDateRange, showSplitBookingOption: this.showSplitBookingOption, adultChildConstraints: this.adultChildConstraints, splitBookings: this.getSplitBookings() }), h("div", { class: "col text-left" }, (_a = this.bookingData.roomsInfo) === null || _a === void 0 ? void 0 : _a.map(roomInfo => (h("igl-booking-rooms", { currency: this.currency, ratePricingMode: this.ratePricingMode, dateDifference: this.dateRangeData.dateDifference, bookingType: this.bookingData.event_type, roomTypeData: roomInfo, class: "mt-2 mb-1", defaultData: this.selectedRooms.get(`c_${roomInfo.id}`), onDataUpdateEvent: evt => this.roomsDataUpdate.emit(evt.detail) })))), h("igl-book-property-footer", { class: 'p-0 mb-1 mt-2', eventType: this.bookingData.event_type, disabled: this.selectedRooms.size === 0 })));
   }
   static get is() { return "igl-booking-overview-page"; }
   static get encapsulation() { return "scoped"; }
@@ -119,6 +122,27 @@ export class IglBookingOverviewPage {
         "attribute": "currency",
         "reflect": false
       },
+      "adultChildConstraints": {
+        "type": "unknown",
+        "mutable": false,
+        "complexType": {
+          "original": "TAdultChildConstraints",
+          "resolved": "{ adult_max_nbr: number; child_max_nbr: number; child_max_age: number; }",
+          "references": {
+            "TAdultChildConstraints": {
+              "location": "import",
+              "path": "../../../../models/igl-book-property",
+              "id": "src/models/igl-book-property.d.ts::TAdultChildConstraints"
+            }
+          }
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        }
+      },
       "ratePricingMode": {
         "type": "any",
         "mutable": false,
@@ -154,6 +178,26 @@ export class IglBookingOverviewPage {
         "reflect": false
       },
       "selectedRooms": {
+        "type": "unknown",
+        "mutable": false,
+        "complexType": {
+          "original": "Map<string, Map<string, any>>",
+          "resolved": "Map<string, Map<string, any>>",
+          "references": {
+            "Map": {
+              "location": "global",
+              "id": "global::Map"
+            }
+          }
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        }
+      },
+      "bookingDataDefaultDateRange": {
         "type": "any",
         "mutable": false,
         "complexType": {
@@ -167,9 +211,29 @@ export class IglBookingOverviewPage {
           "tags": [],
           "text": ""
         },
-        "attribute": "selected-rooms",
-        "reflect": false,
-        "defaultValue": "{}"
+        "attribute": "booking-data-default-date-range",
+        "reflect": false
+      },
+      "sourceOptions": {
+        "type": "unknown",
+        "mutable": false,
+        "complexType": {
+          "original": "TSourceOptions[]",
+          "resolved": "TSourceOptions[]",
+          "references": {
+            "TSourceOptions": {
+              "location": "import",
+              "path": "../../../../models/igl-book-property",
+              "id": "src/models/igl-book-property.d.ts::TSourceOptions"
+            }
+          }
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        }
       }
     };
   }
@@ -203,27 +267,6 @@ export class IglBookingOverviewPage {
           "original": "any",
           "resolved": "any",
           "references": {}
-        }
-      }, {
-        "method": "buttonClicked",
-        "name": "buttonClicked",
-        "bubbles": true,
-        "cancelable": true,
-        "composed": true,
-        "docs": {
-          "tags": [],
-          "text": ""
-        },
-        "complexType": {
-          "original": "FooterButtonType",
-          "resolved": "\"cancel\" | \"next\"",
-          "references": {
-            "FooterButtonType": {
-              "location": "import",
-              "path": "../../../../models/igl-book-property",
-              "id": "src/models/igl-book-property.d.ts::FooterButtonType"
-            }
-          }
         }
       }];
   }

@@ -11,6 +11,7 @@ export declare class IglBookingRoomRatePlan {
   currency: any;
   dateDifference: number;
   bookingType: string;
+  fullyBlocked: boolean;
   dataUpdateEvent: EventEmitter<{
     [key: string]: any;
   }>;

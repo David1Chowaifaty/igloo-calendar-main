@@ -29,7 +29,6 @@ const IglBookingRooms = /*@__PURE__*/ proxyCustomElement(class IglBookingRooms e
     }
   }
   handleRoomTypeDataChange(newValue) {
-    console.log(newValue);
     this.totalRooms = newValue.inventory || 0;
     if (!this.selectedRooms.length) {
       this.selectedRooms = new Array(this.totalRooms).fill(0);
@@ -78,7 +77,9 @@ const IglBookingRooms = /*@__PURE__*/ proxyCustomElement(class IglBookingRooms e
     const isValidBookingType = this.validBookingTypes.includes(this.bookingType);
     return (h(Host, null, isValidBookingType && h("div", { class: "font-weight-bold font-medium-1" }, this.roomTypeData.name), this.roomTypeData.rateplans.map((ratePlan, index) => {
       if (ratePlan.variations !== null) {
-        return (h("igl-booking-room-rate-plan", { key: `rate-plan-${ratePlan.id}`, ratePricingMode: this.ratePricingMode, class: isValidBookingType ? 'ml-1' : '', currency: this.currency, dateDifference: this.dateDifference, ratePlanData: ratePlan, totalAvailableRooms: this.roomsDistributions[index], bookingType: this.bookingType, defaultData: (this.defaultData && this.defaultData['p_' + ratePlan.id]) || null, onDataUpdateEvent: evt => this.onRoomDataUpdate(evt, index) }));
+        return (h("igl-booking-room-rate-plan", { key: `rate-plan-${ratePlan.id}`, ratePricingMode: this.ratePricingMode, class: isValidBookingType ? 'ml-1' : '', currency: this.currency, dateDifference: this.dateDifference, ratePlanData: ratePlan,
+          //fullyBlocked={this.roomTypeData.rate === 0}
+          totalAvailableRooms: this.roomsDistributions[index], bookingType: this.bookingType, defaultData: (this.defaultData && this.defaultData.get(`p_${ratePlan.id}`)) || null, onDataUpdateEvent: evt => this.onRoomDataUpdate(evt, index) }));
       }
       else {
         return null;

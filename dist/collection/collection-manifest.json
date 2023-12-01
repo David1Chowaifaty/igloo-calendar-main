@@ -5,6 +5,7 @@
     "components/igloo-calendar/igl-block-dates-view/igl-block-dates-view.js",
     "components/igloo-calendar/igl-book-property/igl-book-property.js",
     "components/igloo-calendar/igl-book-property/igl-book-property-footer/igl-book-property-footer.js",
+    "components/igloo-calendar/igl-book-property/igl-book-property-header/igl-book-property-header.js",
     "components/igloo-calendar/igl-book-property/igl-booking-overview-page/igl-booking-overview-page.js",
     "components/igloo-calendar/igl-booking-event/igl-booking-event.js",
     "components/igloo-calendar/igl-booking-event-hover/igl-booking-event-hover.js",

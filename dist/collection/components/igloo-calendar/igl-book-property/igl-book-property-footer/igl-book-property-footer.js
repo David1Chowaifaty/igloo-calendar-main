@@ -8,7 +8,7 @@ export class IglBookPropertyFooter {
     return event === this.eventType;
   }
   renderButton(type, label, disabled = false) {
-    return (h("div", { class: this.shouldRenderTwoButtons() ? 'col-6' : 'col-12' }, h("button", { class: `btn btn-${type === 'cancel' ? 'secondary' : 'primary'} full-width`, onClick: () => this.buttonClicked.emit(type), disabled: disabled }, label)));
+    return (h("div", { class: this.shouldRenderTwoButtons() ? 'col-6' : 'col-12' }, h("button", { class: `btn btn-${type === 'cancel' ? 'secondary' : 'primary'} full-width`, onClick: () => this.buttonClicked.emit({ key: type }), disabled: disabled }, label)));
   }
   shouldRenderTwoButtons() {
     return this.isEventType('PLUS_BOOKING') || this.isEventType('ADD_ROOM') || this.isEventType('EDIT_BOOKING');
@@ -79,13 +79,13 @@ export class IglBookPropertyFooter {
           "text": ""
         },
         "complexType": {
-          "original": "FooterButtonType",
-          "resolved": "\"cancel\" | \"next\"",
+          "original": "{ key: TPropertyButtonsTypes }",
+          "resolved": "{ key: TPropertyButtonsTypes; }",
           "references": {
-            "FooterButtonType": {
+            "TPropertyButtonsTypes": {
               "location": "import",
               "path": "../../../../models/igl-book-property",
-              "id": "src/models/igl-book-property.d.ts::FooterButtonType"
+              "id": "src/models/igl-book-property.d.ts::TPropertyButtonsTypes"
             }
           }
         }

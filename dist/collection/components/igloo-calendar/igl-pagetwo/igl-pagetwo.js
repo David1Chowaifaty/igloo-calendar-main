@@ -29,24 +29,17 @@ export class IglPagetwo {
       }
       return rate;
     };
-    for (const key in this.selectedRooms) {
-      for (const prop in this.selectedRooms[key]) {
-        const totalRooms = this.selectedRooms[key][prop].totalRooms;
-        newSelectedUnits[key] = Array(totalRooms).fill(-1);
-      }
-    }
     this.selectedUnits = newSelectedUnits;
     this.guestData = [];
-    for (const key of Object.keys(this.selectedRooms)) {
-      for (const prop of Object.keys(this.selectedRooms[key])) {
-        for (let i = 1; i <= this.selectedRooms[key][prop].totalRooms; i++) {
-          this.guestData.push(Object.assign({ guestName: '', roomId: '', preference: '' }, this.selectedRooms[key][prop]));
+    this.selectedRooms.forEach((room, key) => {
+      room.forEach(rate_plan => {
+        newSelectedUnits[key] = rate_plan.selectedUnits;
+        total += rate_plan.totalRooms * getRate(rate_plan.rate, this.dateRangeData.dateDifference, rate_plan.isRateModified, rate_plan.rateType);
+        for (let i = 1; i <= rate_plan.totalRooms; i++) {
+          this.guestData.push(Object.assign({ guestName: '', roomId: '', preference: '' }, rate_plan));
         }
-        total +=
-          this.selectedRooms[key][prop].totalRooms *
-            getRate(this.selectedRooms[key][prop].rate, this.dateRangeData.dateDifference, this.selectedRooms[key][prop].isRateModified, this.selectedRooms[key][prop].rateType);
-      }
-    }
+      });
+    });
     this.bookingData.TOTAL_PRICE = total;
   }
   handleOnApplicationInfoDataUpdateEvent(event, index) {
@@ -267,21 +260,24 @@ export class IglPagetwo {
         "reflect": false
       },
       "selectedRooms": {
-        "type": "any",
+        "type": "unknown",
         "mutable": false,
         "complexType": {
-          "original": "any",
-          "resolved": "any",
-          "references": {}
+          "original": "Map<string, Map<string, any>>",
+          "resolved": "Map<string, Map<string, any>>",
+          "references": {
+            "Map": {
+              "location": "global",
+              "id": "global::Map"
+            }
+          }
         },
         "required": false,
         "optional": false,
         "docs": {
           "tags": [],
           "text": ""
-        },
-        "attribute": "selected-rooms",
-        "reflect": false
+        }
       },
       "isLoading": {
         "type": "string",
@@ -376,13 +372,13 @@ export class IglPagetwo {
           "text": ""
         },
         "complexType": {
-          "original": "{\r\n    key: PageTwoButtonsTypes;\r\n    data?: CustomEvent;\r\n  }",
-          "resolved": "{ key: PageTwoButtonsTypes; data?: CustomEvent<any>; }",
+          "original": "{\r\n    key: TPropertyButtonsTypes;\r\n    data?: CustomEvent;\r\n  }",
+          "resolved": "{ key: TPropertyButtonsTypes; data?: CustomEvent<any>; }",
           "references": {
-            "PageTwoButtonsTypes": {
+            "TPropertyButtonsTypes": {
               "location": "import",
-              "path": "../../../models/models",
-              "id": "src/models/models.ts::PageTwoButtonsTypes"
+              "path": "../../../models/igl-book-property",
+              "id": "src/models/igl-book-property.d.ts::TPropertyButtonsTypes"
             },
             "CustomEvent": {
               "location": "global",

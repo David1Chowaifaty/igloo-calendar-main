@@ -2,16 +2,16 @@ import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/
 import { a as axios } from './axios.js';
 import { B as BookingService } from './booking.service.js';
 import { h as formatLegendColors, d as dateToFormattedString, i as getNextDay, j as addTwoMonthToDate, k as convertDMYToISO, l as computeEndDate } from './utils.js';
-import { E as EventsService } from './events.service.js';
+import { E as EventsService, d as defineCustomElement$l } from './igl-booking-event-hover2.js';
 import { h as hooks } from './moment.js';
 import { T as ToBeAssignedService } from './toBeAssigned.service.js';
 import { t as transformNewBLockedRooms, a as transformNewBooking } from './booking.js';
-import { d as defineCustomElement$q } from './igl-application-info2.js';
-import { d as defineCustomElement$p } from './igl-block-dates-view2.js';
-import { d as defineCustomElement$o } from './igl-book-property2.js';
-import { d as defineCustomElement$n } from './igl-book-property-footer2.js';
+import { d as defineCustomElement$r } from './igl-application-info2.js';
+import { d as defineCustomElement$q } from './igl-block-dates-view2.js';
+import { d as defineCustomElement$p } from './igl-book-property2.js';
+import { d as defineCustomElement$o } from './igl-book-property-footer2.js';
+import { d as defineCustomElement$n } from './igl-book-property-header2.js';
 import { d as defineCustomElement$m } from './igl-booking-event2.js';
-import { d as defineCustomElement$l } from './igl-booking-event-hover2.js';
 import { d as defineCustomElement$k } from './igl-booking-overview-page2.js';
 import { d as defineCustomElement$j } from './igl-booking-room-rate-plan2.js';
 import { d as defineCustomElement$i } from './igl-booking-rooms2.js';
@@ -3975,6 +3975,7 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
           this.countryNodeList = await this.bookingService.getCountries(this.language);
           this.calendarData.currency = roomResp['My_Result'].currency;
           this.calendarData.allowedBookingSources = roomResp['My_Result'].allowed_booking_sources;
+          this.calendarData.adultChildConstraints = roomResp['My_Result'].adult_child_constraints;
           this.calendarData.legendData = this.getLegendData(roomResp);
           this.calendarData.is_vacation_rental = roomResp['My_Result'].is_vacation_rental;
           this.calendarData.startingDate = new Date(bookingResp.My_Params_Get_Rooming_Data.FROM).getTime();
@@ -4430,7 +4431,7 @@ const IglooCalendar$1 = /*@__PURE__*/ proxyCustomElement(class IglooCalendar ext
       this.showToBeAssigned ? (h("igl-to-be-assigned", { loadingMessage: 'Fetching unassigned units', to_date: this.to_date, from_date: this.from_date, propertyid: this.propertyid, class: "tobeAssignedContainer", calendarData: this.calendarData, onOptionEvent: evt => this.onOptionSelect(evt) })) : null,
       this.showLegend ? (h("igl-legends", { class: "legendContainer", legendData: this.calendarData.legendData, onOptionEvent: evt => this.onOptionSelect(evt) })) : null,
       h("div", { class: "calendarScrollContainer", onMouseDown: event => this.dragScrollContent(event), onScroll: () => this.calendarScrolling() }, h("div", { id: "calendarContainer" }, h("igl-cal-header", { unassignedDates: this.unassignedDates, to_date: this.to_date, propertyid: this.propertyid, today: this.today, calendarData: this.calendarData, onOptionEvent: evt => this.onOptionSelect(evt) }), h("igl-cal-body", { countryNodeList: this.countryNodeList, currency: this.calendarData.currency, today: this.today, isScrollViewDragging: this.scrollViewDragging, calendarData: this.calendarData }), h("igl-cal-footer", { today: this.today, calendarData: this.calendarData, onOptionEvent: evt => this.onOptionSelect(evt) }))),
-    ]) : (h("ir-loading-screen", { message: "Preparing Calendar Data" }))), this.bookingItem && (h("igl-book-property", { allowedBookingSources: this.calendarData.allowedBookingSources, showPaymentDetails: this.showPaymentDetails, countryNodeList: this.countryNodeList, currency: this.calendarData.currency, language: this.language, propertyid: this.propertyid, bookingData: this.bookingItem, onCloseBookingWindow: _ => (this.bookingItem = null) }))));
+    ]) : (h("ir-loading-screen", { message: "Preparing Calendar Data" }))), this.bookingItem && (h("igl-book-property", { allowedBookingSources: this.calendarData.allowedBookingSources, adultChildConstraints: this.calendarData.adultChildConstraints, showPaymentDetails: this.showPaymentDetails, countryNodeList: this.countryNodeList, currency: this.calendarData.currency, language: this.language, propertyid: this.propertyid, bookingData: this.bookingItem, onCloseBookingWindow: _ => (this.bookingItem = null) }))));
   }
   get element() { return this; }
   static get watchers() { return {
@@ -4461,7 +4462,7 @@ function defineCustomElement$1() {
   if (typeof customElements === "undefined") {
     return;
   }
-  const components = ["igloo-calendar", "igl-application-info", "igl-block-dates-view", "igl-book-property", "igl-book-property-footer", "igl-booking-event", "igl-booking-event-hover", "igl-booking-overview-page", "igl-booking-room-rate-plan", "igl-booking-rooms", "igl-cal-body", "igl-cal-footer", "igl-cal-header", "igl-date-range", "igl-legends", "igl-pagetwo", "igl-property-booked-by", "igl-tba-booking-view", "igl-tba-category-view", "igl-to-be-assigned", "ir-common", "ir-date-picker", "ir-interceptor", "ir-loading-screen", "ir-toast", "ir-tooltip"];
+  const components = ["igloo-calendar", "igl-application-info", "igl-block-dates-view", "igl-book-property", "igl-book-property-footer", "igl-book-property-header", "igl-booking-event", "igl-booking-event-hover", "igl-booking-overview-page", "igl-booking-room-rate-plan", "igl-booking-rooms", "igl-cal-body", "igl-cal-footer", "igl-cal-header", "igl-date-range", "igl-legends", "igl-pagetwo", "igl-property-booked-by", "igl-tba-booking-view", "igl-tba-category-view", "igl-to-be-assigned", "ir-common", "ir-date-picker", "ir-interceptor", "ir-loading-screen", "ir-toast", "ir-tooltip"];
   components.forEach(tagName => { switch (tagName) {
     case "igloo-calendar":
       if (!customElements.get(tagName)) {
@@ -4470,20 +4471,25 @@ function defineCustomElement$1() {
       break;
     case "igl-application-info":
       if (!customElements.get(tagName)) {
-        defineCustomElement$q();
+        defineCustomElement$r();
       }
       break;
     case "igl-block-dates-view":
       if (!customElements.get(tagName)) {
-        defineCustomElement$p();
+        defineCustomElement$q();
       }
       break;
     case "igl-book-property":
       if (!customElements.get(tagName)) {
-        defineCustomElement$o();
+        defineCustomElement$p();
       }
       break;
     case "igl-book-property-footer":
+      if (!customElements.get(tagName)) {
+        defineCustomElement$o();
+      }
+      break;
+    case "igl-book-property-header":
       if (!customElements.get(tagName)) {
         defineCustomElement$n();
       }

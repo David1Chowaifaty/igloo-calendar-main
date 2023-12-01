@@ -3,9 +3,7 @@ export declare class IglBookingRooms {
   roomTypeData: {
     [key: string]: any;
   };
-  defaultData: {
-    [key: string]: any;
-  };
+  defaultData: Map<string, any>;
   bookingType: string;
   dateDifference: number;
   ratePricingMode: any[];

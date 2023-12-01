@@ -39,24 +39,17 @@ const IglPagetwo = /*@__PURE__*/ proxyCustomElement(class IglPagetwo extends HTM
       }
       return rate;
     };
-    for (const key in this.selectedRooms) {
-      for (const prop in this.selectedRooms[key]) {
-        const totalRooms = this.selectedRooms[key][prop].totalRooms;
-        newSelectedUnits[key] = Array(totalRooms).fill(-1);
-      }
-    }
     this.selectedUnits = newSelectedUnits;
     this.guestData = [];
-    for (const key of Object.keys(this.selectedRooms)) {
-      for (const prop of Object.keys(this.selectedRooms[key])) {
-        for (let i = 1; i <= this.selectedRooms[key][prop].totalRooms; i++) {
-          this.guestData.push(Object.assign({ guestName: '', roomId: '', preference: '' }, this.selectedRooms[key][prop]));
+    this.selectedRooms.forEach((room, key) => {
+      room.forEach(rate_plan => {
+        newSelectedUnits[key] = rate_plan.selectedUnits;
+        total += rate_plan.totalRooms * getRate(rate_plan.rate, this.dateRangeData.dateDifference, rate_plan.isRateModified, rate_plan.rateType);
+        for (let i = 1; i <= rate_plan.totalRooms; i++) {
+          this.guestData.push(Object.assign({ guestName: '', roomId: '', preference: '' }, rate_plan));
         }
-        total +=
-          this.selectedRooms[key][prop].totalRooms *
-            getRate(this.selectedRooms[key][prop].rate, this.dateRangeData.dateDifference, this.selectedRooms[key][prop].isRateModified, this.selectedRooms[key][prop].rateType);
-      }
-    }
+      });
+    });
     this.bookingData.TOTAL_PRICE = total;
   }
   handleOnApplicationInfoDataUpdateEvent(event, index) {
@@ -142,7 +135,7 @@ const IglPagetwo = /*@__PURE__*/ proxyCustomElement(class IglPagetwo extends HTM
     "language": [1],
     "bookedByInfoData": [16],
     "bedPreferenceType": [8, "bed-preference-type"],
-    "selectedRooms": [8, "selected-rooms"],
+    "selectedRooms": [16],
     "isLoading": [513, "is-loading"],
     "countryNodeList": [8, "country-node-list"],
     "selectedGuestData": [8, "selected-guest-data"],
