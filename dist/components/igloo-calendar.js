@@ -2,7 +2,7 @@ import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/
 import { a as axios } from './axios.js';
 import { B as BookingService } from './booking.service.js';
 import { h as formatLegendColors, d as dateToFormattedString, i as getNextDay, j as addTwoMonthToDate, k as convertDMYToISO, l as computeEndDate } from './utils.js';
-import { E as EventsService, d as defineCustomElement$l } from './igl-booking-event-hover2.js';
+import { E as EventsService } from './events.service.js';
 import { h as hooks } from './moment.js';
 import { T as ToBeAssignedService } from './toBeAssigned.service.js';
 import { t as transformNewBLockedRooms, a as transformNewBooking } from './booking.js';
@@ -12,6 +12,7 @@ import { d as defineCustomElement$p } from './igl-book-property2.js';
 import { d as defineCustomElement$o } from './igl-book-property-footer2.js';
 import { d as defineCustomElement$n } from './igl-book-property-header2.js';
 import { d as defineCustomElement$m } from './igl-booking-event2.js';
+import { d as defineCustomElement$l } from './igl-booking-event-hover2.js';
 import { d as defineCustomElement$k } from './igl-booking-overview-page2.js';
 import { d as defineCustomElement$j } from './igl-booking-room-rate-plan2.js';
 import { d as defineCustomElement$i } from './igl-booking-rooms2.js';

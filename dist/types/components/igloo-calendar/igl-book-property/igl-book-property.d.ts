@@ -47,6 +47,7 @@ export declare class IglBookProperty {
   private bedPreferenceType;
   private bookingService;
   private bookPropertyService;
+  private eventsService;
   componentDidLoad(): void;
   disconnectedCallback(): void;
   componentWillLoad(): Promise<void>;

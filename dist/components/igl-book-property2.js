@@ -2,6 +2,7 @@ import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/
 import { B as BookingService } from './booking.service.js';
 import { d as dateToFormattedString, g as getReleaseHoursString } from './utils.js';
 import { t as transformNewBLockedRooms } from './booking.js';
+import { E as EventsService } from './events.service.js';
 import { d as defineCustomElement$c } from './igl-application-info2.js';
 import { d as defineCustomElement$b } from './igl-block-dates-view2.js';
 import { d as defineCustomElement$a } from './igl-book-property-footer2.js';
@@ -161,6 +162,7 @@ const IglBookProperty = /*@__PURE__*/ proxyCustomElement(class IglBookProperty e
     this.bedPreferenceType = [];
     this.bookingService = new BookingService();
     this.bookPropertyService = new IglBookPropertyService();
+    this.eventsService = new EventsService();
     this.propertyid = undefined;
     this.allowedBookingSources = undefined;
     this.language = undefined;
@@ -206,7 +208,9 @@ const IglBookProperty = /*@__PURE__*/ proxyCustomElement(class IglBookProperty e
         };
         this.bookPropertyService.setEditingRoomInfo(this.bookingData, this.selectedUnits);
       }
-      this.bookingData.roomsInfo = [];
+      if (!this.isEventType('BAR_BOOKING')) {
+        this.bookingData.roomsInfo = [];
+      }
       if (this.bookingData.event_type === 'SPLIT_BOOKING') {
         this.showSplitBookingOption = true;
         this.page = 'page_one';
@@ -387,6 +391,9 @@ const IglBookProperty = /*@__PURE__*/ proxyCustomElement(class IglBookProperty e
   async bookUser(check_in) {
     this.setLoadingState(check_in);
     try {
+      if (['003', '002', '004'].includes(this.bookingData.STATUS_CODE)) {
+        this.eventsService.deleteEvent(this.bookingData.POOL);
+      }
       if (this.isEventType('EDIT_BOOKING')) {
         this.bookedByInfoData.message = this.bookingData.NOTES;
       }
