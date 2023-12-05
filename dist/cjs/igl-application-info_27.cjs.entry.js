@@ -1455,10 +1455,9 @@ const IglBookingRoomRatePlan = class {
   }
   componentWillLoad() {
     this.updateSelectedRatePlan(this.ratePlanData);
-    console.log(this.selectedData.is_closed, this.totalAvailableRooms, this.selectedData.rate);
   }
   disableForm() {
-    return this.selectedData.is_closed || this.totalAvailableRooms === 0 || this.selectedData.rate === null || this.selectedData.rate === undefined;
+    return this.selectedData.is_closed || this.totalAvailableRooms === 0;
   }
   getSelectedOffering(value) {
     return this.ratePlanData.variations.find(variation => variation.adult_child_offering === value);
@@ -1492,7 +1491,6 @@ const IglBookingRoomRatePlan = class {
       });
     }
     this.initialRateValue = this.selectedData.rate / this.dateDifference;
-    console.log(this.disableForm());
   }
   async ratePlanDataChanged(newData) {
     this.selectedData = Object.assign(Object.assign({}, this.selectedData), { rate: this.handleRateDaysUpdate(), physicalRooms: this.getAvailableRooms(newData.assignable_units) });
@@ -1501,8 +1499,6 @@ const IglBookingRoomRatePlan = class {
       changedKey: 'rate',
       data: this.selectedData,
     });
-    console.log(this.selectedData.is_closed, this.totalAvailableRooms, this.selectedData.rate);
-    console.log(this.disableForm());
   }
   handleRateDaysUpdate() {
     if (this.selectedData.isRateModified) {
@@ -1574,7 +1570,6 @@ const IglBookingRoomRatePlan = class {
     return this.selectedData.rateType === 1 ? this.selectedData.rate : this.initialRateValue;
   }
   render() {
-    console.log('render');
     return (index.h(index.Host, null, index.h("div", { class: "row m-0 p-0" }, index.h("div", { class: "col-md-6 col-sm-12 p-0 align-self-center" }, index.h("span", null, this.ratePlanData.name), index.h("ir-tooltip", { message: this.ratePlanData.cancelation + this.ratePlanData.guarantee })), index.h("div", { class: "col-md-6 col-sm-12 row pr-0" }, index.h("div", { class: "col-4" }, index.h("fieldset", { class: "position-relative" }, index.h("select", { disabled: this.disableForm(), class: "form-control input-sm", id: v4.v4(), onChange: evt => this.handleDataChange('adult_child_offering', evt) }, this.ratePlanData.variations.map(variation => (index.h("option", { value: variation.adult_child_offering, selected: this.selectedData.adult_child_offering === variation.adult_child_offering }, variation.adult_child_offering)))))), index.h("div", { class: "row col-6 m-0 p-0" }, index.h("fieldset", { class: "position-relative has-icon-left col-6 m-0 p-0" }, index.h("input", { disabled: this.disableForm(), type: "text", class: "form-control input-sm", value: this.renderRate(), id: v4.v4(), placeholder: "Rate", onInput: (event) => this.handleInput(event) }), index.h("span", { class: "form-control-position" }, booking_service.getCurrencySymbol(this.currency.code))), index.h("fieldset", { class: "position-relative m-0 p-0" }, index.h("select", { disabled: this.disableForm(), class: "form-control input-sm", id: v4.v4(), onChange: evt => this.handleDataChange('rateType', evt) }, this.ratePricingMode.map(data => (index.h("option", { value: data.CODE_NAME, selected: this.selectedData.rateType === +data.CODE_NAME }, data.CODE_VALUE_EN)))))), this.bookingType === 'PLUS_BOOKING' || this.bookingType === 'ADD_ROOM' ? (index.h("div", { class: "col-2 m-0 p-0" }, index.h("fieldset", { class: "position-relative" }, index.h("select", { disabled: this.selectedData.rate === 0 || this.disableForm(), class: "form-control input-sm", id: v4.v4(), onChange: evt => this.handleDataChange('totalRooms', evt) }, Array.from({ length: this.totalAvailableRooms + 1 }, (_, i) => i).map(i => (index.h("option", { value: i, selected: this.selectedData.totalRooms === i }, i))))))) : null, this.bookingType === 'EDIT_BOOKING' ? (index.h("div", { class: "col-2 m-0 p-0 align-self-center" }, index.h("fieldset", { class: "position-relative" }, index.h("input", { disabled: this.disableForm(), type: "radio", name: "ratePlanGroup", value: "1", onChange: evt => this.handleDataChange('totalRooms', evt), checked: this.selectedData.totalRooms === 1 })))) : null, this.bookingType === 'BAR_BOOKING' || this.bookingType === 'SPLIT_BOOKING' ? (index.h("button", { disabled: this.selectedData.rate === 0 || this.disableForm(), type: "button", class: "btn mb-1 btn-primary btn-sm", onClick: () => this.bookProperty() }, "Book")) : null))));
   }
   static get watchers() { return {
@@ -7658,8 +7653,8 @@ const IrInterceptor = class {
     this.hideToastAfterDelay(true);
     this.toast.emit({
       type: 'error',
-      title: '',
-      description: error,
+      title: error,
+      description: '',
       position: 'top-right',
     });
     return Promise.reject(error);
@@ -7701,7 +7696,7 @@ const IrLoadingScreen = class {
 };
 IrLoadingScreen.style = irLoadingScreenCss;
 
-const irToastCss = "button.sc-ir-toast,p.sc-ir-toast,h3.sc-ir-toast,div.sc-ir-toast{all:unset}.sc-ir-toast-h{--rd-viewport-padding:25px;--rd-success:#2b9a66;position:fixed;bottom:0;right:0;display:flex;flex-direction:column;padding:var(--rd-viewport-padding);gap:10px;max-width:100vw;margin:0;list-style:none;z-index:2147483647;outline:none;pointer-events:none;-webkit-user-select:none;user-select:none}@media (prefers-color-scheme: dark){.sc-ir-toast-h{--rd-success:#33b074}}p.sc-ir-toast{color:hsla(222.2, 84%, 4.9%, 0.8);font-size:13px;line-height:1.3}h1.sc-ir-toast,h2.sc-ir-toast,h3.sc-ir-toast,h4.sc-ir-toast,h5.sc-ir-toast,h6.sc-ir-toast{font-weight:500;color:hsl(222.2, 84%, 4.9%);font-size:15px}[position='top-left'].sc-ir-toast-h{top:0;left:0}[position='top-right'].sc-ir-toast-h{top:0;right:0}[position='bottom-left'].sc-ir-toast-h{bottom:0;left:0}[position='bottom-right'].sc-ir-toast-h{bottom:0;right:0}.icon-container.sc-ir-toast{height:25px;width:25px;border-radius:25px;display:flex;align-items:center;justify-content:center;padding:0;margin:0;position:absolute;top:50%;right:calc(var(--rd-viewport-padding) / 2);transform:translateY(-50%)}.icon-container.sc-ir-toast>svg.sc-ir-toast{margin:0;color:white;stroke-width:5px}.success.sc-ir-toast{background-color:var(--rd-success)}.error.sc-ir-toast{background-color:red}.ToastRoot.sc-ir-toast{width:auto;background-color:hsl(0, 0%, 100%);border-radius:0.5rem;box-shadow:hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;padding:15px;display:grid;grid-template-areas:'title action' 'description action';grid-template-columns:auto max-content;column-gap:15px;align-items:center;pointer-events:none;opacity:0;border:1px solid hsl(214.3, 31.8%, 91.4%);position:relative}.ToastRoot[data-state='open'].sc-ir-toast{pointer-events:all;animation:slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1)}.ToastRoot[data-state='closed'].sc-ir-toast{pointer-events:none;animation:hide 100ms ease-in}@-webkit-keyframes slideIn{from{transform:translateX(var(--rd-offset-width))}to{transform:translateX(0)}}@keyframes slideIn{from{transform:translateX(var(--rd-offset-width))}to{transform:translateX(0)}}.ToastTitle.sc-ir-toast{grid-area:title;margin-bottom:5px;font-weight:500;color:hsl(222.2, 84%, 4.9%);font-size:15px}.ToastDescription.sc-ir-toast{grid-area:description;margin:0;color:hsla(222.2, 84%, 4.9%, 0.8);font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}.ToastAction.sc-ir-toast{grid-area:action}";
+const irToastCss = "button.sc-ir-toast,p.sc-ir-toast,h3.sc-ir-toast,div.sc-ir-toast{all:unset}.sc-ir-toast-h{--rd-viewport-padding:25px;--rd-success:#2b9a66;position:fixed;bottom:0;right:0;display:flex;flex-direction:column;padding:var(--rd-viewport-padding);gap:10px;max-width:100vw;margin:0;list-style:none;z-index:2147483647;outline:none;pointer-events:none;-webkit-user-select:none;user-select:none}@media (prefers-color-scheme: dark){.sc-ir-toast-h{--rd-success:#33b074}}p.sc-ir-toast{color:hsla(222.2, 84%, 4.9%, 0.8);font-size:13px;line-height:1.3}h1.sc-ir-toast,h2.sc-ir-toast,h3.sc-ir-toast,h4.sc-ir-toast,h5.sc-ir-toast,h6.sc-ir-toast{font-weight:500;color:hsl(222.2, 84%, 4.9%);font-size:15px}[position='top-left'].sc-ir-toast-h{top:0;left:0}[position='top-right'].sc-ir-toast-h{top:0;right:0}[position='bottom-left'].sc-ir-toast-h{bottom:0;left:0}[position='bottom-right'].sc-ir-toast-h{bottom:0;right:0}.icon-container.sc-ir-toast{height:25px;width:25px;border-radius:25px;display:flex;align-items:center;justify-content:center;padding:0;margin:0}.icon-container.sc-ir-toast>svg.sc-ir-toast{margin:0;color:white;stroke-width:5px}.success.sc-ir-toast{background-color:var(--rd-success)}.error.sc-ir-toast{background-color:red}.ToastRoot.sc-ir-toast{background-color:hsl(0, 0%, 100%);border-radius:0.5rem;box-shadow:hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px;padding:15px;display:grid;grid-template-areas:'title action' 'description action';grid-template-columns:auto max-content;column-gap:15px;align-items:center;pointer-events:none;opacity:0;border:1px solid hsl(214.3, 31.8%, 91.4%);position:relative}.ToastRoot[data-state='open'].sc-ir-toast{pointer-events:all;animation:slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1)}.ToastRoot[data-state='closed'].sc-ir-toast{pointer-events:none;animation:hide 100ms ease-in}@-webkit-keyframes slideIn{from{transform:translateX(var(--rd-offset-width))}to{transform:translateX(0)}}@keyframes slideIn{from{transform:translateX(var(--rd-offset-width))}to{transform:translateX(0)}}.ToastTitle.sc-ir-toast{grid-area:title;font-weight:500;color:hsl(222.2, 84%, 4.9%);font-size:15px}.ToastDescription.sc-ir-toast{grid-area:description;margin:0;margin-top:5px;color:hsla(222.2, 84%, 4.9%, 0.8);font-size:13px;line-height:1.3;overflow:hidden;text-overflow:ellipsis}.ToastAction.sc-ir-toast{grid-area:action}";
 
 const IrToast = class {
   constructor(hostRef) {
@@ -7773,7 +7768,7 @@ const IrToast = class {
     }
   }
   render() {
-    return (index.h(index.Host, null, index.h("section", { "aria-live": "off", role: "status", "aria-atomic": "true", ref: el => (this.toastRef = el), class: `ToastRoot` }, this.isVisible && (index.h(index.Fragment, null, this.toastBody.type === 'custom' ? (this.toastBody.body) : (index.h(index.Fragment, null, index.h("h3", { class: "ToastTitle" }, this.toastBody.title), index.h("p", { class: "ToastDescription" }, this.toastBody.description), this.renderIcon())))))));
+    return (index.h(index.Host, null, index.h("section", { "aria-live": "off", role: "status", "aria-atomic": "true", ref: el => (this.toastRef = el), class: `ToastRoot` }, this.isVisible && (index.h(index.Fragment, null, this.toastBody.type === 'custom' ? (this.toastBody.body) : (index.h(index.Fragment, null, this.toastBody.title !== '' && index.h("h3", { class: "ToastTitle" }, this.toastBody.title), this.toastBody.description !== '' && index.h("p", { class: "ToastDescription" }, this.toastBody.description), this.renderIcon())))))));
   }
   get element() { return index.getElement(this); }
 };
