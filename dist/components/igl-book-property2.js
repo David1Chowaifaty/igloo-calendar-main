@@ -61,7 +61,7 @@ class IglBookPropertyService {
   }
   setSelectedRoomData(roomCategoryKey, ratePlanKey, data, selectedUnits) {
     let selectedRatePlans = selectedUnits.get(roomCategoryKey);
-    if (data.totalRooms === 0) {
+    if (data.totalRooms === 0 || data.inventory === 0) {
       selectedRatePlans.delete(ratePlanKey);
     }
     else {

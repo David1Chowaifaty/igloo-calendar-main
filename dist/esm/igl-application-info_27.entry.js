@@ -194,7 +194,7 @@ class IglBookPropertyService {
   }
   setSelectedRoomData(roomCategoryKey, ratePlanKey, data, selectedUnits) {
     let selectedRatePlans = selectedUnits.get(roomCategoryKey);
-    if (data.totalRooms === 0) {
+    if (data.totalRooms === 0 || data.inventory === 0) {
       selectedRatePlans.delete(ratePlanKey);
     }
     else {
@@ -1599,14 +1599,13 @@ const IglBookingRooms = class {
     this.totalRooms = inventory || 0;
     this.selectedRooms = new Array(rateplans.length).fill(0);
     this.roomsDistributions = this.calculateInitialDistributions(rateplans, inventory);
-    //console.log(this.roomsDistributions, this.selectedRooms);
   }
   handleRoomTypeData() {
     this.initializeRoomData();
   }
   calculateInitialDistributions(rateplans, inventory) {
     let distributions = new Array(rateplans.length).fill(inventory);
-    if (this.defaultData && this.bookingType !== 'EDIT_BOOKING') {
+    if (this.defaultData && this.bookingType !== 'EDIT_BOOKING' && inventory > 0) {
       let selectedIndexes = [];
       let sum = 0;
       this.defaultData.forEach(category => {
