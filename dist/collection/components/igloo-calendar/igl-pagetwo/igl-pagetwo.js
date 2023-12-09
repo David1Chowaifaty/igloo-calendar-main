@@ -1,13 +1,16 @@
 import { h, Host } from "@stencil/core";
+import { formatDate, getCurrencySymbol } from "../../../utils/utils";
 export class IglPagetwo {
   constructor() {
     this.showPaymentDetails = undefined;
+    this.currency = undefined;
     this.isEditOrAddRoomEvent = undefined;
     this.dateRangeData = undefined;
     this.bookingData = undefined;
     this.showSplitBookingOption = undefined;
     this.language = undefined;
     this.bookedByInfoData = undefined;
+    this.propertyId = undefined;
     this.bedPreferenceType = undefined;
     this.selectedRooms = undefined;
     this.isLoading = undefined;
@@ -81,6 +84,7 @@ export class IglPagetwo {
       if (!property) {
         return true;
       }
+      console.log(this.selectedBookedByData);
       if (property === this.selectedGuestData) {
         return this.isGuestDataIncomplete();
       }
@@ -88,6 +92,14 @@ export class IglPagetwo {
       // if (!this.showPaymentDetails && isCardDetails) {
       //   return false;
       // }
+      if (key === "selectedArrivalTime") {
+        if (property[key] !== undefined) {
+          return property[key].code === "";
+        }
+        else {
+          return true;
+        }
+      }
       return property[key] === comparedBy || property[key] === undefined;
     };
     return (this.isLoading === key ||
@@ -106,14 +118,14 @@ export class IglPagetwo {
     );
   }
   render() {
-    return (h(Host, { class: "scrollContent" }, h("div", { class: "row" }, h("div", { class: "col-6 text-left p-0" }, h("span", { class: "mr-1 font-weight-bold font-medium-1" }, this.dateRangeData.fromDateStr, " - ", this.dateRangeData.toDateStr), this.dateRangeData.dateDifference, " nights"), h("div", { class: "col-6 text-right" }, "Total price ", h("span", { class: "font-weight-bold font-medium-1" }, '$' + this.bookingData.TOTAL_PRICE || '$0.00'))), this.guestData.map((roomInfo, index) => {
-      return (h("igl-application-info", { bedPreferenceType: this.bedPreferenceType, index: index, selectedUnits: this.selectedUnits[`c_${roomInfo.roomCategoryId}`], guestInfo: roomInfo, guestRefKey: index, bookingType: this.bookingData.event_type, roomsList: roomInfo.physicalRooms, onDataUpdateEvent: event => this.handleEventData(event, 'application-info', index) }));
-    }), this.isEditOrAddRoomEvent || this.showSplitBookingOption ? null : (h("igl-property-booked-by", { countryNodeList: this.countryNodeList, language: this.language, showPaymentDetails: this.showPaymentDetails, defaultData: this.bookedByInfoData, onDataUpdateEvent: event => 
+    return (h(Host, null, h("div", { class: "d-flex flex-wrap" }, h("div", { class: "flex-fill text-left p-0" }, h("span", { class: "mr-1 font-weight-bold font-medium-1" }, formatDate(this.dateRangeData.fromDateStr), " - ", formatDate(this.dateRangeData.toDateStr)), this.dateRangeData.dateDifference, " ", +this.dateRangeData.dateDifference > 1 ? 'nights' : 'night'), this.guestData.length > 1 && (h("div", { class: "mt-1 mt-md-0 text-right" }, "Total price ", h("span", { class: "font-weight-bold font-medium-1" }, getCurrencySymbol(this.currency.code) + this.bookingData.TOTAL_PRICE || '$0.00')))), this.guestData.map((roomInfo, index) => {
+      return (h("igl-application-info", { currency: this.currency, bedPreferenceType: this.bedPreferenceType, index: index, selectedUnits: this.selectedUnits[`c_${roomInfo.roomCategoryId}`], guestInfo: roomInfo, guestRefKey: index, bookingType: this.bookingData.event_type, roomsList: roomInfo.physicalRooms, onDataUpdateEvent: event => this.handleEventData(event, 'application-info', index) }));
+    }), this.isEditOrAddRoomEvent || this.showSplitBookingOption ? null : (h("igl-property-booked-by", { propertyId: this.propertyId, countryNodeList: this.countryNodeList, language: this.language, showPaymentDetails: this.showPaymentDetails, defaultData: this.bookedByInfoData, onDataUpdateEvent: event => 
       // this.dataUpdateEvent.emit({
       //   key: "propertyBookedBy",
       //   value: event.detail,
       // })
-      this.handleEventData(event, 'propertyBookedBy', 0) })), this.isEditOrAddRoomEvent ? (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-6" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: 'cancel' }) }, "Cancel")), h("div", { class: "col-6" }, h("button", { disabled: this.isLoading === 'save' || this.isGuestDataIncomplete(), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: 'save' }) }, this.isLoading === 'save' && h("i", { class: "la la-circle-o-notch spinner mx-1" }), "Save")))) : (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-4" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: 'back' }) }, "<< Back")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled('book'), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: 'book' }) }, this.isLoading === 'book' && h("i", { class: "la la-circle-o-notch spinner mx-1" }), "Book")), h("div", { class: "col-4" }, h("button", { disabled: this.isButtonDisabled('bookAndCheckIn'), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: 'bookAndCheckIn' }) }, this.isLoading === 'bookAndCheckIn' && h("i", { class: "la la-circle-o-notch spinner mx-1" }), "Book & check in"))))));
+      this.handleEventData(event, 'propertyBookedBy', 0) })), this.isEditOrAddRoomEvent ? (h("div", { class: "row p-0 mb-1 mt-2" }, h("div", { class: "col-6" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: 'cancel' }) }, "Cancel")), h("div", { class: "col-6" }, h("button", { disabled: this.isLoading === 'save' || this.isGuestDataIncomplete(), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: 'save' }) }, this.isLoading === 'save' && h("i", { class: "la la-circle-o-notch spinner mx-1" }), "Save")))) : (h("div", { class: "d-flex flex-column flex-md-row p-0 mb-1 mt-2 justify-content-md-between align-items-md-center" }, h("div", { class: "flex-fill mr-md-1" }, h("button", { type: "button", class: "btn btn-secondary full-width", onClick: () => this.buttonClicked.emit({ key: 'back' }) }, h("span", { class: "d-none d-md-inline-flex" }, "  <<"), " Back")), h("div", { class: "mt-1 mt-md-0 flex-fill mr-md-1" }, h("button", { disabled: this.isButtonDisabled('book'), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: 'book' }) }, this.isLoading === 'book' && h("i", { class: "la la-circle-o-notch spinner mx-1" }), "Book")), h("div", { class: "mt-1 mt-md-0 flex-fill" }, h("button", { disabled: this.isButtonDisabled('bookAndCheckIn'), type: "button", class: "btn btn-primary full-width", onClick: () => this.buttonClicked.emit({ key: 'bookAndCheckIn' }) }, this.isLoading === 'bookAndCheckIn' && h("i", { class: "la la-circle-o-notch spinner mx-1" }), "Book & check in"))))));
   }
   static get is() { return "igl-pagetwo"; }
   static get encapsulation() { return "scoped"; }
@@ -144,6 +156,23 @@ export class IglPagetwo {
           "text": ""
         },
         "attribute": "show-payment-details",
+        "reflect": false
+      },
+      "currency": {
+        "type": "any",
+        "mutable": false,
+        "complexType": {
+          "original": "any",
+          "resolved": "any",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "currency",
         "reflect": false
       },
       "isEditOrAddRoomEvent": {
@@ -241,6 +270,23 @@ export class IglPagetwo {
           "tags": [],
           "text": ""
         }
+      },
+      "propertyId": {
+        "type": "number",
+        "mutable": false,
+        "complexType": {
+          "original": "number",
+          "resolved": "number",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "property-id",
+        "reflect": false
       },
       "bedPreferenceType": {
         "type": "any",

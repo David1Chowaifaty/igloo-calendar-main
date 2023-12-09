@@ -10,11 +10,13 @@ export declare class IglPropertyBookedBy {
     [key: string]: any;
   }>;
   countryNodeList: ICountry[];
+  propertyId: number;
   private bookingService;
   private arrivalTimeList;
   private expiryMonths;
   private expiryYears;
   private currentMonth;
+  private country;
   bookedByData: {
     [key: string]: any;
   };
@@ -28,5 +30,7 @@ export declare class IglPropertyBookedBy {
   handleEmailInput(key: any, event: InputEvent): Promise<void>;
   checkUser(): Promise<void>;
   isValidEmail(emailId: any): boolean;
+  handleComboboxChange(e: CustomEvent): void;
+  clearEvent(): void;
   render(): any;
 }

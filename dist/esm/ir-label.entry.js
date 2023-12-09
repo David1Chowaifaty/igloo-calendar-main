@@ -1,4 +1,4 @@
-import { r as registerInstance, c as createEvent, h } from './index-b828b70a.js';
+import { r as registerInstance, c as createEvent, h } from './index-b3d9a425.js';
 
 const IrLabel = class {
   constructor(hostRef) {
