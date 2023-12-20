@@ -14,21 +14,26 @@ export declare class IglCalHeader {
   };
   today: String;
   propertyid: number;
-  unassignedDates: {};
+  unassignedDates: any;
   to_date: string;
+  defaultTexts: any;
   renderAgain: boolean;
   unassignedRoomsNumber: any;
   private searchValue;
   private searchList;
   private roomsList;
   private toBeAssignedService;
+  private unsubscribe;
   componentWillLoad(): void;
+  updateFromStore(): void;
+  disconnectedCallback(): void;
   handleCalendarDataChanged(): void;
   private initializeRoomsList;
   private fetchAndAssignUnassignedRooms;
   private assignRoomsToDate;
   handleReduceAvailableUnitEvent(event: CustomEvent<{
-    [key: string]: any;
+    fromDate: string;
+    toDate: string;
   }>): void;
   showToBeAssigned(dayInfo: any): void;
   handleOptionEvent(key: any, data?: any): void;
@@ -46,7 +51,7 @@ export declare class IglCalHeader {
     FROM_DATE: string;
     TO_DATE: string;
     roomsInfo: any;
-    TITLE: string;
+    TITLE: any;
     event_type: string;
     legendData: any;
     defaultDateRange: {

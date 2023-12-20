@@ -1,5 +1,5 @@
 import { proxyCustomElement, HTMLElement, createEvent, h, Host } from '@stencil/core/internal/client';
-import { g as getCurrencySymbol } from './utils.js';
+import { s as store } from './store.js';
 import { d as defineCustomElement$3 } from './igl-block-dates-view2.js';
 import { d as defineCustomElement$2 } from './igl-booking-event2.js';
 import { d as defineCustomElement$1 } from './igl-booking-event-hover2.js';
@@ -20,12 +20,23 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
     this.calendarData = undefined;
     this.today = undefined;
     this.currency = undefined;
+    this.language = undefined;
     this.countryNodeList = undefined;
+    this.defaultTexts = undefined;
     this.dragOverElement = '';
     this.renderAgain = false;
   }
   componentWillLoad() {
     this.currentDate.setHours(0, 0, 0, 0);
+    this.updateFromStore();
+    this.unsubscribe = store.subscribe(() => this.updateFromStore());
+  }
+  updateFromStore() {
+    const state = store.getState();
+    this.defaultTexts = state.languages;
+  }
+  disconnectedCallback() {
+    this.unsubscribe();
   }
   dragOverHighlightElementHandler(event) {
     this.dragOverElement = event.detail.dragOverElement;
@@ -91,7 +102,7 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
     return 'room_' + roomId + '_' + selectedDay.currentDate;
   }
   getSplitBookingEvents(newEvent) {
-    return this.getBookingData().filter(bookingEvent => newEvent.FROM_DATE === bookingEvent.TO_DATE);
+    return this.getBookingData().some(bookingEvent => !['003', '002', '004'].includes(bookingEvent.STATUS_CODE) && newEvent.FROM_DATE === bookingEvent.FROM_DATE);
   }
   closeWindow() {
     let ind = this.getBookingData().findIndex(ev => ev.ID === 'NEW_TEMP_EVENT');
@@ -134,7 +145,7 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
       TOTAL_PRICE: '',
       RATE_PLAN: '',
       ARRIVAL_TIME: '',
-      TITLE: 'New Booking for ',
+      TITLE: this.defaultTexts.entries.Lcz_NewBookingFor,
       roomsInfo: [roomCategory],
       CATEGORY: roomCategory.name,
       event_type: 'BAR_BOOKING',
@@ -150,7 +161,7 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
       },
     };
     let popupTitle = roomCategory.name + ' ' + this.getRoomName(this.getRoomById(this.getCategoryRooms(roomCategory), this.selectedRooms[keys[0]].roomId));
-    this.newEvent.BLOCK_DATES_TITLE = 'Block Dates for ' + popupTitle;
+    this.newEvent.BLOCK_DATES_TITLE = this.defaultTexts.entries.Lcz_BlockDatesFor + popupTitle;
     this.newEvent.TITLE += popupTitle;
     this.newEvent.defaultDateRange.toDate = new Date(this.newEvent.TO_DATE + 'T00:00:00');
     this.newEvent.defaultDateRange.fromDate = new Date(this.newEvent.FROM_DATE + 'T00:00:00');
@@ -159,7 +170,7 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
     this.newEvent.ENTRY_DATE = new Date().toISOString();
     this.newEvent.legendData = this.calendarData.formattedLegendData;
     let splitBookingEvents = this.getSplitBookingEvents(this.newEvent);
-    if (splitBookingEvents.length) {
+    if (splitBookingEvents) {
       this.newEvent.splitBookingEvents = splitBookingEvents;
     }
     this.getBookingData().push(this.newEvent);
@@ -209,7 +220,9 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
     this.renderAgain = !this.renderAgain;
   }
   getGeneralCategoryDayColumns(addClass, isCategory = false, index) {
-    return this.calendarData.days.map(dayInfo => (h("div", { class: `cellData pl-0 categoryPriceColumn ${addClass + '_' + dayInfo.day} ${dayInfo.day === this.today ? 'currentDay' : ''}` }, isCategory ? (h("span", null, dayInfo.rate[index].inventory, h("br", null), dayInfo.rate[index].rate && h("u", null, getCurrencySymbol(this.currency.code), " ", dayInfo.rate[index].rate))) : (''))));
+    return this.calendarData.days.map(dayInfo => {
+      return (h("div", { class: `cellData pl-0 categoryPriceColumn ${addClass + '_' + dayInfo.day} ${dayInfo.day === this.today ? 'currentDay' : ''}` }, isCategory ? (h("span", null, dayInfo.rate[index].exposed_inventory.total, h("br", null), dayInfo.rate[index].exposed_inventory.offline)) : ('')));
+    });
   }
   getGeneralRoomDayColumns(roomId, roomCategory) {
     // onDragOver={event => this.handleDragOver(event)} onDrop={event => this.handleDrop(event, addClass+"_"+dayInfo.day)}
@@ -239,7 +252,7 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
   render() {
     var _a;
     // onDragStart={event => this.handleDragStart(event)} draggable={true}
-    return (h(Host, null, h("div", { class: "bodyContainer" }, this.getRoomRows(), h("div", { class: "bookingEventsContainer preventPageScroll" }, (_a = this.getBookingData()) === null || _a === void 0 ? void 0 : _a.map(bookingEvent => (h("igl-booking-event", { is_vacation_rental: this.calendarData.is_vacation_rental, countryNodeList: this.countryNodeList, currency: this.currency, "data-component-id": bookingEvent.ID, bookingEvent: bookingEvent, allBookingEvents: this.getBookingData() })))))));
+    return (h(Host, null, h("div", { class: "bodyContainer" }, this.getRoomRows(), h("div", { class: "bookingEventsContainer preventPageScroll" }, (_a = this.getBookingData()) === null || _a === void 0 ? void 0 : _a.map(bookingEvent => (h("igl-booking-event", { language: this.language, is_vacation_rental: this.calendarData.is_vacation_rental, countryNodeList: this.countryNodeList, currency: this.currency, "data-component-id": bookingEvent.ID, bookingEvent: bookingEvent, allBookingEvents: this.getBookingData() })))))));
   }
   static get style() { return iglCalBodyCss; }
 }, [2, "igl-cal-body", {
@@ -247,7 +260,9 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
     "calendarData": [16],
     "today": [16],
     "currency": [8],
+    "language": [1],
     "countryNodeList": [8, "country-node-list"],
+    "defaultTexts": [32],
     "dragOverElement": [32],
     "renderAgain": [32]
   }, [[8, "dragOverHighlightElement", "dragOverHighlightElementHandler"], [8, "gotoRoomEvent", "gotoRoom"], [8, "addToBeAssignedEvent", "addToBeAssignedEvents"], [8, "closeBookingWindow", "closeWindow"]]]);

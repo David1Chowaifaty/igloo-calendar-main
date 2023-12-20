@@ -27,6 +27,10 @@ export declare class IglooCalendar {
   showPaymentDetails: boolean;
   showToBeAssigned: boolean;
   unassignedDates: {};
+  reduceAvailableUnitEvent: EventEmitter<{
+    fromDate: string;
+    toDate: string;
+  }>;
   private bookingService;
   private countryNodeList;
   private visibleCalendarCells;
@@ -37,9 +41,10 @@ export declare class IglooCalendar {
   private toBeAssignedService;
   private socket;
   private reachedEndOfCalendar;
+  private defaultTexts;
   ticketChanged(): void;
   componentWillLoad(): void;
-  initializeApp(): void;
+  initializeApp(): Promise<void>;
   componentDidLoad(): void;
   handleDeleteEvent(ev: CustomEvent): Promise<void>;
   checkBookingAvailability(data: any): any;

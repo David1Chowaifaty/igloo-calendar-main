@@ -1,14 +1,18 @@
 import { EventEmitter } from '../../stencil-public-runtime';
+import { IToast } from '../ir-toast/toast';
 export declare class IrAutocomplete {
   duration: number;
   placeholder: string;
   propertyId: number;
+  isSplitBooking: boolean;
   type: 'email' | 'text' | 'password' | 'number' | 'search';
   name: string;
   inputId: string;
   required: boolean;
   disabled: boolean;
   value: string;
+  from_date: string;
+  to_date: string;
   inputValue: string;
   data: any[];
   selectedIndex: number;
@@ -18,6 +22,7 @@ export declare class IrAutocomplete {
     data: unknown;
   }>;
   inputCleared: EventEmitter<null>;
+  toast: EventEmitter<IToast>;
   isItemSelected: boolean;
   el: HTMLElement;
   private inputRef;
@@ -26,7 +31,6 @@ export declare class IrAutocomplete {
   handleKeyDown(event: KeyboardEvent): void;
   getHeightOfPElement(): number;
   adjustScrollPosition(itemHeight: any, visibleHeight?: number): void;
-  setInputValue(item: any): void;
   selectItem(index: any): void;
   debounceFetchData(): void;
   fetchData(): Promise<void>;

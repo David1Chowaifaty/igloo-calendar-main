@@ -1,5 +1,32 @@
+//import { BookingService } from '../../../services/booking.service';
 export class IglBookPropertyService {
-  onDataRoomUpdate(event, selectedUnits, isEditBooking, name) {
+  setBookingInfoFromAutoComplete(context, res) {
+    context.bookedByInfoData = {
+      id: res.guest.id,
+      email: res.guest.email,
+      firstName: res.guest.first_name,
+      lastName: res.guest.last_name,
+      countryId: res.guest.country_id,
+      isdCode: res.guest.country_id.toString(),
+      contactNumber: res.guest.mobile,
+      selectedArrivalTime: res.arrival,
+      emailGuest: res.guest.subscribe_to_news_letter,
+      message: res.remark,
+      cardNumber: '',
+      cardHolderName: '',
+      expiryMonth: '',
+      expiryYear: '',
+      bookingNumber: res.booking_nbr,
+      rooms: res.rooms,
+      from_date: res.from_date,
+      to_date: res.to_date,
+    };
+  }
+  resetRoomsInfoAndMessage(context) {
+    context.defaultData.roomsInfo = [];
+    context.message = '';
+  }
+  onDataRoomUpdate(event, selectedUnits, isEdit, isEditBooking, name) {
     let units = selectedUnits;
     const { data, key, changedKey } = event.detail;
     const roomCategoryKey = `c_${data.roomCategoryId}`;
@@ -11,18 +38,18 @@ export class IglBookPropertyService {
     if (isEditBooking) {
       if (changedKey === 'rate') {
         if (units.has(roomCategoryKey) && units.get(roomCategoryKey).has(ratePlanKey)) {
-          this.applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, units, name);
+          this.applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, units, name, isEdit);
         }
       }
       else {
         if (changedKey !== 'rateType') {
           if (changedKey === 'adult_child_offering') {
             if (units.has(roomCategoryKey) && selectedUnits.get(roomCategoryKey).has(ratePlanKey)) {
-              this.applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, units, name);
+              this.applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, units, name, isEdit);
             }
           }
           else {
-            this.applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, units, name);
+            this.applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, units, name, isEdit);
           }
         }
       }
@@ -58,30 +85,63 @@ export class IglBookPropertyService {
       }
     }
   }
-  applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, selectedUnits, name) {
+  applyBookingEditToSelectedRoom(roomCategoryKey, ratePlanKey, data, selectedUnits, name, isEdit) {
     selectedUnits.clear();
-    selectedUnits.set(roomCategoryKey, new Map().set(ratePlanKey, Object.assign(Object.assign({}, data), { guestName: name, roomId: '' })));
+    let res = {};
+    if (isEdit) {
+      res = Object.assign(Object.assign({}, data), { guestName: name || '', roomId: '' });
+    }
+    else {
+      res = Object.assign({}, data);
+    }
+    selectedUnits.set(roomCategoryKey, new Map().set(ratePlanKey, res));
   }
-  prepareBookUserServiceParams(context, check_in, sourceOption) {
-    const arrivalTime = context.isEventType('EDIT_BOOKING') ? context.getArrivalTimeForBooking() : '';
-    const pr_id = context.isEventType('BAR_BOOKING') ? context.bookingData.PR_ID : undefined;
-    const bookingNumber = context.isEventType('EDIT_BOOKING') ? context.bookingData.BOOKING_NUMBER : undefined;
-    return [
-      context.bookedByInfoData,
-      check_in,
-      new Date(context.dateRangeData.fromDate),
-      new Date(context.dateRangeData.toDate),
-      context.guestData,
-      context.dateRangeData.dateDifference,
-      sourceOption,
-      context.propertyid,
-      context.currency,
-      bookingNumber,
-      context.bookingData.GUEST,
-      arrivalTime,
-      pr_id,
-      context.bookingData.IDENTIFIER,
-    ];
+  async prepareBookUserServiceParams(context, check_in, sourceOption) {
+    try {
+      const arrivalTime = context.isEventType('EDIT_BOOKING')
+        ? context.getArrivalTimeForBooking()
+        : context.isEventType('ADD_ROOM')
+          ? context.bookingData.ARRIVAL.code
+          : context.isEventType('SPLIT_BOOKING')
+            ? context.bookedByInfoData.selectedArrivalTime.code
+            : '';
+      const pr_id = context.isEventType('BAR_BOOKING') ? context.bookingData.PR_ID : undefined;
+      const bookingNumber = context.isEventType('EDIT_BOOKING') || context.isEventType('ADD_ROOM')
+        ? context.bookingData.BOOKING_NUMBER
+        : context.isEventType('SPLIT_BOOKING')
+          ? context.bookedByInfoData.bookingNumber
+          : undefined;
+      let rooms = [];
+      if (context.isEventType('ADD_ROOM')) {
+        // const result = await (context.bookingService as BookingService).getExoposedBooking(bookingNumber, context.language);
+        //rooms = result.rooms;
+        rooms = context.bookingData.ROOMS;
+      }
+      else if (context.isEventType('SPLIT_BOOKING')) {
+        rooms = context.bookedByInfoData.rooms;
+      }
+      console.log('rooms', rooms);
+      return [
+        context.bookedByInfoData,
+        check_in,
+        new Date(context.dateRangeData.fromDate),
+        new Date(context.dateRangeData.toDate),
+        context.guestData,
+        context.dateRangeData.dateDifference,
+        sourceOption,
+        context.propertyid,
+        rooms,
+        context.currency,
+        bookingNumber,
+        context.bookingData.GUEST,
+        arrivalTime,
+        pr_id,
+        context.bookingData.IDENTIFIER,
+      ];
+    }
+    catch (error) {
+      console.log(error);
+    }
   }
   getBookingPreferenceRoomId(bookingData) {
     return (bookingData.hasOwnProperty('PR_ID') && bookingData.PR_ID) || null;

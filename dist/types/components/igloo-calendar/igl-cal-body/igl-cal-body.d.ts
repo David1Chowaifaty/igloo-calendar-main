@@ -8,7 +8,9 @@ export declare class IglCalBody {
   };
   today: String;
   currency: any;
+  language: string;
   countryNodeList: any;
+  defaultTexts: any;
   dragOverElement: string;
   renderAgain: boolean;
   addBookingDatasEvent: EventEmitter<any[]>;
@@ -16,7 +18,10 @@ export declare class IglCalBody {
   private fromRoomId;
   private newEvent;
   private currentDate;
+  private unsubscribe;
   componentWillLoad(): void;
+  updateFromStore(): void;
+  disconnectedCallback(): void;
   dragOverHighlightElementHandler(event: CustomEvent): void;
   gotoRoom(event: CustomEvent): void;
   addToBeAssignedEvents(event: CustomEvent): void;

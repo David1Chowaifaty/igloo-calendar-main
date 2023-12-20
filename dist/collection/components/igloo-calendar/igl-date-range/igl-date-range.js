@@ -1,4 +1,5 @@
 import { Host, h } from "@stencil/core";
+import { store } from "../../../redux/store";
 export class IglDateRange {
   constructor() {
     this.totalNights = 0;
@@ -6,12 +7,17 @@ export class IglDateRange {
     this.toDateStr = 'to';
     this.defaultData = undefined;
     this.disabled = false;
+    this.minDate = undefined;
+    this.dateLabel = undefined;
     this.renderAgain = false;
+    this.defaultTexts = undefined;
   }
   getStringDateFormat(dt) {
     return dt.getFullYear() + '-' + (dt.getMonth() < 9 ? '0' : '') + (dt.getMonth() + 1) + '-' + (dt.getDate() <= 9 ? '0' : '') + dt.getDate();
   }
   componentWillLoad() {
+    this.updateFromStore();
+    this.unsubscribe = store.subscribe(() => this.updateFromStore());
     let dt = new Date();
     dt.setHours(0, 0, 0, 0);
     dt.setDate(dt.getDate() + 1);
@@ -38,6 +44,13 @@ export class IglDateRange {
       });
     }
   }
+  updateFromStore() {
+    const state = store.getState();
+    this.defaultTexts = state.languages;
+  }
+  disconnectedCallback() {
+    this.unsubscribe();
+  }
   calculateTotalNights() {
     this.totalNights = Math.floor((this.toDate.getTime() - this.fromDate.getTime()) / 86400000);
   }
@@ -62,9 +75,9 @@ export class IglDateRange {
     this.renderAgain = !this.renderAgain;
   }
   render() {
-    return (h(Host, null, h("div", { class: "calendarPickerContainer ml-0 d-flex flex-column flex-lg-row align-items-lg-center " }, h("h5", { class: "mt-0 mb-1 mb-lg-0 mr-lg-1 text-left" }, "Dates"), h("div", { class: "d-flex align-items-center mr-lg-1" }, h("div", { class: "iglRangePicker" }, h("ir-date-picker", { class: 'date-range-input', disabled: this.disabled, fromDate: this.fromDate, toDate: this.toDate, autoApply: true, onDateChanged: evt => {
+    return (h(Host, null, h("div", { class: "calendarPickerContainer ml-0 d-flex flex-column flex-lg-row align-items-lg-center " }, h("h5", { class: "mt-0 mb-1 mb-lg-0 mr-lg-1 text-left" }, this.dateLabel), h("div", { class: 'd-flex align-items-center mr-lg-1' }, h("div", { class: "iglRangePicker" }, h("ir-date-picker", { class: 'date-range-input', disabled: this.disabled, fromDate: this.fromDate, toDate: this.toDate, minDate: this.minDate, autoApply: true, onDateChanged: evt => {
         this.handleDateChange(evt);
-      } })), this.totalNights ? h("span", { class: "iglRangeNights" }, this.totalNights + (this.totalNights > 1 ? ' nights' : ' night')) : ''))));
+      } })), this.totalNights ? h("span", { class: "iglRangeNights" }, this.totalNights + (this.totalNights > 1 ? ` ${this.defaultTexts.entries.Lcz_Nights}` : ` ${this.defaultTexts.entries.Lcz_Night}`)) : ''))));
   }
   static get is() { return "igl-date-range"; }
   static get encapsulation() { return "scoped"; }
@@ -112,12 +125,47 @@ export class IglDateRange {
         "attribute": "disabled",
         "reflect": true,
         "defaultValue": "false"
+      },
+      "minDate": {
+        "type": "string",
+        "mutable": false,
+        "complexType": {
+          "original": "string",
+          "resolved": "string",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "min-date",
+        "reflect": false
+      },
+      "dateLabel": {
+        "type": "any",
+        "mutable": false,
+        "complexType": {
+          "original": "any",
+          "resolved": "any",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "date-label",
+        "reflect": false
       }
     };
   }
   static get states() {
     return {
-      "renderAgain": {}
+      "renderAgain": {},
+      "defaultTexts": {}
     };
   }
   static get events() {
@@ -135,6 +183,27 @@ export class IglDateRange {
           "original": "{ [key: string]: any }",
           "resolved": "{ [key: string]: any; }",
           "references": {}
+        }
+      }, {
+        "method": "toast",
+        "name": "toast",
+        "bubbles": true,
+        "cancelable": true,
+        "composed": true,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "complexType": {
+          "original": "IToast",
+          "resolved": "ICustomToast & Partial<IToastWithButton> | IDefaultToast & Partial<IToastWithButton>",
+          "references": {
+            "IToast": {
+              "location": "import",
+              "path": "../../ir-toast/toast",
+              "id": "src/components/ir-toast/toast.ts::IToast"
+            }
+          }
         }
       }];
   }

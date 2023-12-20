@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "./stencil-public-runtime";
 import { TAdultChildConstraints, TPropertyButtonsTypes, TSourceOptions } from "./models/igl-book-property";
 import { ICountry, RoomBlockDetails, RoomBookingDetails } from "./models/IBooking";
+import { Languages } from "./redux/features/languages";
 import { IToast, TPositions } from "./components/ir-toast/toast";
 import { IPageTwoDataUpdateProps } from "./models/models";
 import { checkboxes, guestInfo, selectOption } from "./common/models";
@@ -14,6 +15,7 @@ import { ChannelManager, RoomType } from "./sample/channel/data";
 import { Guest, Room } from "./models/booking.dto";
 export { TAdultChildConstraints, TPropertyButtonsTypes, TSourceOptions } from "./models/igl-book-property";
 export { ICountry, RoomBlockDetails, RoomBookingDetails } from "./models/IBooking";
+export { Languages } from "./redux/features/languages";
 export { IToast, TPositions } from "./components/ir-toast/toast";
 export { IPageTwoDataUpdateProps } from "./models/models";
 export { checkboxes, guestInfo, selectOption } from "./common/models";
@@ -24,6 +26,7 @@ export namespace Components {
         "bedPreferenceType": any[];
         "bookingType": string;
         "currency": any;
+        "defaultTexts": any;
         "guestInfo": { [key: string]: any };
         "guestRefKey": string;
         "index": number;
@@ -50,15 +53,22 @@ export namespace Components {
         "showPaymentDetails": boolean;
     }
     interface IglBookPropertyFooter {
+        "defaultTexts": any;
         "disabled": boolean;
         "eventType": string;
     }
     interface IglBookPropertyHeader {
         "adultChildConstraints": TAdultChildConstraints;
         "adultChildCount": { adult: number; child: number };
+        "bookedByInfoData": any;
         "bookingData": any;
         "bookingDataDefaultDateRange": { [key: string]: any };
+        "dateRangeData": any;
+        "defaultDaterange": { from_date: string; to_date: string };
+        "defaultTexts": Languages;
         "message": string;
+        "minDate": string;
+        "propertyId": number;
         "showSplitBookingOption": boolean;
         "sourceOptions": TSourceOptions[];
         "splitBookingId": any;
@@ -70,6 +80,7 @@ export namespace Components {
         "countryNodeList": any;
         "currency": any;
         "is_vacation_rental": boolean;
+        "language": string;
     }
     interface IglBookingEventHover {
         "bookingEvent": { [key: string]: any };
@@ -81,11 +92,14 @@ export namespace Components {
     interface IglBookingOverviewPage {
         "adultChildConstraints": TAdultChildConstraints;
         "adultChildCount": { adult: number; child: number };
+        "bookedByInfoData": any;
         "bookingData": any;
         "currency": any;
         "dateRangeData": any;
+        "defaultDaterange": { from_date: string; to_date: string };
         "eventType": string;
         "message": string;
+        "propertyId": number;
         "ratePricingMode": any;
         "selectedRooms": Map<string, Map<string, any>>;
         "showSplitBookingOption": boolean;
@@ -96,8 +110,10 @@ export namespace Components {
         "currency": any;
         "dateDifference": number;
         "defaultData": { [key: string]: any };
+        "defaultTexts": any;
         "fullyBlocked": boolean;
         "index": number;
+        "isBookDisabled": boolean;
         "ratePlanData": { [key: string]: any };
         "ratePricingMode": any[];
         "totalAvailableRooms": number;
@@ -107,6 +123,8 @@ export namespace Components {
         "currency": any;
         "dateDifference": number;
         "defaultData": Map<string, any>;
+        "defaultTexts": any;
+        "isBookDisabled": boolean;
         "ratePricingMode": any[];
         "roomTypeData": { [key: string]: any };
     }
@@ -115,6 +133,7 @@ export namespace Components {
         "countryNodeList": any;
         "currency": any;
         "isScrollViewDragging": boolean;
+        "language": string;
         "today": String;
     }
     interface IglCalFooter {
@@ -126,13 +145,16 @@ export namespace Components {
         "propertyid": number;
         "to_date": string;
         "today": String;
-        "unassignedDates": {};
+        "unassignedDates": any;
     }
     interface IglDateRange {
+        "dateLabel": any;
         "defaultData": { [key: string]: any };
         "disabled": boolean;
+        "minDate": string;
     }
     interface IglLegends {
+        "defaultTexts": any;
         "legendData": { [key: string]: any };
     }
     interface IglPagetwo {
@@ -154,6 +176,7 @@ export namespace Components {
     interface IglPropertyBookedBy {
         "countryNodeList": ICountry[];
         "defaultData": { [key: string]: any };
+        "defaultTexts": any;
         "language": string;
         "propertyId": number;
         "showPaymentDetails": boolean;
@@ -178,9 +201,9 @@ export namespace Components {
     interface IglToBeAssigned {
         "calendarData": { [key: string]: any };
         "from_date": string;
-        "loadingMessage": string;
         "propertyid": number;
         "to_date": string;
+        "unassignedDatesProp": any;
     }
     interface IglooCalendar {
         "baseurl": string;
@@ -195,11 +218,14 @@ export namespace Components {
     interface IrAutocomplete {
         "disabled": boolean;
         "duration": number;
+        "from_date": string;
         "inputId": string;
+        "isSplitBooking": boolean;
         "name": string;
         "placeholder": string;
         "propertyId": number;
         "required": boolean;
+        "to_date": string;
         "type": 'email' | 'text' | 'password' | 'number' | 'search';
         "value": string;
     }
@@ -279,6 +305,7 @@ export namespace Components {
         "fromDate": Date;
         "fromLabel": string;
         "maxSpan": moment.DurationInputArg1;
+        "minDate": string;
         "monthNames": string[];
         "opens": 'left' | 'right' | 'center';
         "separator": string;
@@ -725,6 +752,7 @@ declare global {
         "checkClicked": any;
         "buttonClicked": { key: TPropertyButtonsTypes };
         "toast": IToast;
+        "spiltBookingSelected": { key: string; data: unknown };
     }
     interface HTMLIglBookPropertyHeaderElement extends Components.IglBookPropertyHeader, HTMLStencilElement {
         addEventListener<K extends keyof HTMLIglBookPropertyHeaderElementEventMap>(type: K, listener: (this: HTMLIglBookPropertyHeaderElement, ev: IglBookPropertyHeaderCustomEvent<HTMLIglBookPropertyHeaderElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -892,6 +920,7 @@ declare global {
     };
     interface HTMLIglDateRangeElementEventMap {
         "dateSelectEvent": { [key: string]: any };
+        "toast": IToast;
     }
     interface HTMLIglDateRangeElement extends Components.IglDateRange, HTMLStencilElement {
         addEventListener<K extends keyof HTMLIglDateRangeElementEventMap>(type: K, listener: (this: HTMLIglDateRangeElement, ev: IglDateRangeCustomEvent<HTMLIglDateRangeElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1024,6 +1053,7 @@ declare global {
         "dragOverHighlightElement": any;
         "moveBookingTo": any;
         "calculateUnassignedDates": any;
+        "reduceAvailableUnitEvent": { fromDate: string; toDate: string };
     }
     interface HTMLIglooCalendarElement extends Components.IglooCalendar, HTMLStencilElement {
         addEventListener<K extends keyof HTMLIglooCalendarElementEventMap>(type: K, listener: (this: HTMLIglooCalendarElement, ev: IglooCalendarCustomEvent<HTMLIglooCalendarElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1042,6 +1072,7 @@ declare global {
     interface HTMLIrAutocompleteElementEventMap {
         "comboboxValue": { key: string; data: unknown };
         "inputCleared": null;
+        "toast": IToast;
     }
     interface HTMLIrAutocompleteElement extends Components.IrAutocomplete, HTMLStencilElement {
         addEventListener<K extends keyof HTMLIrAutocompleteElementEventMap>(type: K, listener: (this: HTMLIrAutocompleteElement, ev: IrAutocompleteCustomEvent<HTMLIrAutocompleteElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1553,6 +1584,7 @@ declare namespace LocalJSX {
         "bedPreferenceType"?: any[];
         "bookingType"?: string;
         "currency"?: any;
+        "defaultTexts"?: any;
         "guestInfo"?: { [key: string]: any };
         "guestRefKey"?: string;
         "index"?: number;
@@ -1584,6 +1616,7 @@ declare namespace LocalJSX {
         "showPaymentDetails"?: boolean;
     }
     interface IglBookPropertyFooter {
+        "defaultTexts"?: any;
         "disabled"?: boolean;
         "eventType"?: string;
         "onButtonClicked"?: (event: IglBookPropertyFooterCustomEvent<{ key: TPropertyButtonsTypes }>) => void;
@@ -1591,15 +1624,22 @@ declare namespace LocalJSX {
     interface IglBookPropertyHeader {
         "adultChildConstraints"?: TAdultChildConstraints;
         "adultChildCount"?: { adult: number; child: number };
+        "bookedByInfoData"?: any;
         "bookingData"?: any;
         "bookingDataDefaultDateRange"?: { [key: string]: any };
+        "dateRangeData"?: any;
+        "defaultDaterange"?: { from_date: string; to_date: string };
+        "defaultTexts"?: Languages;
         "message"?: string;
+        "minDate"?: string;
         "onAdultChild"?: (event: IglBookPropertyHeaderCustomEvent<any>) => void;
         "onButtonClicked"?: (event: IglBookPropertyHeaderCustomEvent<{ key: TPropertyButtonsTypes }>) => void;
         "onCheckClicked"?: (event: IglBookPropertyHeaderCustomEvent<any>) => void;
         "onSourceDropDownChange"?: (event: IglBookPropertyHeaderCustomEvent<string>) => void;
+        "onSpiltBookingSelected"?: (event: IglBookPropertyHeaderCustomEvent<{ key: string; data: unknown }>) => void;
         "onSplitBookingDropDownChange"?: (event: IglBookPropertyHeaderCustomEvent<any>) => void;
         "onToast"?: (event: IglBookPropertyHeaderCustomEvent<IToast>) => void;
+        "propertyId"?: number;
         "showSplitBookingOption"?: boolean;
         "sourceOptions"?: TSourceOptions[];
         "splitBookingId"?: any;
@@ -1611,6 +1651,7 @@ declare namespace LocalJSX {
         "countryNodeList"?: any;
         "currency"?: any;
         "is_vacation_rental"?: boolean;
+        "language"?: string;
         "onDragOverEventData"?: (event: IglBookingEventCustomEvent<any>) => void;
         "onHideBubbleInfo"?: (event: IglBookingEventCustomEvent<any>) => void;
         "onUpdateEventData"?: (event: IglBookingEventCustomEvent<any>) => void;
@@ -1629,12 +1670,15 @@ declare namespace LocalJSX {
     interface IglBookingOverviewPage {
         "adultChildConstraints"?: TAdultChildConstraints;
         "adultChildCount"?: { adult: number; child: number };
+        "bookedByInfoData"?: any;
         "bookingData"?: any;
         "currency"?: any;
         "dateRangeData"?: any;
+        "defaultDaterange"?: { from_date: string; to_date: string };
         "eventType"?: string;
         "message"?: string;
         "onRoomsDataUpdate"?: (event: IglBookingOverviewPageCustomEvent<any>) => void;
+        "propertyId"?: number;
         "ratePricingMode"?: any;
         "selectedRooms"?: Map<string, Map<string, any>>;
         "showSplitBookingOption"?: boolean;
@@ -1645,8 +1689,10 @@ declare namespace LocalJSX {
         "currency"?: any;
         "dateDifference"?: number;
         "defaultData"?: { [key: string]: any };
+        "defaultTexts"?: any;
         "fullyBlocked"?: boolean;
         "index"?: number;
+        "isBookDisabled"?: boolean;
         "onDataUpdateEvent"?: (event: IglBookingRoomRatePlanCustomEvent<{ [key: string]: any }>) => void;
         "onGotoSplitPageTwoEvent"?: (event: IglBookingRoomRatePlanCustomEvent<{ [key: string]: any }>) => void;
         "ratePlanData"?: { [key: string]: any };
@@ -1658,6 +1704,8 @@ declare namespace LocalJSX {
         "currency"?: any;
         "dateDifference"?: number;
         "defaultData"?: Map<string, any>;
+        "defaultTexts"?: any;
+        "isBookDisabled"?: boolean;
         "onDataUpdateEvent"?: (event: IglBookingRoomsCustomEvent<{ [key: string]: any }>) => void;
         "ratePricingMode"?: any[];
         "roomTypeData"?: { [key: string]: any };
@@ -1667,6 +1715,7 @@ declare namespace LocalJSX {
         "countryNodeList"?: any;
         "currency"?: any;
         "isScrollViewDragging"?: boolean;
+        "language"?: string;
         "onAddBookingDatasEvent"?: (event: IglCalBodyCustomEvent<any[]>) => void;
         "onScrollPageToRoom"?: (event: IglCalBodyCustomEvent<any>) => void;
         "onShowBookingPopup"?: (event: IglCalBodyCustomEvent<any>) => void;
@@ -1689,14 +1738,18 @@ declare namespace LocalJSX {
         "propertyid"?: number;
         "to_date"?: string;
         "today"?: String;
-        "unassignedDates"?: {};
+        "unassignedDates"?: any;
     }
     interface IglDateRange {
+        "dateLabel"?: any;
         "defaultData"?: { [key: string]: any };
         "disabled"?: boolean;
+        "minDate"?: string;
         "onDateSelectEvent"?: (event: IglDateRangeCustomEvent<{ [key: string]: any }>) => void;
+        "onToast"?: (event: IglDateRangeCustomEvent<IToast>) => void;
     }
     interface IglLegends {
+        "defaultTexts"?: any;
         "legendData"?: { [key: string]: any };
         "onOptionEvent"?: (event: IglLegendsCustomEvent<{ [key: string]: any }>) => void;
     }
@@ -1724,6 +1777,7 @@ declare namespace LocalJSX {
     interface IglPropertyBookedBy {
         "countryNodeList"?: ICountry[];
         "defaultData"?: { [key: string]: any };
+        "defaultTexts"?: any;
         "language"?: string;
         "onDataUpdateEvent"?: (event: IglPropertyBookedByCustomEvent<{ [key: string]: any }>) => void;
         "propertyId"?: number;
@@ -1754,7 +1808,6 @@ declare namespace LocalJSX {
     interface IglToBeAssigned {
         "calendarData"?: { [key: string]: any };
         "from_date"?: string;
-        "loadingMessage"?: string;
         "onAddToBeAssignedEvent"?: (event: IglToBeAssignedCustomEvent<any>) => void;
         "onHighlightToBeAssignedBookingEvent"?: (event: IglToBeAssignedCustomEvent<any>) => void;
         "onOptionEvent"?: (event: IglToBeAssignedCustomEvent<{ [key: string]: any }>) => void;
@@ -1762,6 +1815,7 @@ declare namespace LocalJSX {
         "onShowBookingPopup"?: (event: IglToBeAssignedCustomEvent<any>) => void;
         "propertyid"?: number;
         "to_date"?: string;
+        "unassignedDatesProp"?: any;
     }
     interface IglooCalendar {
         "baseurl"?: string;
@@ -1772,6 +1826,7 @@ declare namespace LocalJSX {
         "onCalculateUnassignedDates"?: (event: IglooCalendarCustomEvent<any>) => void;
         "onDragOverHighlightElement"?: (event: IglooCalendarCustomEvent<any>) => void;
         "onMoveBookingTo"?: (event: IglooCalendarCustomEvent<any>) => void;
+        "onReduceAvailableUnitEvent"?: (event: IglooCalendarCustomEvent<{ fromDate: string; toDate: string }>) => void;
         "propertyid"?: number;
         "ticket"?: string;
         "to_date"?: string;
@@ -1779,13 +1834,17 @@ declare namespace LocalJSX {
     interface IrAutocomplete {
         "disabled"?: boolean;
         "duration"?: number;
+        "from_date"?: string;
         "inputId"?: string;
+        "isSplitBooking"?: boolean;
         "name"?: string;
         "onComboboxValue"?: (event: IrAutocompleteCustomEvent<{ key: string; data: unknown }>) => void;
         "onInputCleared"?: (event: IrAutocompleteCustomEvent<null>) => void;
+        "onToast"?: (event: IrAutocompleteCustomEvent<IToast>) => void;
         "placeholder"?: string;
         "propertyId"?: number;
         "required"?: boolean;
+        "to_date"?: string;
         "type"?: 'email' | 'text' | 'password' | 'number' | 'search';
         "value"?: string;
     }
@@ -1880,6 +1939,7 @@ declare namespace LocalJSX {
         "fromDate"?: Date;
         "fromLabel"?: string;
         "maxSpan"?: moment.DurationInputArg1;
+        "minDate"?: string;
         "monthNames"?: string[];
         "onDateChanged"?: (event: IrDatePickerCustomEvent<{
     start: moment.Moment;

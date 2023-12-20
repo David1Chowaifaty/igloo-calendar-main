@@ -1,5 +1,6 @@
 import { EventEmitter } from '../../../stencil-public-runtime';
 export declare class IglBookingRooms {
+  defaultTexts: any;
   roomTypeData: {
     [key: string]: any;
   };
@@ -10,6 +11,7 @@ export declare class IglBookingRooms {
   currency: any;
   selectedRooms: number[];
   totalRooms: number;
+  isBookDisabled: boolean;
   roomsDistributions: number[];
   dataUpdateEvent: EventEmitter<{
     [key: string]: any;

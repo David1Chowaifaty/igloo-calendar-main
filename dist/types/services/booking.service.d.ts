@@ -21,10 +21,11 @@ export declare class BookingService {
   private generateDays;
   private calculateTotalRate;
   fetchExposedGuest(email: string, property_id: number): Promise<any>;
+  fetchExposedBookings(booking_nbr: string, property_id: number, from_date: string, to_date: string): Promise<any>;
   bookUser(bookedByInfoData: any, check_in: boolean, fromDate: Date, toDate: Date, guestData: any, totalNights: number, source: {
     code: string;
     description: string;
-  }, propertyid: number, currency: {
+  }, propertyid: number, rooms: any[], currency: {
     id: number;
     code: string;
   }, bookingNumber?: string, defaultGuest?: any, arrivalTime?: any, pr_id?: number, identifier?: string): Promise<any>;

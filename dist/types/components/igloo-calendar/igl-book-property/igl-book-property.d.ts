@@ -5,6 +5,7 @@ import { TAdultChildConstraints, TPropertyButtonsTypes } from '../../../models/i
 export declare class IglBookProperty {
   propertyid: number;
   allowedBookingSources: any;
+  defaultTexts: any;
   language: string;
   countryNodeList: any;
   showPaymentDetails: boolean;
@@ -25,7 +26,9 @@ export declare class IglBookProperty {
   isLoading: string;
   private message;
   private sourceOption;
-  private dateRangeData;
+  dateRangeData: {
+    [key: string]: any;
+  };
   private page;
   private showSplitBookingOption;
   private sourceOptions;
@@ -38,6 +41,8 @@ export declare class IglBookProperty {
   private bookingService;
   private bookPropertyService;
   private eventsService;
+  private defaultDateRange;
+  private unsubscribe;
   closeBookingWindow: EventEmitter<{
     [key: string]: any;
   }>;
@@ -46,9 +51,16 @@ export declare class IglBookProperty {
     data: RoomBookingDetails[];
   }>;
   blockedCreated: EventEmitter<RoomBlockDetails>;
+  handleKeyDown(e: KeyboardEvent): void;
   componentDidLoad(): void;
   disconnectedCallback(): void;
+  clearBooking(e: CustomEvent): void;
+  handleSpiltBookingSelected(e: CustomEvent<{
+    key: string;
+    data: unknown;
+  }>): Promise<void>;
   componentWillLoad(): Promise<void>;
+  updateFromStore(): void;
   fetchSetupEntries(): Promise<import("../../../models/IBooking").ISetupEntries>;
   setSourceOptions(bookingSource: any[]): void;
   setOtherProperties(res: any): void;

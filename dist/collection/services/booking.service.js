@@ -255,7 +255,31 @@ export class BookingService {
       throw new Error(error);
     }
   }
-  async bookUser(bookedByInfoData, check_in, fromDate, toDate, guestData, totalNights, source, propertyid, currency, bookingNumber, defaultGuest, arrivalTime, pr_id, identifier) {
+  async fetchExposedBookings(booking_nbr, property_id, from_date, to_date) {
+    try {
+      const token = JSON.parse(sessionStorage.getItem('token'));
+      if (token) {
+        const { data } = await axios.post(`/Fetch_Exposed_Bookings?Ticket=${token}`, {
+          booking_nbr,
+          property_id,
+          from_date,
+          to_date,
+        });
+        if (data.ExceptionMsg !== '') {
+          throw new Error(data.ExceptionMsg);
+        }
+        return data['My_Result'];
+      }
+      else {
+        throw new Error("Token doesn't exist");
+      }
+    }
+    catch (error) {
+      console.error(error);
+      throw new Error(error);
+    }
+  }
+  async bookUser(bookedByInfoData, check_in, fromDate, toDate, guestData, totalNights, source, propertyid, rooms, currency, bookingNumber, defaultGuest, arrivalTime, pr_id, identifier) {
     try {
       const token = JSON.parse(sessionStorage.getItem('token'));
       if (token) {
@@ -302,50 +326,53 @@ export class BookingService {
               code: arrivalTime || bookedByInfoData.selectedArrivalTime,
             },
             guest: defaultGuest || guest,
-            rooms: guestData.map(data => ({
-              identifier: identifier || null,
-              roomtype: {
-                id: data.roomCategoryId,
-                name: data.roomCategoryName,
-                physicalrooms: null,
-                rateplans: null,
-                availabilities: null,
-                inventory: data.inventory,
-                rate: data.rate / totalNights,
-              },
-              rateplan: {
-                id: data.ratePlanId,
-                name: data.ratePlanName,
-                rate_restrictions: null,
-                variations: null,
-                cancelation: data.cancelation,
-                guarantee: data.guarantee,
-              },
-              unit: typeof pr_id === 'undefined' && data.roomId === '' ? null : { id: +pr_id || +data.roomId },
-              occupancy: {
-                adult_nbr: data.adultCount,
-                children_nbr: data.childrenCount,
-                infant_nbr: null,
-              },
-              from_date: fromDateStr,
-              to_date: toDateStr,
-              notes: null,
-              days: this.generateDays(fromDateStr, toDateStr, this.calculateTotalRate(data.rate, totalNights, data.isRateModified, data.rateType)),
-              guest: {
-                email: null,
-                first_name: data.guestName,
-                last_name: null,
-                country_id: null,
-                city: null,
-                mobile: null,
-                address: null,
-                dob: null,
-                subscribe_to_news_letter: null,
-              },
-            })),
+            rooms: [
+              ...guestData.map(data => ({
+                identifier: identifier || null,
+                roomtype: {
+                  id: data.roomCategoryId,
+                  name: data.roomCategoryName,
+                  physicalrooms: null,
+                  rateplans: null,
+                  availabilities: null,
+                  inventory: data.inventory,
+                  rate: data.rate / totalNights,
+                },
+                rateplan: {
+                  id: data.ratePlanId,
+                  name: data.ratePlanName,
+                  rate_restrictions: null,
+                  variations: null,
+                  cancelation: data.cancelation,
+                  guarantee: data.guarantee,
+                },
+                unit: typeof pr_id === 'undefined' && data.roomId === '' ? null : { id: +pr_id || +data.roomId },
+                occupancy: {
+                  adult_nbr: data.adultCount,
+                  children_nbr: data.childrenCount,
+                  infant_nbr: null,
+                },
+                from_date: fromDateStr,
+                to_date: toDateStr,
+                notes: null,
+                days: this.generateDays(fromDateStr, toDateStr, this.calculateTotalRate(data.rate, totalNights, data.isRateModified, data.rateType)),
+                guest: {
+                  email: null,
+                  first_name: data.guestName,
+                  last_name: null,
+                  country_id: null,
+                  city: null,
+                  mobile: null,
+                  address: null,
+                  dob: null,
+                  subscribe_to_news_letter: null,
+                },
+              })),
+              ...rooms,
+            ],
           },
         };
-        console.log('body', body);
+        console.log('book user payload', body);
         const { data } = await axios.post(`/DoReservation?Ticket=${token}`, body);
         if (data.ExceptionMsg !== '') {
           throw new Error(data.ExceptionMsg);

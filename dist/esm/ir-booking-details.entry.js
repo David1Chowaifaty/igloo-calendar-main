@@ -1,7 +1,7 @@
 import { r as registerInstance, c as createEvent, h, g as getElement } from './index-b3d9a425.js';
 import { h as hooks } from './moment-5e85be7a.js';
 import { _ as _formatDate, a as _formatTime } from './functions-d0f70e87.js';
-import { B as BookingService, a as axios } from './booking.service-778fd989.js';
+import { B as BookingService, a as axios } from './booking.service-e88dd5b5.js';
 
 const irBookingDetailsCss = ".confirmed{color:#fff;display:flex;align-items:center}ir-select#update-status{transform:translateY(0.5rem)}.pointer{cursor:pointer}:root{--sidebar-width:50rem}.sm-padding-right{padding-right:0.2rem}.sm-padding-left{padding-left:0.2rem}.sm-padding-top{padding-top:0.2rem}.sm-padding-bottom{padding-bottom:0.2rem}.info-notes{list-style:none;padding-left:0}.light-blue-bg{background-color:#acecff;padding:0rem 0.1rem}.iframeHeight{height:17.5rem}";
 
