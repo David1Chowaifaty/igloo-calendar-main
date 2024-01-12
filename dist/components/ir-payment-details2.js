@@ -95,8 +95,8 @@ const IrPaymentDetails = /*@__PURE__*/ proxyCustomElement(class IrPaymentDetails
     // console.log(this.item);
     // this.handlePaymentItemChange.emit(this.item.My_Payment);
     console.log('item to be added :', this.itemToBeAdded);
-    this.initializeItemToBeAdded();
     await this.paymentService.AddPayment(this.itemToBeAdded, this.bookingDetails.booking_nbr);
+    this.initializeItemToBeAdded();
   }
   handlePaymentInputChange(key, value) {
     this.itemToBeAdded = Object.assign(Object.assign({}, this.itemToBeAdded), { [key]: value });
