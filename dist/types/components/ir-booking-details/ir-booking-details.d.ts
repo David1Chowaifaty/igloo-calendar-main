@@ -2,6 +2,7 @@ import { EventEmitter } from '../../stencil-public-runtime';
 import { guestInfo, selectOption } from '../../common/models';
 import { Booking, Guest } from '../../models/booking.dto';
 import { TIglBookPropertyPayload } from '../../models/igl-book-property';
+import { ILocale } from "../../stores/locales.store";
 export declare class IrBookingDetails {
   element: HTMLElement;
   bookingDetails: any;
@@ -35,7 +36,7 @@ export declare class IrBookingDetails {
   countryNodeList: any;
   calendarData: any;
   guestData: Guest;
-  defaultTexts: any;
+  defaultTexts: ILocale;
   rerenderFlag: boolean;
   isSidebarOpen: boolean;
   sendDataToServer: EventEmitter<guestInfo>;
@@ -65,6 +66,6 @@ export declare class IrBookingDetails {
   handleEditInitiated(e: CustomEvent<TIglBookPropertyPayload>): void;
   handleCloseBookingWindow(): void;
   handleDeleteFinish(e: CustomEvent): void;
-  handleEditFinished(): Promise<void>;
+  handleResetBookingData(e: CustomEvent): Promise<void>;
   render(): any[];
 }

@@ -68,11 +68,11 @@ export class BookingService {
       throw new Error(error);
     }
   }
-  async editExposedGuest(guest) {
+  async editExposedGuest(guest, book_nbr) {
     try {
       const token = JSON.parse(sessionStorage.getItem('token'));
       if (token !== null) {
-        const { data } = await axios.post(`/Edit_Exposed_Guest?Ticket=${token}`, guest);
+        const { data } = await axios.post(`/Edit_Exposed_Guest?Ticket=${token}`, Object.assign(Object.assign({}, guest), { book_nbr }));
         if (data.ExceptionMsg !== '') {
           throw new Error(data.ExceptionMsg);
         }

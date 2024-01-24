@@ -1,13 +1,15 @@
 import { EventEmitter } from '../../stencil-public-runtime';
 import { selectOption } from "../../common/models";
 import { Guest } from "../../models/booking.dto";
-import { ICountry, Languages } from "../../components";
+import { ICountry } from "../../components";
+import { ILocale } from "../../stores/locales.store";
 export declare class GuestInfo {
   setupDataCountries: selectOption[];
   setupDataCountriesCode: selectOption[];
-  defaultTexts: Languages;
+  defaultTexts: ILocale;
   language: string;
   email: string;
+  booking_nbr: string;
   countries: ICountry[];
   submit: boolean;
   guest: Guest | null;

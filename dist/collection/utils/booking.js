@@ -1,7 +1,7 @@
 import moment from "moment";
 import { dateDifference, isBlockUnit } from "./utils";
 import axios from "axios";
-import { store } from "../redux/store";
+import locales from "../../../src/stores/locales.store";
 export async function getMyBookings(months) {
   const myBookings = [];
   const stayStatus = await getStayStatus();
@@ -27,7 +27,12 @@ const status = {
   '004': 'BLOCKED',
   '003': 'BLOCKED-WITH-DATES',
   '002': 'BLOCKED',
-  '001': 'IN-HOUSE',
+};
+const bookingStatus = {
+  '000': 'IN-HOUSE',
+  '001': 'PENDING-CONFIRMATION',
+  '002': 'CONFIRMED',
+  '003': 'CHECKED-OUT',
 };
 export function formatName(firstName, lastName) {
   if (firstName === null && lastName === null)
@@ -58,13 +63,13 @@ async function getStayStatus() {
   }
 }
 function renderBlock003Date(date, hour, minute) {
-  const { languages } = store.getState();
   const dt = new Date(date);
   dt.setHours(hour);
   dt.setMinutes(minute);
-  return `${languages.entries.Lcz_BlockedTill} ${moment(dt).format('MMM DD, HH:mm')}`;
+  return `${locales.entries.Lcz_BlockedTill} ${moment(dt).format('MMM DD, HH:mm')}`;
 }
 function getDefaultData(cell, stayStatus) {
+  var _a, _b;
   if (isBlockUnit(cell.STAY_STATUS_CODE)) {
     return {
       ID: cell.POOL,
@@ -92,13 +97,13 @@ function getDefaultData(cell, stayStatus) {
       TO_DATE_STR: cell.My_Block_Info.format.to_date,
     };
   }
-  //console.log('booked cells', cell);
+  //console.log('booking', cell);
   return {
     ID: cell.POOL,
     TO_DATE: cell.DATE,
     FROM_DATE: cell.DATE,
     NO_OF_DAYS: 1,
-    STATUS: status[cell.STAY_STATUS_CODE],
+    STATUS: bookingStatus[moment(cell.DATE, 'YYYY-MM-DD').isSameOrBefore(moment()) ? '000' : (_a = cell.booking) === null || _a === void 0 ? void 0 : _a.status.code],
     NAME: formatName(cell.room.guest.first_name, cell.room.guest.last_name),
     IDENTIFIER: cell.room.identifier,
     PR_ID: cell.pr_id,
@@ -106,6 +111,7 @@ function getDefaultData(cell, stayStatus) {
     BOOKING_NUMBER: cell.booking.booking_nbr,
     NOTES: cell.booking.remark,
     is_direct: cell.booking.is_direct,
+    BALANCE: (_b = cell.booking.financial) === null || _b === void 0 ? void 0 : _b.due_amount,
     ///from here
     //ENTRY_DATE: cell.booking.booked_on.date,
     // IS_EDITABLE: cell.booking.is_editable,
@@ -133,8 +139,19 @@ function getDefaultData(cell, stayStatus) {
   };
 }
 function updateBookingWithStayData(data, cell) {
+  var _a;
   data.NO_OF_DAYS = dateDifference(data.FROM_DATE, cell.DATE);
   data.TO_DATE = cell.DATE;
+  if (!isBlockUnit(cell.STAY_STATUS_CODE)) {
+    const now = moment();
+    const toDate = moment(data.TO_DATE, 'YYYY-MM-DD');
+    if (toDate.isBefore(now, 'day') || (toDate.isSame(now, 'day') && now.hour() >= 12)) {
+      data.STATUS = bookingStatus['003'];
+    }
+    else {
+      data.STATUS = bookingStatus[moment(cell.DATE, 'YYYY-MM-DD').isSameOrBefore(moment()) ? '000' : (_a = cell.booking) === null || _a === void 0 ? void 0 : _a.status.code];
+    }
+  }
   if (cell.booking) {
     const { arrival } = cell.booking;
     Object.assign(data, {
@@ -156,8 +173,20 @@ function addOrUpdateBooking(cell, myBookings, stayStatus) {
 }
 export function transformNewBooking(data) {
   let bookings = [];
+  console.log(data);
+  const renderStatus = room => {
+    const now = moment();
+    const toDate = moment(room.to_date, 'YYYY-MM-DD');
+    const fromDate = moment(room.from_date, 'YYYY-MM-DD');
+    if (toDate.isBefore(now, 'day') || (toDate.isSame(now, 'day') && now.hour() >= 12)) {
+      return bookingStatus['003'];
+    }
+    else {
+      return bookingStatus[fromDate.isSameOrBefore(now, 'day') ? '000' : (data === null || data === void 0 ? void 0 : data.status.code) || '001'];
+    }
+  };
   data.rooms.forEach(room => {
-    var _a;
+    var _a, _b;
     bookings.push({
       ID: room['assigned_units_pool'],
       TO_DATE: room.to_date,
@@ -165,9 +194,10 @@ export function transformNewBooking(data) {
       NO_OF_DAYS: room.days.length,
       ARRIVAL: data.arrival,
       IS_EDITABLE: true,
-      STATUS: status['001'],
+      BALANCE: (_a = data.financial) === null || _a === void 0 ? void 0 : _a.due_amount,
+      STATUS: renderStatus(room),
       NAME: formatName(room.guest.first_name, room.guest.last_name),
-      PHONE: (_a = data.guest.mobile) !== null && _a !== void 0 ? _a : '',
+      PHONE: (_b = data.guest.mobile) !== null && _b !== void 0 ? _b : '',
       ENTRY_DATE: '12-12-2023',
       RATE: room.total,
       RATE_PLAN: room.rateplan.name,
@@ -227,7 +257,7 @@ export async function transformNewBLockedRooms(data) {
     TO_DATE_STR: data.format.to_date,
   };
 }
-function calculateDaysBetweenDates(from_date, to_date) {
+export function calculateDaysBetweenDates(from_date, to_date) {
   const startDate = moment(from_date, 'YYYY-MM-DD');
   const endDate = moment(to_date, 'YYYY-MM-DD');
   const daysDiff = endDate.diff(startDate, 'days');

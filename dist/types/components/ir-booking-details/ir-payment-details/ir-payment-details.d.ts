@@ -1,11 +1,11 @@
 import { EventEmitter } from '../../../stencil-public-runtime';
 import { Booking, IDueDate, IPayment } from "../../../models/booking.dto";
 import moment from 'moment';
-import { Languages } from "../../../components";
+import { ILocale } from "../../../components";
 export declare class IrPaymentDetails {
   item: any;
   bookingDetails: Booking;
-  defaultTexts: Languages;
+  defaultTexts: ILocale;
   newTableRow: boolean;
   collapsedPayment: boolean;
   collapsedGuarantee: boolean;
@@ -14,16 +14,15 @@ export declare class IrPaymentDetails {
   toBeDeletedItem: IPayment;
   paymentDetailsUrl: string;
   paymentExceptionMessage: string;
-  handlePaymentItemChange: EventEmitter<any>;
+  resetBookingData: EventEmitter<null>;
   creditCardPressHandler: EventEmitter<any>;
   private itemToBeAdded;
   private paymentService;
   componentWillLoad(): Promise<void>;
   initializeItemToBeAdded(): void;
   _handleSave(): Promise<void>;
-  handlePaymentInputChange(key: keyof IPayment, value: any): void;
+  handlePaymentInputChange(key: keyof IPayment, value: any, event?: InputEvent): void;
   handleConfirmModal(e: CustomEvent): Promise<void>;
-  wandler(): void;
   handleDateChange(e: CustomEvent<{
     start: moment.Moment;
     end: moment.Moment;

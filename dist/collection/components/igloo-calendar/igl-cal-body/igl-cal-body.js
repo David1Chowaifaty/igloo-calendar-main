@@ -1,5 +1,6 @@
 import { Host, h } from "@stencil/core";
-import { store } from "../../../redux/store";
+import calendar_dates from "../../../../../src/stores/calendar-dates.store";
+import locales from "../../../../../src/stores/locales.store";
 export class IglCalBody {
   constructor() {
     this.selectedRooms = {};
@@ -11,21 +12,11 @@ export class IglCalBody {
     this.currency = undefined;
     this.language = undefined;
     this.countryNodeList = undefined;
-    this.defaultTexts = undefined;
     this.dragOverElement = '';
     this.renderAgain = false;
   }
   componentWillLoad() {
     this.currentDate.setHours(0, 0, 0, 0);
-    this.updateFromStore();
-    this.unsubscribe = store.subscribe(() => this.updateFromStore());
-  }
-  updateFromStore() {
-    const state = store.getState();
-    this.defaultTexts = state.languages;
-  }
-  disconnectedCallback() {
-    this.unsubscribe();
   }
   dragOverHighlightElementHandler(event) {
     this.dragOverElement = event.detail.dragOverElement;
@@ -90,8 +81,19 @@ export class IglCalBody {
   getSelectedCellRefName(roomId, selectedDay) {
     return 'room_' + roomId + '_' + selectedDay.currentDate;
   }
+  // getSplitBookingEvents(newEvent) {
+  //   return this.getBookingData().some(bookingEvent => !['003', '002', '004'].includes(bookingEvent.STATUS_CODE) && newEvent.FROM_DATE === bookingEvent.FROM_DATE);
+  // }
   getSplitBookingEvents(newEvent) {
-    return this.getBookingData().some(bookingEvent => !['003', '002', '004'].includes(bookingEvent.STATUS_CODE) && newEvent.FROM_DATE === bookingEvent.FROM_DATE);
+    console.log(newEvent.FROM_DATE);
+    return this.getBookingData().some(bookingEvent => {
+      if (!['003', '002', '004'].includes(bookingEvent.STATUS_CODE)) {
+        if (new Date(newEvent.FROM_DATE).getTime() >= new Date(bookingEvent.FROM_DATE).getTime() &&
+          new Date(newEvent.FROM_DATE).getTime() <= new Date(bookingEvent.TO_DATE).getTime()) {
+          return bookingEvent;
+        }
+      }
+    });
   }
   closeWindow() {
     let ind = this.getBookingData().findIndex(ev => ev.ID === 'NEW_TEMP_EVENT');
@@ -134,11 +136,11 @@ export class IglCalBody {
       TOTAL_PRICE: '',
       RATE_PLAN: '',
       ARRIVAL_TIME: '',
-      TITLE: this.defaultTexts.entries.Lcz_NewBookingFor,
+      TITLE: locales.entries.Lcz_NewBookingFor,
       roomsInfo: [roomCategory],
       CATEGORY: roomCategory.name,
       event_type: 'BAR_BOOKING',
-      STATUS: 'PENDING-CONFIRMATION',
+      STATUS: 'TEMP-EVENT',
       defaultDateRange: {
         fromDate: null,
         fromDateStr: '',
@@ -150,7 +152,7 @@ export class IglCalBody {
       },
     };
     let popupTitle = roomCategory.name + ' ' + this.getRoomName(this.getRoomById(this.getCategoryRooms(roomCategory), this.selectedRooms[keys[0]].roomId));
-    this.newEvent.BLOCK_DATES_TITLE = this.defaultTexts.entries.Lcz_BlockDatesFor + popupTitle;
+    this.newEvent.BLOCK_DATES_TITLE = locales.entries.Lcz_BlockDatesFor + popupTitle;
     this.newEvent.TITLE += popupTitle;
     this.newEvent.defaultDateRange.toDate = new Date(this.newEvent.TO_DATE + 'T00:00:00');
     this.newEvent.defaultDateRange.fromDate = new Date(this.newEvent.FROM_DATE + 'T00:00:00');
@@ -209,8 +211,8 @@ export class IglCalBody {
     this.renderAgain = !this.renderAgain;
   }
   getGeneralCategoryDayColumns(addClass, isCategory = false, index) {
-    return this.calendarData.days.map(dayInfo => {
-      return (h("div", { class: `cellData pl-0 categoryPriceColumn ${addClass + '_' + dayInfo.day} ${dayInfo.day === this.today ? 'currentDay' : ''}` }, isCategory ? (h("span", null, dayInfo.rate[index].exposed_inventory.total, h("br", null), dayInfo.rate[index].exposed_inventory.offline)) : ('')));
+    return calendar_dates.days.map(dayInfo => {
+      return (h("div", { class: `cellData pl-0 font-weight-bold categoryPriceColumn ${addClass + '_' + dayInfo.day} ${dayInfo.day === this.today ? 'currentDay' : ''}` }, isCategory ? (h("span", { class: 'categoryName' }, dayInfo.rate[index].exposed_inventory.total)) : ('')));
     });
   }
   getGeneralRoomDayColumns(roomId, roomCategory) {
@@ -364,7 +366,6 @@ export class IglCalBody {
   }
   static get states() {
     return {
-      "defaultTexts": {},
       "dragOverElement": {},
       "renderAgain": {}
     };

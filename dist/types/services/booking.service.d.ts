@@ -5,7 +5,7 @@ export declare class BookingService {
     [key: string]: any;
   }>;
   fetchGuest(email: string): Promise<Guest>;
-  editExposedGuest(guest: Guest): Promise<any>;
+  editExposedGuest(guest: Guest, book_nbr: string): Promise<any>;
   getBookingAvailability(from_date: string, to_date: string, propertyid: number, adultChildCount: {
     adult: number;
     child: number;

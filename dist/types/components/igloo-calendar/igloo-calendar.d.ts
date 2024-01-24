@@ -47,11 +47,11 @@ export declare class IglooCalendar {
   private toBeAssignedService;
   private socket;
   private reachedEndOfCalendar;
-  private defaultTexts;
   ticketChanged(): void;
   componentWillLoad(): void;
   setUpCalendarData(roomResp: any, bookingResp: any): void;
   initializeApp(): Promise<void>;
+  private updateTotalAvailability;
   componentDidLoad(): void;
   handleDeleteEvent(ev: CustomEvent): Promise<void>;
   checkBookingAvailability(data: any): any;
