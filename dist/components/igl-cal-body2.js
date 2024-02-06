@@ -228,7 +228,7 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
   }
   getGeneralCategoryDayColumns(addClass, isCategory = false, index) {
     return calendar_dates.days.map(dayInfo => {
-      return (h("div", { class: `cellData pl-0 font-weight-bold categoryPriceColumn ${addClass + '_' + dayInfo.day} ${dayInfo.day === this.today ? 'currentDay' : ''}` }, isCategory ? (h("span", { class: 'categoryName' }, dayInfo.rate[index].exposed_inventory.total)) : ('')));
+      return (h("div", { class: `cellData pl-0 font-weight-bold categoryPriceColumn ${addClass + '_' + dayInfo.day} ${dayInfo.day === this.today ? 'currentDay' : ''}` }, isCategory ? (h("span", { class: 'categoryName' }, dayInfo.rate[index].exposed_inventory.rts)) : ('')));
     });
   }
   getGeneralRoomDayColumns(roomId, roomCategory) {
@@ -254,7 +254,14 @@ const IglCalBody = /*@__PURE__*/ proxyCustomElement(class IglCalBody extends HTM
     return (_a = this.getCategoryRooms(roomCategory)) === null || _a === void 0 ? void 0 : _a.map(room => (h("div", { class: "roomRow" }, h("div", { class: `cellData text-left align-items-center roomHeaderCell  roomTitle ${this.getTotalPhysicalRooms(roomCategory) <= 1 ? 'pl10' : ''} ${'room_' + this.getRoomId(room)}`, "data-room": this.getRoomId(room) }, h("div", null, this.getTotalPhysicalRooms(roomCategory) <= 1 ? this.getCategoryName(roomCategory) : this.getRoomName(room))), this.getGeneralRoomDayColumns(this.getRoomId(room), roomCategory))));
   }
   getRoomRows() {
-    return this.calendarData.roomsInfo.map((roomCategory, index) => [this.getRoomCategoryRow(roomCategory, index), this.getRoomsByCategory(roomCategory)]);
+    return this.calendarData.roomsInfo.map((roomCategory, index) => {
+      if (roomCategory.is_active) {
+        return [this.getRoomCategoryRow(roomCategory, index), this.getRoomsByCategory(roomCategory)];
+      }
+      else {
+        return null;
+      }
+    });
   }
   render() {
     var _a;

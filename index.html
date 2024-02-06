@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="dist/collection/assets/feather/style.min.css">
     <link rel="stylesheet" href="dist/collection/assets/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="dist/collection/assets/line-awesome/css/line-awesome.min.css">
+    <link rel="stylesheet" href="dist/collection/assets/scripts/daterangepicker/daterangepicker.css">
     <script src="dist/collection/assets/scripts/jquery.min.js"></script>
     <script src="dist/collection/assets/scripts/daterangepicker/moment.min.js"></script>
     <script src="dist/collection/assets/scripts/daterangepicker/daterangepicker.js"></script>
@@ -17,6 +18,7 @@
 </head>
 
 <body>
+    <ir-common></ir-common>
     <igloo-calendar currency-name="USD" propertyid="42" from_date="2023-10-11" to_date="2024-3-31" language="en"
         baseurl="https://gateway.igloorooms.com/IR"></igloo-calendar>
     <script>
@@ -30,7 +32,7 @@
         calendar.from_date = _FROM_DATE;
         calendar.to_date = _TO_DATE;
         setTimeout(() => {
-            const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDczMjAxNjYsIkNMQUlNLTAxIjoicktLMi9DY1dQQnM9IiwiQ0xBSU0tMDIiOiI5UStMQm93VTl6az0iLCJDTEFJTS0wMyI6Ilp3Tys5azJoTzUwPSIsIkNMQUlNLTA0IjoiRThLMEFsdS9NdkVYbjlaaFJxVWx1dz09In0.mbhMlAWc7rEOCKcn0rJ8tUEdojNzzs9VQvQmhFtl0rE"
+            const token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDg0MTE3MzEsIkNMQUlNLTAxIjoicktLMi9DY1dQQnM9IiwiQ0xBSU0tMDIiOiI5UStMQm93VTl6az0iLCJDTEFJTS0wMyI6Ilp3Tys5azJoTzUwPSIsIkNMQUlNLTA0IjoiRThLMEFsdS9NdkdDUFdjVDhFR1Q0Zz09In0.Pk33zHBCz_XI2lamZ0h5Y1_L9N8ZCntKp5w6SfBcmEo"
             sessionStorage.removeItem('token');
             sessionStorage.setItem('token', JSON.stringify(token))
             calendar.propertyid = "42";

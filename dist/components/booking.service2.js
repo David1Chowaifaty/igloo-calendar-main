@@ -334,6 +334,7 @@ class BookingService {
     }
   }
   async bookUser(bookedByInfoData, check_in, fromDate, toDate, guestData, totalNights, source, propertyid, rooms, currency, bookingNumber, defaultGuest, arrivalTime, pr_id, identifier) {
+    console.log(arrivalTime);
     try {
       const token = JSON.parse(sessionStorage.getItem('token'));
       if (token) {
@@ -376,9 +377,9 @@ class BookingService {
             },
             source,
             currency,
-            arrival: {
-              code: arrivalTime || bookedByInfoData.selectedArrivalTime,
-            },
+            arrival: arrivalTime
+              ? { code: arrivalTime }
+              : Object.assign({}, bookedByInfoData.selectedArrivalTime),
             guest: defaultGuest || guest,
             rooms: [
               ...guestData.map(data => ({
@@ -406,6 +407,7 @@ class BookingService {
                   children_nbr: data.childrenCount,
                   infant_nbr: null,
                 },
+                bed_preference: data.preference,
                 from_date: fromDateStr,
                 to_date: toDateStr,
                 notes: null,

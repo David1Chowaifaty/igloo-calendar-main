@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "./stencil-public-runtime";
-import { TAdultChildConstraints, TIglBookPropertyPayload, TPropertyButtonsTypes, TSourceOptions } from "./models/igl-book-property";
+import { IglBookPropertyPayloadEditBooking, TAdultChildConstraints, TIglBookPropertyPayload, TPropertyButtonsTypes, TSourceOptions } from "./models/igl-book-property";
 import { ICountry, RoomBlockDetails, RoomBookingDetails } from "./models/IBooking";
 import { IToast, TPositions } from "./components/ir-toast/toast";
 import { IReallocationPayload, IRoomNightsData } from "./models/property-types";
@@ -19,7 +19,7 @@ import { Booking } from "./models/booking.dto";
 import { ILocale as ILocale1 } from "./components.d";
 import { Booking as Booking1 } from "./models/booking.dto";
 import { IRoomNightsDataEventPayload } from "./models/property-types";
-export { TAdultChildConstraints, TIglBookPropertyPayload, TPropertyButtonsTypes, TSourceOptions } from "./models/igl-book-property";
+export { IglBookPropertyPayloadEditBooking, TAdultChildConstraints, TIglBookPropertyPayload, TPropertyButtonsTypes, TSourceOptions } from "./models/igl-book-property";
 export { ICountry, RoomBlockDetails, RoomBookingDetails } from "./models/IBooking";
 export { IToast, TPositions } from "./components/ir-toast/toast";
 export { IReallocationPayload, IRoomNightsData } from "./models/property-types";
@@ -38,6 +38,8 @@ export namespace Components {
         "bedPreferenceType": any[];
         "bookingType": string;
         "currency": any;
+        "defaultGuestPreference": number | null;
+        "defaultGuestRoomId": number;
         "guestInfo": { [key: string]: any };
         "guestRefKey": string;
         "index": number;
@@ -177,6 +179,7 @@ export namespace Components {
         "countryNodeList": any;
         "currency": any;
         "dateRangeData": { [key: string]: any };
+        "defaultGuestData": IglBookPropertyPayloadEditBooking;
         "isEditOrAddRoomEvent": boolean;
         "isLoading": string;
         "language": string;
@@ -228,6 +231,7 @@ export namespace Components {
         "to_date": string;
     }
     interface IrAutocomplete {
+        "danger_border": boolean;
         "disabled": boolean;
         "duration": number;
         "from_date": string;
@@ -263,6 +267,7 @@ export namespace Components {
         "propertyid": number;
         "setupDataCountries": selectOption[];
         "setupDataCountriesCode": selectOption[];
+        "show_header": boolean;
         "statusCodes": any;
         "ticket": string;
     }
@@ -272,6 +277,7 @@ export namespace Components {
         "btn_disabled": boolean;
         "btn_type": string;
         "icon": string;
+        "isLoading": boolean;
         "name": string;
         "size": 'sm' | 'md' | 'lg';
         "text": any;
@@ -438,6 +444,8 @@ export namespace Components {
         "defaultTexts": ILocale;
         "item": any;
         "paymentExceptionMessage": string;
+    }
+    interface IrPickup {
     }
     interface IrRoom {
         "bookingEvent": Booking1;
@@ -1144,6 +1152,7 @@ declare global {
         "handleRoomEdit": any;
         "handleRoomDelete": any;
         "handleAddPayment": any;
+        "toast": IToast;
     }
     interface HTMLIrBookingDetailsElement extends Components.IrBookingDetails, HTMLStencilElement {
         addEventListener<K extends keyof HTMLIrBookingDetailsElementEventMap>(type: K, listener: (this: HTMLIrBookingDetailsElement, ev: IrBookingDetailsCustomEvent<HTMLIrBookingDetailsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -1460,6 +1469,12 @@ declare global {
         prototype: HTMLIrPaymentDetailsElement;
         new (): HTMLIrPaymentDetailsElement;
     };
+    interface HTMLIrPickupElement extends Components.IrPickup, HTMLStencilElement {
+    }
+    var HTMLIrPickupElement: {
+        prototype: HTMLIrPickupElement;
+        new (): HTMLIrPickupElement;
+    };
     interface HTMLIrRoomElementEventMap {
         "deleteFinished": string;
         "pressCheckIn": any;
@@ -1632,6 +1647,7 @@ declare global {
         "ir-mapping": HTMLIrMappingElement;
         "ir-modal": HTMLIrModalElement;
         "ir-payment-details": HTMLIrPaymentDetailsElement;
+        "ir-pickup": HTMLIrPickupElement;
         "ir-room": HTMLIrRoomElement;
         "ir-room-nights": HTMLIrRoomNightsElement;
         "ir-select": HTMLIrSelectElement;
@@ -1649,6 +1665,8 @@ declare namespace LocalJSX {
         "bedPreferenceType"?: any[];
         "bookingType"?: string;
         "currency"?: any;
+        "defaultGuestPreference"?: number | null;
+        "defaultGuestRoomId"?: number;
         "guestInfo"?: { [key: string]: any };
         "guestRefKey"?: string;
         "index"?: number;
@@ -1831,6 +1849,7 @@ declare namespace LocalJSX {
         "countryNodeList"?: any;
         "currency"?: any;
         "dateRangeData"?: { [key: string]: any };
+        "defaultGuestData"?: IglBookPropertyPayloadEditBooking;
         "isEditOrAddRoomEvent"?: boolean;
         "isLoading"?: string;
         "language"?: string;
@@ -1903,6 +1922,7 @@ declare namespace LocalJSX {
         "to_date"?: string;
     }
     interface IrAutocomplete {
+        "danger_border"?: boolean;
         "disabled"?: boolean;
         "duration"?: number;
         "from_date"?: string;
@@ -1945,11 +1965,13 @@ declare namespace LocalJSX {
         "onHandleRoomDelete"?: (event: IrBookingDetailsCustomEvent<any>) => void;
         "onHandleRoomEdit"?: (event: IrBookingDetailsCustomEvent<any>) => void;
         "onSendDataToServer"?: (event: IrBookingDetailsCustomEvent<guestInfo>) => void;
+        "onToast"?: (event: IrBookingDetailsCustomEvent<IToast>) => void;
         "paymentDetailsUrl"?: string;
         "paymentExceptionMessage"?: string;
         "propertyid"?: number;
         "setupDataCountries"?: selectOption[];
         "setupDataCountriesCode"?: selectOption[];
+        "show_header"?: boolean;
         "statusCodes"?: any;
         "ticket"?: string;
     }
@@ -1959,6 +1981,7 @@ declare namespace LocalJSX {
         "btn_disabled"?: boolean;
         "btn_type"?: string;
         "icon"?: string;
+        "isLoading"?: boolean;
         "name"?: string;
         "onClickHanlder"?: (event: IrButtonCustomEvent<any>) => void;
         "size"?: 'sm' | 'md' | 'lg';
@@ -2150,6 +2173,8 @@ declare namespace LocalJSX {
         "onResetBookingData"?: (event: IrPaymentDetailsCustomEvent<null>) => void;
         "paymentExceptionMessage"?: string;
     }
+    interface IrPickup {
+    }
     interface IrRoom {
         "bookingEvent"?: Booking1;
         "bookingIndex"?: number;
@@ -2293,6 +2318,7 @@ declare namespace LocalJSX {
         "ir-mapping": IrMapping;
         "ir-modal": IrModal;
         "ir-payment-details": IrPaymentDetails;
+        "ir-pickup": IrPickup;
         "ir-room": IrRoom;
         "ir-room-nights": IrRoomNights;
         "ir-select": IrSelect;
@@ -2351,6 +2377,7 @@ declare module "@stencil/core" {
             "ir-mapping": LocalJSX.IrMapping & JSXBase.HTMLAttributes<HTMLIrMappingElement>;
             "ir-modal": LocalJSX.IrModal & JSXBase.HTMLAttributes<HTMLIrModalElement>;
             "ir-payment-details": LocalJSX.IrPaymentDetails & JSXBase.HTMLAttributes<HTMLIrPaymentDetailsElement>;
+            "ir-pickup": LocalJSX.IrPickup & JSXBase.HTMLAttributes<HTMLIrPickupElement>;
             "ir-room": LocalJSX.IrRoom & JSXBase.HTMLAttributes<HTMLIrRoomElement>;
             "ir-room-nights": LocalJSX.IrRoomNights & JSXBase.HTMLAttributes<HTMLIrRoomNightsElement>;
             "ir-select": LocalJSX.IrSelect & JSXBase.HTMLAttributes<HTMLIrSelectElement>;

@@ -25,7 +25,7 @@ export declare class IrRoomNights {
   isButtonDisabled(): boolean;
   init(): Promise<void>;
   handleInput(event: InputEvent, index: number): void;
-  fetchBookingAvailability(from_date: string, to_date: string): Promise<void>;
+  fetchBookingAvailability(from_date: string, to_date: string, rate_plan_id: number, selected_variation: string): Promise<number>;
   renderInputField(index: number, currency_symbol: string, day: Day): any;
   renderReadOnlyField(currency_symbol: string, day: Day): any;
   renderRateFields(index: number, currency_symbol: string, day: Day): any;

@@ -29,6 +29,11 @@ export declare class IglooCalendar {
   roomNightsData: IRoomNightsData | null;
   renderAgain: boolean;
   showBookProperty: boolean;
+  totalAvailabilityQueue: {
+    room_type_id: number;
+    date: string;
+    availability: number;
+  }[];
   dragOverHighlightElement: EventEmitter;
   moveBookingTo: EventEmitter;
   calculateUnassignedDates: EventEmitter;
@@ -48,6 +53,7 @@ export declare class IglooCalendar {
   private socket;
   private reachedEndOfCalendar;
   ticketChanged(): void;
+  private availabilityTimeout;
   componentWillLoad(): void;
   setUpCalendarData(roomResp: any, bookingResp: any): void;
   initializeApp(): Promise<void>;

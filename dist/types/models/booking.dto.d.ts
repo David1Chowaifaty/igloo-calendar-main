@@ -1,6 +1,8 @@
 import { ICurrency } from './calendarData';
 export interface Booking {
   arrival: Arrival;
+  allowed_actions: IAllowedActions[];
+  system_id: number;
   booked_on: DateTime;
   booking_nbr: string;
   currency: Currency;
@@ -20,6 +22,10 @@ export interface Booking {
   channel_booking_nbr: string | null;
   is_direct: boolean;
   financial: IFinancials;
+}
+export interface IAllowedActions {
+  code: string;
+  description: string;
 }
 export interface IFinancials {
   due_amount: number;
@@ -102,6 +108,7 @@ export interface Room {
   notes: string | null;
   occupancy: Occupancy;
   physicalroom: null;
+  bed_preference: number | null;
   rateplan: RatePlan;
   roomtype: RoomType;
   to_date: string;
@@ -128,6 +135,7 @@ export interface RatePlan {
   selected_variation: IVariations;
   is_non_refundable: boolean;
   custom_text: string | null;
+  is_active: boolean;
 }
 export interface IVariations {
   adult_child_offering: string;
@@ -143,6 +151,7 @@ export interface RoomType {
   physicalrooms: null;
   rate: number;
   rateplans: null;
+  is_active: boolean;
 }
 export interface Source {
   code: string | null;
