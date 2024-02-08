@@ -11,6 +11,7 @@ export class IrButton {
     this.btn_disabled = false;
     this.btn_type = 'button';
     this.isLoading = false;
+    this.btn_styles = undefined;
   }
   connectedCallback() { }
   disconnectedCallback() { }
@@ -21,7 +22,7 @@ export class IrButton {
     }
     return (h("button", { onClick: () => {
         this.clickHanlder.emit();
-      }, class: `m-0 btn btn-${this.btn_color} d-flex btn-${this.size} text-${this.textSize} ${block}`, type: this.btn_type }, this.icon && !this.isLoading && (h("span", null, h("i", { class: `${this.icon} font-small-3` }), "\u00A0")), this.isLoading && (h(Fragment, null, h("span", { class: 'm-0 p-0 loader' }), "\u00A0")), h("span", { class: 'm-0 p-0 button-text' }, this.text)));
+      }, class: `m-0 btn btn-${this.btn_color} ${this.btn_styles} d-flex btn-${this.size} text-${this.textSize} ${block}`, type: this.btn_type }, this.icon && !this.isLoading && (h("span", null, h("i", { class: `${this.icon} font-small-3` }), "\u00A0")), this.isLoading && (h(Fragment, null, h("span", { class: 'm-0 p-0 loader' }), "\u00A0")), h("span", { class: 'm-0 p-0 button-text' }, this.text)));
   }
   static get is() { return "ir-button"; }
   static get originalStyleUrls() {
@@ -213,6 +214,23 @@ export class IrButton {
         "attribute": "is-loading",
         "reflect": false,
         "defaultValue": "false"
+      },
+      "btn_styles": {
+        "type": "string",
+        "mutable": false,
+        "complexType": {
+          "original": "string",
+          "resolved": "string",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "btn_styles",
+        "reflect": false
       }
     };
   }

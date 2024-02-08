@@ -9,8 +9,10 @@ const IrInputText = /*@__PURE__*/ proxyCustomElement(class IrInputText extends H
     this.value = undefined;
     this.label = '<label>';
     this.placeholder = '<placeholder>';
+    this.inputStyles = '';
     this.required = undefined;
     this.LabelAvailable = true;
+    this.readonly = false;
     this.type = 'text';
     this.submited = false;
     this.inputStyle = true;
@@ -59,7 +61,7 @@ const IrInputText = /*@__PURE__*/ proxyCustomElement(class IrInputText extends H
     if (this.required && !this.valid && !this.initial) {
       className = `${className} border-danger`;
     }
-    return (h("div", { class: "form-group" }, h("div", { class: "input-group row m-0" }, label, h("input", { type: this.type, class: `${className} form-control-${this.size} text-${this.textSize} col-${this.LabelAvailable ? 12 - this.labelWidth : 12}`, placeholder: this.placeholder, value: this.value, onInput: this.handleInputChange.bind(this), required: this.required }))));
+    return (h("div", { class: "form-group" }, h("div", { class: "input-group row m-0" }, label, h("input", { readOnly: this.readonly, type: this.type, class: `${className} form-control-${this.size} text-${this.textSize} col-${this.LabelAvailable ? 12 - this.labelWidth : 12} ${this.readonly && 'bg-white'} ${this.inputStyles}`, placeholder: this.placeholder, value: this.value, onInput: this.handleInputChange.bind(this), required: this.required }))));
   }
   static get watchers() { return {
     "value": ["watchHandler"],
@@ -70,8 +72,10 @@ const IrInputText = /*@__PURE__*/ proxyCustomElement(class IrInputText extends H
     "value": [8],
     "label": [1],
     "placeholder": [1],
+    "inputStyles": [1, "input-styles"],
     "required": [4],
     "LabelAvailable": [4, "label-available"],
+    "readonly": [4],
     "type": [1],
     "submited": [4],
     "inputStyle": [4, "input-style"],

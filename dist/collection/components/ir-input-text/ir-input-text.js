@@ -5,8 +5,10 @@ export class IrInputText {
     this.value = undefined;
     this.label = '<label>';
     this.placeholder = '<placeholder>';
+    this.inputStyles = '';
     this.required = undefined;
     this.LabelAvailable = true;
+    this.readonly = false;
     this.type = 'text';
     this.submited = false;
     this.inputStyle = true;
@@ -55,7 +57,7 @@ export class IrInputText {
     if (this.required && !this.valid && !this.initial) {
       className = `${className} border-danger`;
     }
-    return (h("div", { class: "form-group" }, h("div", { class: "input-group row m-0" }, label, h("input", { type: this.type, class: `${className} form-control-${this.size} text-${this.textSize} col-${this.LabelAvailable ? 12 - this.labelWidth : 12}`, placeholder: this.placeholder, value: this.value, onInput: this.handleInputChange.bind(this), required: this.required }))));
+    return (h("div", { class: "form-group" }, h("div", { class: "input-group row m-0" }, label, h("input", { readOnly: this.readonly, type: this.type, class: `${className} form-control-${this.size} text-${this.textSize} col-${this.LabelAvailable ? 12 - this.labelWidth : 12} ${this.readonly && 'bg-white'} ${this.inputStyles}`, placeholder: this.placeholder, value: this.value, onInput: this.handleInputChange.bind(this), required: this.required }))));
   }
   static get is() { return "ir-input-text"; }
   static get properties() {
@@ -130,6 +132,24 @@ export class IrInputText {
         "reflect": false,
         "defaultValue": "'<placeholder>'"
       },
+      "inputStyles": {
+        "type": "string",
+        "mutable": false,
+        "complexType": {
+          "original": "string",
+          "resolved": "string",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "input-styles",
+        "reflect": false,
+        "defaultValue": "''"
+      },
       "required": {
         "type": "boolean",
         "mutable": false,
@@ -164,6 +184,24 @@ export class IrInputText {
         "attribute": "label-available",
         "reflect": false,
         "defaultValue": "true"
+      },
+      "readonly": {
+        "type": "boolean",
+        "mutable": false,
+        "complexType": {
+          "original": "boolean",
+          "resolved": "boolean",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "readonly",
+        "reflect": false,
+        "defaultValue": "false"
       },
       "type": {
         "type": "string",

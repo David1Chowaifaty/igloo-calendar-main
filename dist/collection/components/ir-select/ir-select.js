@@ -5,6 +5,8 @@ export class IrSelect {
     this.name = undefined;
     this.data = undefined;
     this.label = '<label>';
+    this.selectStyles = undefined;
+    this.selectContainerStyle = undefined;
     this.selectedValue = null;
     this.required = undefined;
     this.LabelAvailable = true;
@@ -57,7 +59,7 @@ export class IrSelect {
     if (!this.LabelAvailable) {
       label = '';
     }
-    return (h("div", { class: "form-group" }, h("div", { class: "input-group row m-0" }, label, h("select", { class: `${className} form-control-${this.size} text-${this.textSize} col-${this.LabelAvailable ? 12 - this.labelWidth : 12}`, onInput: this.handleSelectChange.bind(this), required: this.required }, h("option", { value: null }, this.firstOption), this.data.map(item => {
+    return (h("div", { class: `form-group m-0 ${this.selectContainerStyle}` }, h("div", { class: "input-group row m-0" }, label, h("select", { class: `${this.selectStyles} ${className} form-control-${this.size} text-${this.textSize} col-${this.LabelAvailable ? 12 - this.labelWidth : 12}`, onInput: this.handleSelectChange.bind(this), required: this.required }, h("option", { value: '' }, this.firstOption), this.data.map(item => {
       if (this.selectedValue === item.value) {
         return (h("option", { selected: true, value: item.value }, item.text));
       }
@@ -124,6 +126,40 @@ export class IrSelect {
         "attribute": "label",
         "reflect": false,
         "defaultValue": "'<label>'"
+      },
+      "selectStyles": {
+        "type": "string",
+        "mutable": false,
+        "complexType": {
+          "original": "string",
+          "resolved": "string",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "select-styles",
+        "reflect": false
+      },
+      "selectContainerStyle": {
+        "type": "string",
+        "mutable": false,
+        "complexType": {
+          "original": "string",
+          "resolved": "string",
+          "references": {}
+        },
+        "required": false,
+        "optional": false,
+        "docs": {
+          "tags": [],
+          "text": ""
+        },
+        "attribute": "select-container-style",
+        "reflect": false
       },
       "selectedValue": {
         "type": "any",
