@@ -1,8 +1,8 @@
 import { r as registerInstance, c as createEvent, h, F as Fragment, H as Host, g as getElement } from './index-a3d7c849.js';
-import { R as RoomService } from './room.service-c3288e2f.js';
+import { R as RoomService } from './room.service-000dc192.js';
 import { u as updateChannelSettings, s as selectChannel, t as testConnection, c as channels_data, r as resetStore, o as onChannelChange, a as addMapping, b as setMappedChannel } from './channel.store-00ec4b5a.js';
 import { a as axios, l as locales } from './axios-e2d8c656.js';
-import { c as calendar_data } from './calendar-data-439260b8.js';
+import { c as calendar_data } from './calendar-data-847011fc.js';
 
 const irButtonCss = ".loader{width:11px;height:11px;border:2px solid #fff;border-bottom-color:transparent;border-radius:50%;margin:0;padding:0;display:inline-flex;box-sizing:border-box;animation:rotation 1s linear infinite}.button-icon{padding:0;margin-top:0}.button-icon[data-state='loading']{display:none}.button-text{padding:0 5px}@keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}";
 
@@ -50,14 +50,34 @@ const actions = (entries) => [
     name: 'View logs',
     icon: () => (h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "14", viewBox: "0 0 512 512" },
       h("path", { d: "M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z" }))),
-    action: () => { },
+    action: () => {
+      return {
+        cause: 'view_logs',
+        action: () => {
+          alert('view logs clicked');
+        },
+        title: 'ok',
+        message: 'ok',
+        main_color: 'primary',
+      };
+    },
   },
   {
     id: 'full_sync',
     name: 'Full Sync',
     icon: () => (h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "14", viewBox: "0 0 512 512" },
       h("path", { d: "M142.9 142.9c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5c0 0 0 0 0 0H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5c7.7-21.8 20.2-42.3 37.8-59.8zM16 312v7.6 .7V440c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l41.6-41.6c87.6 86.5 228.7 86.2 315.8-1c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.2 62.2-162.7 62.5-225.3 1L185 329c6.9-6.9 8.9-17.2 5.2-26.2s-12.5-14.8-22.2-14.8H48.4h-.7H40c-13.3 0-24 10.7-24 24z" }))),
-    action: () => { },
+    action: () => {
+      return {
+        cause: 'view_logs',
+        action: () => {
+          alert('view logs clicked');
+        },
+        title: 'ok',
+        message: 'ok',
+        main_color: 'primary',
+      };
+    },
   },
   { id: 'pull_future_reservation', name: 'Pull Future Reservations', icon: () => null, action: () => { } },
   {
@@ -65,11 +85,26 @@ const actions = (entries) => [
     name: entries.Lcz_Delete,
     icon: () => (h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" },
       h("path", { d: "M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" }))),
-    action: () => { },
+    action: () => {
+      return {
+        cause: 'view_logs',
+        action: async () => {
+          await new Promise(resolve => {
+            setTimeout(() => {
+              console.log('hello world');
+              resolve('hello world');
+            }, 500);
+          });
+        },
+        title: 'ok',
+        message: 'ok',
+        main_color: 'danger',
+      };
+    },
   },
 ];
 
-const irChannelCss = ".sc-ir-channel-h{display:block}.dropdown-toggle.sc-ir-channel{color:var(--blue)}.dropdown-toggle.sc-ir-channel::after{content:none;display:none}.dropdown-toggle.sc-ir-channel .caret-icon.sc-ir-channel{transition:transform 0.15s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,\n    -webkit-box-shadow 0.15s ease-in-out}.btn.sc-ir-channel:hover .caret-icon.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.show.sc-ir-channel .caret-icon.sc-ir-channel{transform:rotate(-180deg)}.dropdown-divider.sc-ir-channel{border-color:#e4e5ec}.dropdown-item.sc-ir-channel{padding:10px;display:flex;align-items:center;gap:10px;color:#6b6f82}.dropdown-item.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.danger.sc-ir-channel{color:var(--red)}.danger.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:var(--red)}.table.sc-ir-channel thead.sc-ir-channel tr.sc-ir-channel{height:50px !important}.table-container.sc-ir-channel{border-radius:30px}";
+const irChannelCss = ".sc-ir-channel-h{display:block}.dropdown-toggle.sc-ir-channel{color:var(--blue)}.dropdown-toggle.sc-ir-channel::after{content:none;display:none}.dropdown-toggle.sc-ir-channel .caret-icon.sc-ir-channel{transition:transform 0.15s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,\n    -webkit-box-shadow 0.15s ease-in-out}.btn.sc-ir-channel:hover .caret-icon.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.show.sc-ir-channel .caret-icon.sc-ir-channel{transform:rotate(-180deg)}.dropdown-divider.sc-ir-channel{border-color:#e4e5ec}.dropdown-item.sc-ir-channel{padding:10px;display:flex;align-items:center;gap:10px;color:#6b6f82}.dropdown-item.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.danger.sc-ir-channel{color:var(--red)}.danger.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:var(--red)}.table.sc-ir-channel thead.sc-ir-channel tr.sc-ir-channel{height:50px !important}.table-container.sc-ir-channel{border-radius:30px}.table.sc-ir-channel thead.sc-ir-channel{background:#fafafa;border-top-width:0}.actions-theader.sc-ir-channel{width:35% !important;text-align:end}";
 
 const IrChannel = class {
   constructor(hostRef) {
@@ -80,6 +115,7 @@ const IrChannel = class {
     this.language = undefined;
     this.baseurl = undefined;
     this.channel_status = null;
+    this.modal_cause = null;
   }
   componentWillLoad() {
     if (this.baseurl) {
@@ -88,6 +124,18 @@ const IrChannel = class {
     if (this.ticket !== '') {
       this.initializeApp();
     }
+  }
+  async handleConfirmClicked(e) {
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    if (!this.modal_cause) {
+      return;
+    }
+    await this.modal_cause.action();
+    this.modal_cause = null;
+  }
+  openModal() {
+    this.irModalRef.openModal();
   }
   async initializeApp() {
     try {
@@ -111,27 +159,61 @@ const IrChannel = class {
     sessionStorage.setItem('token', JSON.stringify(this.ticket));
     this.initializeApp();
   }
+  handleCancelModal(e) {
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    this.modal_cause = null;
+  }
+  handleSidebarClose(e) {
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    if (channels_data.selectedChannel) {
+      this.modal_cause = {
+        action: () => {
+          return new Promise(reselove => {
+            this.resetSideBar();
+            reselove('');
+          });
+        },
+        cause: 'channel',
+        main_color: 'primary',
+        message: '',
+        title: '',
+      };
+      this.openModal();
+    }
+    else {
+      this.resetSideBar();
+    }
+  }
+  resetSideBar() {
+    this.channel_status = null;
+    resetStore();
+  }
+  handleSaveChange(e) {
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    this.resetSideBar();
+  }
   render() {
-    var _a;
-    return (h(Host, { class: "bg-white h-100" }, h("section", { class: "p-2" }, h("div", { class: "d-flex w-100 justify-content-end mb-2" }, h("ir-button", { text: 'Create', size: "sm", onClickHanlder: () => (this.channel_status = 'create') })), h("div", { class: "table-container" }, h("table", { class: "table table-hover" }, h("thead", null, h("tr", null, h("th", { scope: "col", class: "text-left" }, "Title"), h("th", { scope: "col" }, "Channel"), h("th", { scope: "col" }, "Status"), h("th", { scope: "col" }, "Actions"))), h("tbody", { class: "" }, (_a = channels_data.connected_channels) === null || _a === void 0 ? void 0 : _a.map(channel => (h("tr", { key: channel.channel.id }, h("th", { scope: "row", class: "text-left" }, channel.title), h("th", { scope: "row" }, channel.channel.name), h("td", null, h("ir-switch", { checked: channel.is_active })), h("th", null, h("div", { class: "btn-group" }, h("button", { type: "button", class: "btn  dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }, h("span", { class: "mr-1" }, "Actions"), h("svg", { class: 'caret-icon', xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 448 512", height: 14, width: 14 }, h("path", { fill: "var(--blue)", d: "M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" }))), h("div", { class: "dropdown-menu dropdown-menu-right" }, actions(locales.entries).map((a, index) => (h(Fragment, null, index === actions(locales.entries).length - 1 && h("div", { key: a.id + '_divider', class: "dropdown-divider my-0" }), h("button", { onClick: () => {
-        console.log(a.id);
-        a.action(channel);
-        if (a.id === 'edit') {
-          setTimeout(() => {
-            this.channel_status = 'edit';
-          }, 300);
-        }
-      }, key: a.id + '_item', class: `dropdown-item my-0 ${a.id === 'remove' ? 'danger' : ''}`, type: "button" }, a.icon(), a.name)))))))))))))), h("ir-sidebar", { sidebarStyles: {
+    var _a, _b, _c, _d, _e;
+    return (h(Host, { class: "h-100 " }, h("section", { class: "p-2 px-lg-5 py-0 h-100 d-flex flex-column" }, h("div", { class: "d-flex w-100 justify-content-between mb-2 align-items-center" }, h("h3", { class: "font-weight-bold m-0 p-0" }, "iSWITCH"), h("ir-button", { text: 'Create channel', size: "sm", onClickHanlder: () => (this.channel_status = 'create') }, h("svg", { slot: "icon", "stroke-width": 3, width: "15", height: "15", viewBox: "0 0 15 15", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, h("path", { d: "M7.49991 0.876892C3.84222 0.876892 0.877075 3.84204 0.877075 7.49972C0.877075 11.1574 3.84222 14.1226 7.49991 14.1226C11.1576 14.1226 14.1227 11.1574 14.1227 7.49972C14.1227 3.84204 11.1576 0.876892 7.49991 0.876892ZM1.82707 7.49972C1.82707 4.36671 4.36689 1.82689 7.49991 1.82689C10.6329 1.82689 13.1727 4.36671 13.1727 7.49972C13.1727 10.6327 10.6329 13.1726 7.49991 13.1726C4.36689 13.1726 1.82707 10.6327 1.82707 7.49972ZM7.50003 4C7.77617 4 8.00003 4.22386 8.00003 4.5V7H10.5C10.7762 7 11 7.22386 11 7.5C11 7.77614 10.7762 8 10.5 8H8.00003V10.5C8.00003 10.7761 7.77617 11 7.50003 11C7.22389 11 7.00003 10.7761 7.00003 10.5V8H4.50003C4.22389 8 4.00003 7.77614 4.00003 7.5C4.00003 7.22386 4.22389 7 4.50003 7H7.00003V4.5C7.00003 4.22386 7.22389 4 7.50003 4Z", fill: "currentColor", "fill-rule": "evenodd", "clip-rule": "evenodd" })))), h("div", { class: "card p-1 flex-fill m-0" }, h("table", { class: "table table-hover" }, h("thead", null, h("tr", null, h("th", { scope: "col", class: "text-left" }, "Channel"), h("th", { scope: "col" }, "Status"), h("th", { scope: "col", class: "actions-theader" }, "Actions"))), h("tbody", { class: "" }, (_a = channels_data.connected_channels) === null || _a === void 0 ? void 0 : _a.map(channel => {
+      var _a;
+      return (h("tr", { key: channel.channel.id }, h("th", { scope: "row", class: "text-left" }, channel.channel.name, " ", (_a = channel === null || channel === void 0 ? void 0 : channel.title) !== null && _a !== void 0 ? _a : ''), h("td", null, h("ir-switch", { checked: channel.is_active })), h("th", null, h("div", { class: "d-flex justify-content-end" }, h("div", { class: "btn-group" }, h("button", { type: "button", class: "btn  dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }, h("span", { class: "mr-1" }, "Actions"), h("svg", { class: 'caret-icon', xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 448 512", height: 14, width: 14 }, h("path", { fill: "var(--blue)", d: "M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" }))), h("div", { class: "dropdown-menu dropdown-menu-right" }, actions(locales.entries).map((a, index) => (h(Fragment, null, h("button", { onClick: () => {
+          a.action(channel);
+          if (a.id === 'edit') {
+            setTimeout(() => {
+              this.channel_status = 'edit';
+            }, 300);
+          }
+          else {
+            this.modal_cause = a.action(channel);
+            this.openModal();
+          }
+        }, key: a.id + '_item', class: `dropdown-item my-0 ${a.id === 'remove' ? 'danger' : ''}`, type: "button" }, a.icon(), a.name), index < actions(locales.entries).length - 1 && h("div", { key: a.id + '_divider', class: "dropdown-divider my-0" }))))))))));
+    }))))), h("ir-sidebar", { sidebarStyles: {
         width: '60rem',
-      }, showCloseButton: false, onIrSidebarToggle: e => {
-        e.stopImmediatePropagation();
-        e.stopPropagation();
-        this.channel_status = null;
-        resetStore();
-      }, open: this.channel_status !== null }, this.channel_status && (h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: () => {
-        this.channel_status = null;
-        resetStore();
-      } }))), h("ir-modal", null)));
+      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) })), h("ir-modal", { modalTitle: (_b = this.modal_cause) === null || _b === void 0 ? void 0 : _b.title, modalBody: (_c = this.modal_cause) === null || _c === void 0 ? void 0 : _c.message, ref: el => (this.irModalRef = el), onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_e = (_d = this.modal_cause) === null || _d === void 0 ? void 0 : _d.main_color) !== null && _e !== void 0 ? _e : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
   }
   get el() { return getElement(this); }
   static get watchers() { return {
@@ -145,9 +227,11 @@ const irChannelEditorCss = ".sc-ir-channel-editor-h{display:block;position:relat
 const IrChannelEditor = class {
   constructor(hostRef) {
     registerInstance(this, hostRef);
+    this.saveChannelFinished = createEvent(this, "saveChannelFinished", 7);
     this.closeSideBar = createEvent(this, "closeSideBar", 7);
     this.channel_status = null;
     this.selectedTab = '';
+    this.isLoading = false;
     this.headerTitles = [
       {
         id: 'general_settings',
@@ -193,10 +277,38 @@ const IrChannelEditor = class {
   disableNonFirstTabs() {
     this.headerTitles = this.headerTitles.map((title, index) => (index > 0 ? Object.assign(Object.assign({}, title), { disabled: true }) : title));
   }
+  async saveConnectedChannel() {
+    try {
+      this.isLoading = true;
+      const body = {
+        // id: channels_data.selectedChannel.id,
+        id: -1,
+        title: channels_data.channel_settings.hotel_title,
+        is_active: false,
+        channel: { id: channels_data.selectedChannel.id, name: channels_data.selectedChannel.name },
+        property: { id: calendar_data.id, name: calendar_data.name },
+        map: channels_data.mappedChannels,
+        is_remove: false,
+      };
+      const token = JSON.parse(sessionStorage.getItem('token'));
+      if (!token) {
+        throw new Error('Invalid Token');
+      }
+      const { data } = await axios.post(`/Handle_Connected_Channel?Ticket=${token}`, body);
+      this.saveChannelFinished.emit();
+      console.log(data);
+    }
+    catch (error) {
+      console.error(error);
+    }
+    finally {
+      this.isLoading = false;
+    }
+  }
   render() {
     return (h(Host, { class: " d-flex flex-column h-100" }, h("nav", { class: "px-1 position-sticky sticky-top py-1 top-0 bg-white" }, h("div", { class: "d-flex align-items-center  justify-content-between" }, h("h3", { class: "text-left font-medium-2  py-0 my-0" }, this.channel_status === 'create' ? 'Create Channel' : 'Edit Channel'), h("ir-icon", { class: 'm-0 p-0 close', onIconClickHandler: () => {
         this.closeSideBar.emit(null);
-      } }, h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 384 512", height: 20, width: 20 }, h("path", { d: "M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" })))), h("ir-channel-header", { class: "mt-1 px-0", headerTitles: this.headerTitles })), h("section", { class: "py-1 flex-fill tab-container px-1" }, this.renderTabScreen()), h("ir-button", { class: "px-1 py-1 top-border", btn_styles: "w-100  justify-content-center", text: locales.entries.Lcz_Save })));
+      } }, h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 384 512", height: 20, width: 20 }, h("path", { d: "M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" })))), h("ir-channel-header", { class: "mt-1 px-0", headerTitles: this.headerTitles })), h("section", { class: "py-1 flex-fill tab-container px-1" }, this.renderTabScreen()), h("ir-button", { isLoading: this.isLoading, onClickHanlder: () => this.saveConnectedChannel(), class: "px-1 py-1 top-border", btn_styles: "w-100  justify-content-center align-items-center", text: locales.entries.Lcz_Save })));
   }
 };
 IrChannelEditor.style = irChannelEditorCss;
@@ -371,11 +483,11 @@ const IrChannelMapping = class {
       } })) : (h("span", { class: "cursor-pointer text-danger", onClick: () => this.setActiveField(id, isRoomType, roomTypeId) }, "Not mapped"))));
   }
   render() {
-    var _a, _b;
+    var _a, _b, _c, _d;
     return (h(Host, null, h("div", { class: "d-flex w-100 justify-content-end" }, h("button", { onClick: () => {
         setMappedChannel();
-      }, class: "btn refresh-btn" }, "Refresh")), h("ul", { class: "m-0 p-0" }, h("li", { class: "map-row my-1" }, h("span", { class: "font-weight-bold" }, channels_data.selectedChannel.name), h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, h("path", { d: "M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" })), h("span", { class: "font-weight-bold px-2" }, "Igloorooms")), (_b = (_a = channels_data.selectedChannel.property) === null || _a === void 0 ? void 0 : _a.room_types) === null || _b === void 0 ? void 0 :
-      _b.map(room_type => {
+      }, class: "btn refresh-btn" }, "Refresh")), h("ul", { class: "m-0 p-0" }, h("li", { class: "map-row my-1" }, h("span", { class: "font-weight-bold" }, (_a = channels_data.selectedChannel) === null || _a === void 0 ? void 0 : _a.name), h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, h("path", { d: "M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" })), h("span", { class: "font-weight-bold px-2" }, "Igloorooms")), (_d = (_c = (_b = channels_data.selectedChannel) === null || _b === void 0 ? void 0 : _b.property) === null || _c === void 0 ? void 0 : _c.room_types) === null || _d === void 0 ? void 0 :
+      _d.map(room_type => {
         const mappedRoomType = this.mappingService.checkMappingExists(room_type.id, true);
         return (h("li", { key: room_type.id, class: "mb-1" }, h("div", { class: "map-row" }, h("span", null, room_type.name), h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, h("path", { d: "M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" })), this.renderMappingStatus(mappedRoomType, room_type.id, true)), h("ul", { class: "m-0 p-0" }, room_type.rate_plans.map(rate_plan => {
           const mappedRatePlan = this.mappingService.checkMappingExists(rate_plan.id, false, room_type.id);
@@ -849,7 +961,7 @@ const IrSidebar = class {
 };
 IrSidebar.style = irSidebarCss;
 
-const irSwitchCss = ".sc-ir-switch-h{display:block;position:relative;box-sizing:border-box;--ir-root-width:36px;--ir-root-height:20px}.hidden-input.sc-ir-switch{transform:translateX(-100%);position:absolute;pointer-events:none;opacity:0;margin:0;width:var(--ir-root-width);height:var(--ir-root-height)}.SwitchRoot.sc-ir-switch{all:unset;padding:0;margin:0;width:var(--ir-root-width);height:var(--ir-root-height);background-color:rgba(0, 0, 0, 0.4);position:relative;box-shadow:rgba(0, 0, 0, 0.2) 0px 2px 10px;--webkit-tap-highlight-color:rgba(0, 0, 0, 0);border-radius:9999px;box-sizing:border-box}.SwitchRoot.sc-ir-switch:disabled{opacity:80%}.SwitchRoot.sc-ir-switch:focus-visible{outline:1px solid rgba(55, 188, 155, 0.2);outline-offset:1px}.SwitchRoot[data-state='checked'].sc-ir-switch{background-color:rgb(55, 188, 155)}.SwitchThumb.sc-ir-switch{padding:0;margin:0;display:block;width:calc(var(--ir-root-height) - 3px);height:calc(var(--ir-root-height) - 3px);border-radius:9999px;background:white;box-shadow:rgba(0, 0, 0, 0.2) 0px;transition:transform 100ms ease 0s;transform:translateX(2px);will-change:transform}.SwitchThumb[data-state='checked'].sc-ir-switch{transform:translateX(calc(var(--ir-root-height) - 3px))}";
+const irSwitchCss = ".sc-ir-switch-h{display:block;position:relative;box-sizing:border-box;--ir-root-width:36px;--ir-root-height:20px}.hidden-input.sc-ir-switch{transform:translateX(-100%);position:absolute;pointer-events:none;opacity:0;margin:0;width:var(--ir-root-width);height:var(--ir-root-height)}.SwitchRoot.sc-ir-switch{all:unset;padding:0;margin:0;width:var(--ir-root-width);height:var(--ir-root-height);background-color:var(--red);position:relative;box-shadow:rgba(0, 0, 0, 0.2) 0px 2px 10px;--webkit-tap-highlight-color:rgba(0, 0, 0, 0);border-radius:9999px;box-sizing:border-box}.SwitchRoot.sc-ir-switch:disabled{opacity:80%}.SwitchRoot.sc-ir-switch:focus-visible{outline:1px solid rgba(55, 188, 155, 0.2);outline-offset:1px}.SwitchRoot[data-state='checked'].sc-ir-switch{background-color:rgb(55, 188, 155)}.SwitchThumb.sc-ir-switch{padding:0;margin:0;display:block;width:calc(var(--ir-root-height) - 3px);height:calc(var(--ir-root-height) - 3px);border-radius:9999px;background:white;box-shadow:rgba(0, 0, 0, 0.2) 0px;transition:transform 100ms ease 0s;transform:translateX(2px);will-change:transform}.SwitchThumb[data-state='checked'].sc-ir-switch{transform:translateX(calc(var(--ir-root-height) - 3px))}";
 
 const IrSwitch = class {
   constructor(hostRef) {

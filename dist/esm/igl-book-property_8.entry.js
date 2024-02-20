@@ -8,7 +8,7 @@ import { B as BookingService$1 } from './booking.service-1b0ad001.js';
 import { i as interceptor_requests } from './ir-interceptor.store-73cf2583.js';
 import { _ as _formatDate, b as _formatAmount, c as _getDay } from './functions-d0f70e87.js';
 import { h as hooks } from './moment-5e85be7a.js';
-import { c as calendar_data } from './calendar-data-439260b8.js';
+import { c as calendar_data } from './calendar-data-847011fc.js';
 
 //import { BookingService } from '../../../services/booking.service';
 class IglBookPropertyService {

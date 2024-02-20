@@ -71,5 +71,8 @@ export function testConnection() {
   channels_data.isConnectedToChannel = true;
   return true;
 }
+export function saveChannel() {
+  console.log(channels_data.channel_settings, channels_data.mappedChannels, channels_data.selectedChannel);
+}
 export default channels_data;
 //# sourceMappingURL=channel.store.js.map

@@ -1,7 +1,7 @@
 import { r as registerInstance, c as createEvent, h, H as Host, F as Fragment } from './index-a3d7c849.js';
 import { m as getCurrencySymbol, o as formatDate } from './utils-9e497cec.js';
 import { l as locales } from './axios-e2d8c656.js';
-import { c as calendar_data } from './calendar-data-439260b8.js';
+import { c as calendar_data } from './calendar-data-847011fc.js';
 import { v as v4 } from './v4-7b82dc75.js';
 import { h as hooks } from './moment-5e85be7a.js';
 import { i as interceptor_requests } from './ir-interceptor.store-73cf2583.js';

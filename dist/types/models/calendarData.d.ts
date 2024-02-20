@@ -17,6 +17,8 @@ export interface CalendarDataDetails {
   allowed_payment_methods: IAllowedPaymentMethods[];
   pickup_service: IPickupService;
   is_frontdesk_enabled: boolean;
+  id: number;
+  name: string;
 }
 export interface ITaxes {
   is_exlusive: boolean;

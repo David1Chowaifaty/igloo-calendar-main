@@ -12,7 +12,7 @@ const booking_service$1 = require('./booking.service-9518a7f0.js');
 const irInterceptor_store = require('./ir-interceptor.store-2feddc65.js');
 const functions = require('./functions-378ebfbf.js');
 const moment = require('./moment-27049970.js');
-const calendarData = require('./calendar-data-9ea7c56c.js');
+const calendarData = require('./calendar-data-f96d5e48.js');
 
 //import { BookingService } from '../../../services/booking.service';
 class IglBookPropertyService {
