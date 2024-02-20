@@ -1,5 +1,7 @@
 import { proxyCustomElement, HTMLElement, createEvent, h } from '@stencil/core/internal/client';
 
+const irSelectCss = ".border-theme.sc-ir-select{border:1px solid #cacfe7}";
+
 const IrSelect = /*@__PURE__*/ proxyCustomElement(class IrSelect extends HTMLElement {
   constructor() {
     super();
@@ -20,9 +22,9 @@ const IrSelect = /*@__PURE__*/ proxyCustomElement(class IrSelect extends HTMLEle
     this.size = 'md';
     this.textSize = 'md';
     this.labelPosition = 'left';
-    this.labelBackground = 'light';
+    this.labelBackground = null;
     this.labelColor = 'dark';
-    this.labelBorder = 'none';
+    this.labelBorder = 'theme';
     this.labelWidth = 3;
     this.initial = true;
     this.valid = false;
@@ -53,7 +55,7 @@ const IrSelect = /*@__PURE__*/ proxyCustomElement(class IrSelect extends HTMLEle
   }
   render() {
     let className = 'form-control';
-    let label = (h("div", { class: `input-group-prepend col-${this.labelWidth} p-0 text-${this.labelColor} border-${this.labelBorder}` }, h("label", { class: `input-group-text ${this.labelPosition === 'right' ? 'justify-content-end' : this.labelPosition === 'center' ? 'justify-content-center' : ''} bg-${this.labelBackground} flex-grow-1 text-${this.labelColor} border-${this.labelBorder === 'none' ? 0 : this.labelBorder} ` }, this.label, this.required ? '*' : '')));
+    let label = (h("div", { class: `input-group-prepend col-${this.labelWidth} p-0 text-${this.labelColor}` }, h("label", { class: `input-group-text ${this.labelPosition === 'right' ? 'justify-content-end' : this.labelPosition === 'center' ? 'justify-content-center' : ''} ${this.labelBackground ? 'bg-' + this.labelBackground : ''} flex-grow-1 text-${this.labelColor} border-${this.labelBorder === 'none' ? 0 : this.labelBorder} ` }, this.label, this.required ? '*' : '')));
     if (this.selectStyle === false) {
       className = '';
     }
@@ -76,7 +78,8 @@ const IrSelect = /*@__PURE__*/ proxyCustomElement(class IrSelect extends HTMLEle
     "selectedValue": ["watchHandler"],
     "submited": ["watchHandler2"]
   }; }
-}, [0, "ir-select", {
+  static get style() { return irSelectCss; }
+}, [2, "ir-select", {
     "name": [1],
     "data": [16],
     "label": [1],

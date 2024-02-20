@@ -1,5 +1,6 @@
 {
   "entries": [
+    "components/igl-book-property-container/igl-book-property-container.js",
     "components/igloo-calendar/igloo-calendar.js",
     "components/igloo-calendar/igl-application-info/igl-application-info.js",
     "components/igloo-calendar/igl-block-dates-view/igl-block-dates-view.js",
@@ -28,13 +29,14 @@
     "components/ir-modal/ir-modal.js",
     "components/ir-booking-details/ir-room/ir-room.js",
     "components/ir-button/ir-button.js",
-    "components/ir-channel/ir-channel-manager/ir-channel-manager.js",
-    "components/ir-channel/ir-general-settings/ir-general-settings.js",
-    "components/ir-channel/ir-listItems/ir-listItem.js",
-    "components/ir-channel/ir-mapping/ir-mapping.js",
-    "components/ir-channel/ir-topBar/ir-topbar.js",
+    "components/ir-channel/ir-channel.js",
+    "components/ir-channel/ir-channel-editor/ir-channel-editor.js",
+    "components/ir-channel/ir-channel-general/ir-channel-general.js",
+    "components/ir-channel/ir-channel-header/ir-channel-header.js",
+    "components/ir-channel/ir-channel-mapping/ir-channel-mapping.js",
     "components/ir-checkbox/ir-checlbox.js",
     "components/ir-checkboxes/ir-checkboxes.js",
+    "components/ir-combobox/ir-combobox.js",
     "components/ir-common/ir-common.js",
     "components/ir-date-picker/ir-date-picker.js",
     "components/ir-dropdown/ir-dropdown.js",
@@ -42,6 +44,7 @@
     "components/ir-icon/ir-icon.js",
     "components/ir-input-text/ir-input-text.js",
     "components/ir-interceptor/ir-interceptor.js",
+    "components/ir-jquery-switch/ir-jquery-switch.js",
     "components/ir-label/ir-label.js",
     "components/ir-loader/ir-loader.js",
     "components/ir-loading-screen/ir-loading-screen.js",
@@ -52,7 +55,12 @@
     "components/ir-switch/ir-switch.js",
     "components/ir-textarea/ir-textarea.js",
     "components/ir-toast/ir-toast.js",
-    "components/ir-tooltip/ir-tooltip.js"
+    "components/ir-tooltip/ir-tooltip.js",
+    "components/old-ir-channel/ir-channel-manager/ir-channel-manager.js",
+    "components/old-ir-channel/ir-general-settings/ir-general-settings.js",
+    "components/old-ir-channel/ir-listItems/ir-listItem.js",
+    "components/old-ir-channel/ir-mapping/ir-mapping.js",
+    "components/old-ir-channel/ir-topBar/ir-topbar.js"
   ],
   "compiler": {
     "name": "@stencil/core",

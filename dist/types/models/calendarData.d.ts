@@ -5,6 +5,7 @@ export interface CalendarDataDetails {
   allowedBookingSources: IAllowedBookingSources[];
   currency: IPickupCurrency;
   endingDate: number;
+  taxes: ITaxes[];
   formattedLegendData: IFormattedLegendData;
   is_vacation_rental: boolean;
   legendData: ILegendData[];
@@ -12,8 +13,46 @@ export interface CalendarDataDetails {
   startingDate: number;
   language: string;
   toBeAssignedEvents: [];
+  max_nights: number;
   allowed_payment_methods: IAllowedPaymentMethods[];
   pickup_service: IPickupService;
+  is_frontdesk_enabled: boolean;
+}
+export interface ITaxes {
+  is_exlusive: boolean;
+  name: string;
+  pct: number;
+}
+export interface IChannel {
+  channel: IExposedChannel;
+  is_active: boolean;
+  map: IMap[];
+  title: string;
+}
+export interface IExposedChannel {
+  id: number | string;
+  name: string;
+  properties: IChannelProperty[];
+  property?: IChannelProperty;
+}
+export interface IChannelProperty {
+  id: string;
+  name: string;
+  room_types: IChannelRoomTypes[];
+}
+export interface IChannelRoomTypes {
+  id: string;
+  name: string;
+  rate_plans: IChannelRatePlans[];
+}
+export interface IChannelRatePlans {
+  id: string;
+  name: string;
+}
+export interface IMap {
+  channel_id: string;
+  ir_id: string;
+  type: 'room_type' | 'rate_plan' | 'property';
 }
 export interface IPickupCurrency extends ICurrency {
   symbol: string;

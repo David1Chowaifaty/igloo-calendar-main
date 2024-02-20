@@ -1,9 +1,8 @@
 import { EventEmitter } from '../../../stencil-public-runtime';
 import { Booking, IDueDate, IPayment } from "../../../models/booking.dto";
 import moment from 'moment';
-import { ILocale } from "../../../components";
+import { ILocale, IToast } from "../../../components";
 export declare class IrPaymentDetails {
-  item: any;
   bookingDetails: Booking;
   defaultTexts: ILocale;
   newTableRow: boolean;
@@ -15,7 +14,7 @@ export declare class IrPaymentDetails {
   paymentDetailsUrl: string;
   paymentExceptionMessage: string;
   resetBookingData: EventEmitter<null>;
-  creditCardPressHandler: EventEmitter<any>;
+  toast: EventEmitter<IToast>;
   private itemToBeAdded;
   private paymentService;
   componentWillLoad(): Promise<void>;
@@ -23,6 +22,7 @@ export declare class IrPaymentDetails {
   _handleSave(): Promise<void>;
   handlePaymentInputChange(key: keyof IPayment, value: any, event?: InputEvent): void;
   handleConfirmModal(e: CustomEvent): Promise<void>;
+  handleBookingDetails(): void;
   handleDateChange(e: CustomEvent<{
     start: moment.Moment;
     end: moment.Moment;

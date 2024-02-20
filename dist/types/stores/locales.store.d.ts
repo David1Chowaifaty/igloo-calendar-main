@@ -147,6 +147,10 @@ export type LocalizationStrings = {
   Lcz_NbrOfVehicles: string;
   Lcz_Pickup_YesFrom: string;
   Lcz_Pickup_NoThankYou: string;
+  Lcz_EnterAmount: string;
+  Lcz_Excluding: string;
+  Lcz_Including: string;
+  Lcz_SubTotal: string;
 };
 export declare const locales: ILocale, onCalendarDatesChange: import("@stencil/store/dist/types").OnChangeHandler<ILocale>;
 export default locales;

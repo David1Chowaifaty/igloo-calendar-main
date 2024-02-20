@@ -16,9 +16,9 @@ export class IrSelect {
     this.size = 'md';
     this.textSize = 'md';
     this.labelPosition = 'left';
-    this.labelBackground = 'light';
+    this.labelBackground = null;
     this.labelColor = 'dark';
-    this.labelBorder = 'none';
+    this.labelBorder = 'theme';
     this.labelWidth = 3;
     this.initial = true;
     this.valid = false;
@@ -49,7 +49,7 @@ export class IrSelect {
   }
   render() {
     let className = 'form-control';
-    let label = (h("div", { class: `input-group-prepend col-${this.labelWidth} p-0 text-${this.labelColor} border-${this.labelBorder}` }, h("label", { class: `input-group-text ${this.labelPosition === 'right' ? 'justify-content-end' : this.labelPosition === 'center' ? 'justify-content-center' : ''} bg-${this.labelBackground} flex-grow-1 text-${this.labelColor} border-${this.labelBorder === 'none' ? 0 : this.labelBorder} ` }, this.label, this.required ? '*' : '')));
+    let label = (h("div", { class: `input-group-prepend col-${this.labelWidth} p-0 text-${this.labelColor}` }, h("label", { class: `input-group-text ${this.labelPosition === 'right' ? 'justify-content-end' : this.labelPosition === 'center' ? 'justify-content-center' : ''} ${this.labelBackground ? 'bg-' + this.labelBackground : ''} flex-grow-1 text-${this.labelColor} border-${this.labelBorder === 'none' ? 0 : this.labelBorder} ` }, this.label, this.required ? '*' : '')));
     if (this.selectStyle === false) {
       className = '';
     }
@@ -69,6 +69,17 @@ export class IrSelect {
     })))));
   }
   static get is() { return "ir-select"; }
+  static get encapsulation() { return "scoped"; }
+  static get originalStyleUrls() {
+    return {
+      "$": ["ir-select.css"]
+    };
+  }
+  static get styleUrls() {
+    return {
+      "$": ["ir-select.css"]
+    };
+  }
   static get properties() {
     return {
       "name": {
@@ -326,7 +337,7 @@ export class IrSelect {
         "type": "string",
         "mutable": false,
         "complexType": {
-          "original": "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark'",
+          "original": "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | null",
           "resolved": "\"danger\" | \"dark\" | \"info\" | \"light\" | \"primary\" | \"secondary\" | \"success\" | \"warning\"",
           "references": {}
         },
@@ -338,7 +349,7 @@ export class IrSelect {
         },
         "attribute": "label-background",
         "reflect": false,
-        "defaultValue": "'light'"
+        "defaultValue": "null"
       },
       "labelColor": {
         "type": "string",
@@ -362,8 +373,8 @@ export class IrSelect {
         "type": "string",
         "mutable": false,
         "complexType": {
-          "original": "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'none'",
-          "resolved": "\"danger\" | \"dark\" | \"info\" | \"light\" | \"none\" | \"primary\" | \"secondary\" | \"success\" | \"warning\"",
+          "original": "'theme' | 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'none'",
+          "resolved": "\"danger\" | \"dark\" | \"info\" | \"light\" | \"none\" | \"primary\" | \"secondary\" | \"success\" | \"theme\" | \"warning\"",
           "references": {}
         },
         "required": false,
@@ -374,7 +385,7 @@ export class IrSelect {
         },
         "attribute": "label-border",
         "reflect": false,
-        "defaultValue": "'none'"
+        "defaultValue": "'theme'"
       },
       "labelWidth": {
         "type": "number",

@@ -112,6 +112,7 @@ function getDefaultData(cell, stayStatus) {
     NOTES: cell.booking.remark,
     is_direct: cell.booking.is_direct,
     BALANCE: (_b = cell.booking.financial) === null || _b === void 0 ? void 0 : _b.due_amount,
+    channel_booking_nbr: cell.booking.channel_booking_nbr,
     ///from here
     //ENTRY_DATE: cell.booking.booked_on.date,
     // IS_EDITABLE: cell.booking.is_editable,
@@ -124,7 +125,6 @@ function getDefaultData(cell, stayStatus) {
     // RATE_TYPE: 1,
     // ADULTS_COUNT: cell.room.occupancy.adult_nbr,
     // CHILDREN_COUNT: cell.room.occupancy.children_nbr,
-    // channel_booking_nbr: cell.booking.channel_booking_nbr,
     // origin: cell.booking.origin,
     // GUEST: cell.booking.guest,
     // ROOMS: cell.booking.rooms,
@@ -188,7 +188,8 @@ export function transformNewBooking(data) {
     //   return bookingStatus[fromDate.isSameOrBefore(now, 'day') ? '000' : data?.status.code || '001'];
     // }
   };
-  data.rooms.forEach(room => {
+  const rooms = data.rooms.filter(room => !!room['assigned_units_pool']);
+  rooms.forEach(room => {
     var _a, _b;
     bookings.push({
       ID: room['assigned_units_pool'],
