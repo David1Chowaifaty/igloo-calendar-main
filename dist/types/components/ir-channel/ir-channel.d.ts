@@ -1,4 +1,5 @@
 import { IModalCause } from './types';
+import { IChannel } from "../../models/calendarData";
 export declare class IrChannel {
   el: HTMLElement;
   ticket: string;
@@ -9,14 +10,17 @@ export declare class IrChannel {
   modal_cause: IModalCause | null;
   private roomService;
   private irModalRef;
+  private channelService;
   componentWillLoad(): void;
   handleConfirmClicked(e: CustomEvent): Promise<void>;
   openModal(): void;
+  refreshChannels(): Promise<void>;
   initializeApp(): Promise<void>;
   ticketChanged(): Promise<void>;
   handleCancelModal(e: CustomEvent): void;
   handleSidebarClose(e: CustomEvent): void;
   resetSideBar(): void;
-  handleSaveChange(e: CustomEvent): void;
+  handleSaveChange(e: CustomEvent): Promise<void>;
+  handleCheckChange(check: boolean, params: IChannel): Promise<void>;
   render(): any;
 }

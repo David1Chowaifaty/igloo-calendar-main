@@ -3,7 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const unassigned_dates_store = require('./unassigned_dates.store-73358106.js');
+const unassigned_dates_store = require('./unassigned_dates.store-6fa42214.js');
 const booking_service = require('./booking.service-9518a7f02.js');
 const utils = require('./utils-4d5a8b3d.js');
 const axios = require('./axios-676363b1.js');
@@ -12,7 +12,6 @@ const moment = require('./moment-27049970.js');
 const toBeAssigned_service = require('./toBeAssigned.service-25ba43d2.js');
 const booking = require('./booking-c3ed455b.js');
 const calendarData = require('./calendar-data-f96d5e48.js');
-require('./channel.store-761e5985.js');
 
 const PACKET_TYPES = Object.create(null); // no Map = no polyfill
 PACKET_TYPES["open"] = "0";
@@ -4342,15 +4341,16 @@ const IglooCalendar = class {
       });
       unassigned_dates_store.calendar_dates.days = this.days;
       //calendar_dates.months = bookingResp.months;
-      this.calendarData = Object.assign(Object.assign({}, this.calendarData), { days: this.days, monthsInfo: [...this.calendarData.monthsInfo, ...newMonths], bookingEvents: [...this.calendarData.bookingEvents, ...newBookings] });
+      this.calendarData = Object.assign(Object.assign({}, this.calendarData), { days: this.days, monthsInfo: [...this.calendarData.monthsInfo, ...newMonths], bookingEvents: [...this.calendarData.bookingEvents, ...bookings] });
+      const data = await this.toBeAssignedService.getUnassignedDates(this.propertyid, fromDate, toDate);
+      this.calendarData.unassignedDates = Object.assign(Object.assign({}, this.calendarData.unassignedDates), data);
+      this.unassignedDates = {
+        fromDate,
+        toDate,
+        data,
+      };
+      unassigned_dates_store.addUnassingedDates(data);
     }
-    const data = await this.toBeAssignedService.getUnassignedDates(this.propertyid, fromDate, toDate);
-    this.calendarData.unassignedDates = Object.assign(Object.assign({}, this.calendarData.unassignedDates), data);
-    this.unassignedDates = {
-      fromDate,
-      toDate,
-      data,
-    };
   }
   async handleDateSearch(dates) {
     const startDate = moment.hooks(dates.start).toDate();

@@ -2,6 +2,7 @@ import { r as registerInstance, c as createEvent, h, F as Fragment, H as Host, g
 import { B as BookingService$1 } from './booking.service-1b0ad001.js';
 import { h as hooks } from './moment-5e85be7a.js';
 import { a as axios, l as locales } from './axios-e2d8c656.js';
+import { i as isBlockUnit } from './utils-3a2a9b4d.js';
 import { B as BookingService } from './booking.service-1b0ad0012.js';
 import { k as getReleaseHoursString, p as findCountry, o as formatDate, m as getCurrencySymbol } from './utils-9e497cec.js';
 import { E as EventsService$1 } from './events.service-4aa75ec2.js';
@@ -93,10 +94,6 @@ function transformNewBooking(data) {
     });
   });
   return bookings;
-}
-
-function isBlockUnit(status_code) {
-  return ['003', '002', '004'].includes(status_code);
 }
 
 class EventsService {

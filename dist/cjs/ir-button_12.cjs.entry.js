@@ -3,8 +3,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const room_service = require('./room.service-517fb587.js');
-const channel_store = require('./channel.store-761e5985.js');
+const room_service = require('./room.service-d3af0aee.js');
 const axios = require('./axios-676363b1.js');
 const calendarData = require('./calendar-data-f96d5e48.js');
 
@@ -35,23 +34,162 @@ const IrButton = class {
 };
 IrButton.style = irButtonCss;
 
+const initialState = {
+  channels: [],
+  selectedChannel: null,
+  mappedChannels: [],
+  connected_channels: [],
+  isConnectedToChannel: false,
+  channel_settings: null,
+  property_id: null,
+  channel_id: -1,
+  is_active: false,
+};
+const { state: channels_data, onChange: onChannelChange, dispose } = axios.createStore(initialState);
+function setChannelIdAndActiveState(id, is_active) {
+  channels_data.channel_id = id;
+  channels_data.is_active = is_active;
+}
+function selectChannel(channel_id) {
+  if (channel_id === '') {
+    channels_data.selectedChannel = null;
+    return;
+  }
+  const selectedChannel = channels_data.channels.find(c => c.id.toString() === channel_id);
+  if (selectedChannel) {
+    channels_data.selectedChannel = selectedChannel;
+  }
+  else {
+    channels_data.selectedChannel = {
+      id: channel_id,
+      name: '',
+      properties: [],
+    };
+  }
+  setMappedChannel();
+}
+function updateChannelSettings(key, value) {
+  if (!channels_data.channel_settings) {
+    channels_data.channel_settings = {
+      hotel_id: '',
+      hotel_title: '',
+    };
+  }
+  channels_data.channel_settings[key] = value;
+}
+function setMappedChannel() {
+  let selectedChannelMap = channels_data.connected_channels.find(c => c.channel.id.toString() === channels_data.selectedChannel.id.toString());
+  if (!selectedChannelMap) {
+    channels_data.mappedChannels = [];
+    return;
+  }
+  channels_data.mappedChannels = [...selectedChannelMap.map];
+}
+function resetStore() {
+  channels_data.selectedChannel = null;
+  channels_data.mappedChannels = [];
+  channels_data.isConnectedToChannel = false;
+  channels_data.channel_settings = null;
+}
+function addMapping(ir_id, fr_id, isRoomType) {
+  channels_data.mappedChannels.push({
+    channel_id: fr_id,
+    ir_id,
+    type: isRoomType ? 'room_type' : 'rate_plan',
+  });
+}
+function testConnection() {
+  var _a;
+  // const hotelConnection = channels_data.selectedChannel.properties.find(property => property.id === 'd09e6374-1ebf-45e0-a130-64c8c9930987');
+  const hotelConnection = channels_data.selectedChannel.properties.find(property => property.id === channels_data.channel_settings.hotel_id);
+  if (!hotelConnection) {
+    return false;
+  }
+  channels_data.selectedChannel.property = hotelConnection;
+  if (channels_data.mappedChannels.length === 0) {
+    channels_data.mappedChannels.push({ ir_id: ((_a = channels_data.property_id) !== null && _a !== void 0 ? _a : -1).toString(), channel_id: channels_data.channel_settings.hotel_id, type: 'property' });
+  }
+  channels_data.isConnectedToChannel = true;
+  return true;
+}
+
+class ChannelService {
+  async getExposedChannels() {
+    try {
+      const token = JSON.parse(sessionStorage.getItem('token'));
+      if (token !== null) {
+        const { data } = await axios.axios.post(`/Get_Exposed_Channels?Ticket=${token}`, {});
+        if (data.ExceptionMsg !== '') {
+          throw new Error(data.ExceptionMsg);
+        }
+        const results = data.My_Result;
+        channels_data.channels = [...results];
+        return data;
+      }
+    }
+    catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
+  async getExposedConnectedChannels(property_id) {
+    try {
+      const token = JSON.parse(sessionStorage.getItem('token'));
+      if (token !== null) {
+        const { data } = await axios.axios.post(`/Get_Exposed_Connected_Channels?Ticket=${token}`, { property_id });
+        if (data.ExceptionMsg !== '') {
+          throw new Error(data.ExceptionMsg);
+        }
+        channels_data.connected_channels = [...data.My_Result];
+      }
+    }
+    catch (error) {
+      console.log(error);
+      throw new Error(error);
+    }
+  }
+  async saveConnectedChannel(is_remove) {
+    try {
+      const body = {
+        id: channels_data.channel_id,
+        title: channels_data.channel_settings.hotel_title,
+        is_active: channels_data.is_active,
+        channel: { id: channels_data.selectedChannel.id, name: channels_data.selectedChannel.name },
+        property: { id: calendarData.calendar_data.id, name: calendarData.calendar_data.name },
+        map: channels_data.mappedChannels,
+        is_remove,
+      };
+      const token = JSON.parse(sessionStorage.getItem('token'));
+      if (!token) {
+        throw new Error('Invalid Token');
+      }
+      const { data } = await axios.axios.post(`/Handle_Connected_Channel?Ticket=${token}`, body);
+      return data;
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+}
+
 const actions = (entries) => [
   {
     id: 'edit',
-    name: 'Edit',
+    name: entries.Lcz_Edit,
     icon: () => (index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "14", viewBox: "0 0 512 512" },
       index.h("path", { d: "M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" }))),
     action: (params) => {
       const selectedProperty = params.map.find(m => m.type === 'property');
-      channel_store.updateChannelSettings('hotel_id', selectedProperty.channel_id);
-      channel_store.updateChannelSettings('hotel_title', params.title);
-      channel_store.selectChannel(params.channel.id.toString());
-      channel_store.testConnection();
+      setChannelIdAndActiveState(params.id, params.is_active);
+      updateChannelSettings('hotel_id', selectedProperty.channel_id);
+      updateChannelSettings('hotel_title', params.title);
+      selectChannel(params.channel.id.toString());
+      testConnection();
     },
   },
   {
     id: 'view_logs',
-    name: 'View logs',
+    name: entries === null || entries === void 0 ? void 0 : entries.Lcz_ViewLogs,
     icon: () => (index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "14", viewBox: "0 0 512 512" },
       index.h("path", { d: "M40 48C26.7 48 16 58.7 16 72v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V72c0-13.3-10.7-24-24-24H40zM192 64c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zm0 160c-17.7 0-32 14.3-32 32s14.3 32 32 32H480c17.7 0 32-14.3 32-32s-14.3-32-32-32H192zM16 232v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V232c0-13.3-10.7-24-24-24H40c-13.3 0-24 10.7-24 24zM40 368c-13.3 0-24 10.7-24 24v48c0 13.3 10.7 24 24 24H88c13.3 0 24-10.7 24-24V392c0-13.3-10.7-24-24-24H40z" }))),
     action: () => {
@@ -68,40 +206,56 @@ const actions = (entries) => [
   },
   {
     id: 'full_sync',
-    name: 'Full Sync',
+    name: entries === null || entries === void 0 ? void 0 : entries.Lcz_FullSync,
     icon: () => (index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "14", viewBox: "0 0 512 512" },
       index.h("path", { d: "M142.9 142.9c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5c0 0 0 0 0 0H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5c7.7-21.8 20.2-42.3 37.8-59.8zM16 312v7.6 .7V440c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l41.6-41.6c87.6 86.5 228.7 86.2 315.8-1c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.2 62.2-162.7 62.5-225.3 1L185 329c6.9-6.9 8.9-17.2 5.2-26.2s-12.5-14.8-22.2-14.8H48.4h-.7H40c-13.3 0-24 10.7-24 24z" }))),
     action: () => {
       return {
-        cause: 'view_logs',
+        cause: 'full_sync',
         action: () => {
-          alert('view logs clicked');
+          alert('full sync');
         },
-        title: 'ok',
-        message: 'ok',
+        title: '',
+        message: entries === null || entries === void 0 ? void 0 : entries.Lcz_ScheduleFullSync,
         main_color: 'primary',
       };
     },
   },
-  { id: 'pull_future_reservation', name: 'Pull Future Reservations', icon: () => null, action: () => { } },
   {
-    id: 'remove',
-    name: entries.Lcz_Delete,
-    icon: () => (index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" },
-      index.h("path", { d: "M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" }))),
+    id: 'pull_future_reservation',
+    name: entries === null || entries === void 0 ? void 0 : entries.Lcz_PullFutureReservations,
+    icon: () => null,
     action: () => {
       return {
-        cause: 'view_logs',
-        action: async () => {
-          await new Promise(resolve => {
-            setTimeout(() => {
-              console.log('hello world');
-              resolve('hello world');
-            }, 500);
-          });
+        cause: 'pull_future_reservation',
+        action: () => {
+          alert('pull_future_reservation');
         },
-        title: 'ok',
-        message: 'ok',
+        title: '',
+        message: entries === null || entries === void 0 ? void 0 : entries.Lcz_ScheduleFullSync,
+        main_color: 'primary',
+      };
+    },
+  },
+  {
+    id: 'remove',
+    name: entries === null || entries === void 0 ? void 0 : entries.Lcz_Delete,
+    icon: () => (index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" },
+      index.h("path", { d: "M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" }))),
+    action: (params) => {
+      const selectedProperty = params.map.find(m => m.type === 'property');
+      setChannelIdAndActiveState(params.id, params.is_active);
+      updateChannelSettings('hotel_id', selectedProperty.channel_id);
+      updateChannelSettings('hotel_title', params.title);
+      selectChannel(params.channel.id.toString());
+      testConnection();
+      return {
+        cause: 'remove',
+        action: async () => {
+          await new ChannelService().saveConnectedChannel(true);
+        },
+        title: '',
+        message: entries === null || entries === void 0 ? void 0 : entries.Lcz_ThisActionWillDelete,
         main_color: 'danger',
       };
     },
@@ -114,6 +268,7 @@ const IrChannel = class {
   constructor(hostRef) {
     index.registerInstance(this, hostRef);
     this.roomService = new room_service.RoomService();
+    this.channelService = new ChannelService();
     this.ticket = '';
     this.propertyid = undefined;
     this.language = undefined;
@@ -136,20 +291,27 @@ const IrChannel = class {
       return;
     }
     await this.modal_cause.action();
+    if (this.modal_cause.cause === 'remove') {
+      await this.refreshChannels();
+    }
     this.modal_cause = null;
   }
   openModal() {
     this.irModalRef.openModal();
   }
+  async refreshChannels() {
+    await Promise.all([this.channelService.getExposedChannels(), this.channelService.getExposedConnectedChannels(this.propertyid)]);
+  }
   async initializeApp() {
     try {
       const [, , , languageTexts] = await Promise.all([
         this.roomService.fetchData(this.propertyid, this.language),
-        this.roomService.getExposedChannels(),
-        this.roomService.getExposedConnectedChannels(this.propertyid),
-        this.roomService.fetchLanguage(this.language),
+        this.channelService.getExposedChannels(),
+        this.channelService.getExposedConnectedChannels(this.propertyid),
+        this.roomService.fetchLanguage(this.language, ['_CHANNEL_FRONT']),
       ]);
-      channel_store.channels_data.property_id = this.propertyid;
+      console.log(languageTexts);
+      channels_data.property_id = this.propertyid;
       if (!axios.locales.entries) {
         axios.locales.entries = languageTexts.entries;
         axios.locales.direction = languageTexts.direction;
@@ -169,9 +331,10 @@ const IrChannel = class {
     this.modal_cause = null;
   }
   handleSidebarClose(e) {
+    var _a;
     e.stopImmediatePropagation();
     e.stopPropagation();
-    if (channel_store.channels_data.selectedChannel) {
+    if (channels_data.selectedChannel) {
       this.modal_cause = {
         action: () => {
           return new Promise(reselove => {
@@ -181,7 +344,7 @@ const IrChannel = class {
         },
         cause: 'channel',
         main_color: 'primary',
-        message: '',
+        message: (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_UnSavedChangesWillBeLost,
         title: '',
       };
       this.openModal();
@@ -192,18 +355,34 @@ const IrChannel = class {
   }
   resetSideBar() {
     this.channel_status = null;
-    channel_store.resetStore();
+    resetStore();
   }
-  handleSaveChange(e) {
+  async handleSaveChange(e) {
     e.stopImmediatePropagation();
     e.stopPropagation();
+    await this.refreshChannels();
     this.resetSideBar();
   }
+  async handleCheckChange(check, params) {
+    const selectedProperty = params.map.find(m => m.type === 'property');
+    setChannelIdAndActiveState(params.id, check);
+    updateChannelSettings('hotel_id', selectedProperty.channel_id);
+    updateChannelSettings('hotel_title', params.title);
+    selectChannel(params.channel.id.toString());
+    testConnection();
+    await this.channelService.saveConnectedChannel(false);
+    resetStore();
+    this.refreshChannels();
+  }
   render() {
-    var _a, _b, _c, _d, _e;
-    return (index.h(index.Host, { class: "h-100 " }, index.h("section", { class: "p-2 px-lg-5 py-0 h-100 d-flex flex-column" }, index.h("div", { class: "d-flex w-100 justify-content-between mb-2 align-items-center" }, index.h("h3", { class: "font-weight-bold m-0 p-0" }, "iSWITCH"), index.h("ir-button", { text: 'Create channel', size: "sm", onClickHanlder: () => (this.channel_status = 'create') }, index.h("svg", { slot: "icon", "stroke-width": 3, width: "15", height: "15", viewBox: "0 0 15 15", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, index.h("path", { d: "M7.49991 0.876892C3.84222 0.876892 0.877075 3.84204 0.877075 7.49972C0.877075 11.1574 3.84222 14.1226 7.49991 14.1226C11.1576 14.1226 14.1227 11.1574 14.1227 7.49972C14.1227 3.84204 11.1576 0.876892 7.49991 0.876892ZM1.82707 7.49972C1.82707 4.36671 4.36689 1.82689 7.49991 1.82689C10.6329 1.82689 13.1727 4.36671 13.1727 7.49972C13.1727 10.6327 10.6329 13.1726 7.49991 13.1726C4.36689 13.1726 1.82707 10.6327 1.82707 7.49972ZM7.50003 4C7.77617 4 8.00003 4.22386 8.00003 4.5V7H10.5C10.7762 7 11 7.22386 11 7.5C11 7.77614 10.7762 8 10.5 8H8.00003V10.5C8.00003 10.7761 7.77617 11 7.50003 11C7.22389 11 7.00003 10.7761 7.00003 10.5V8H4.50003C4.22389 8 4.00003 7.77614 4.00003 7.5C4.00003 7.22386 4.22389 7 4.50003 7H7.00003V4.5C7.00003 4.22386 7.22389 4 7.50003 4Z", fill: "currentColor", "fill-rule": "evenodd", "clip-rule": "evenodd" })))), index.h("div", { class: "card p-1 flex-fill m-0" }, index.h("table", { class: "table table-hover" }, index.h("thead", null, index.h("tr", null, index.h("th", { scope: "col", class: "text-left" }, "Channel"), index.h("th", { scope: "col" }, "Status"), index.h("th", { scope: "col", class: "actions-theader" }, "Actions"))), index.h("tbody", { class: "" }, (_a = channel_store.channels_data.connected_channels) === null || _a === void 0 ? void 0 : _a.map(channel => {
-      var _a;
-      return (index.h("tr", { key: channel.channel.id }, index.h("th", { scope: "row", class: "text-left" }, channel.channel.name, " ", (_a = channel === null || channel === void 0 ? void 0 : channel.title) !== null && _a !== void 0 ? _a : ''), index.h("td", null, index.h("ir-switch", { checked: channel.is_active })), index.h("th", null, index.h("div", { class: "d-flex justify-content-end" }, index.h("div", { class: "btn-group" }, index.h("button", { type: "button", class: "btn  dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }, index.h("span", { class: "mr-1" }, "Actions"), index.h("svg", { class: 'caret-icon', xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 448 512", height: 14, width: 14 }, index.h("path", { fill: "var(--blue)", d: "M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" }))), index.h("div", { class: "dropdown-menu dropdown-menu-right" }, actions(axios.locales.entries).map((a, index$1) => (index.h(index.Fragment, null, index.h("button", { onClick: () => {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    return (index.h(index.Host, { class: "h-100 " }, index.h("section", { class: "p-2 px-lg-5 py-0 h-100 d-flex flex-column" }, index.h("div", { class: "d-flex w-100 justify-content-between mb-2 align-items-center" }, index.h("h3", { class: "font-weight-bold m-0 p-0" }, (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_iSWITCH), index.h("ir-button", { text: (_b = axios.locales.entries) === null || _b === void 0 ? void 0 : _b.Lcz_CreateChannel, size: "sm", onClickHanlder: () => (this.channel_status = 'create') }, index.h("svg", { slot: "icon", "stroke-width": 3, width: "15", height: "15", viewBox: "0 0 15 15", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, index.h("path", { d: "M7.49991 0.876892C3.84222 0.876892 0.877075 3.84204 0.877075 7.49972C0.877075 11.1574 3.84222 14.1226 7.49991 14.1226C11.1576 14.1226 14.1227 11.1574 14.1227 7.49972C14.1227 3.84204 11.1576 0.876892 7.49991 0.876892ZM1.82707 7.49972C1.82707 4.36671 4.36689 1.82689 7.49991 1.82689C10.6329 1.82689 13.1727 4.36671 13.1727 7.49972C13.1727 10.6327 10.6329 13.1726 7.49991 13.1726C4.36689 13.1726 1.82707 10.6327 1.82707 7.49972ZM7.50003 4C7.77617 4 8.00003 4.22386 8.00003 4.5V7H10.5C10.7762 7 11 7.22386 11 7.5C11 7.77614 10.7762 8 10.5 8H8.00003V10.5C8.00003 10.7761 7.77617 11 7.50003 11C7.22389 11 7.00003 10.7761 7.00003 10.5V8H4.50003C4.22389 8 4.00003 7.77614 4.00003 7.5C4.00003 7.22386 4.22389 7 4.50003 7H7.00003V4.5C7.00003 4.22386 7.22389 4 7.50003 4Z", fill: "currentColor", "fill-rule": "evenodd", "clip-rule": "evenodd" })))), index.h("div", { class: "card p-1 flex-fill m-0" }, index.h("table", { class: "table table-striped table-bordered no-footer dataTable" }, index.h("thead", null, index.h("tr", null, index.h("th", { scope: "col", class: "text-left" }, (_c = axios.locales.entries) === null || _c === void 0 ? void 0 : _c.Lcz_Channel), index.h("th", { scope: "col" }, (_d = axios.locales.entries) === null || _d === void 0 ? void 0 : _d.Lcz_Status), index.h("th", { scope: "col", class: "actions-theader" }, (_e = axios.locales.entries) === null || _e === void 0 ? void 0 : _e.Lcz_Actions))), index.h("tbody", { class: "" }, (_f = channels_data.connected_channels) === null || _f === void 0 ? void 0 : _f.map(channel => {
+      var _a, _b;
+      return (index.h("tr", { key: channel.channel.id }, index.h("th", { scope: "row", class: "text-left" }, channel.channel.name, " ", (_a = channel === null || channel === void 0 ? void 0 : channel.title) !== null && _a !== void 0 ? _a : ''), index.h("td", null, index.h("ir-switch", { checked: channel.is_active, onCheckChange: e => this.handleCheckChange(e.detail, channel) })), index.h("th", null, index.h("div", { class: "d-flex justify-content-end" }, index.h("div", { class: "btn-group" }, index.h("button", { type: "button", class: "btn  dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }, index.h("span", { class: "mr-1" }, " ", (_b = axios.locales.entries) === null || _b === void 0 ? void 0 :
+        _b.Lcz_Actions), index.h("svg", { class: 'caret-icon', xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 448 512", height: 14, width: 14 }, index.h("path", { fill: "var(--blue)", d: "M201.4 342.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 274.7 86.6 137.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z" }))), index.h("div", { class: "dropdown-menu dropdown-menu-right" }, actions(axios.locales.entries).map((a, index$1) => (index.h(index.Fragment, null, index.h("button", { onClick: () => {
+          if (a.id === 'pull_future_reservation' || a.id === 'view_logs') {
+            return;
+          }
           a.action(channel);
           if (a.id === 'edit') {
             setTimeout(() => {
@@ -215,9 +394,9 @@ const IrChannel = class {
             this.openModal();
           }
         }, key: a.id + '_item', class: `dropdown-item my-0 ${a.id === 'remove' ? 'danger' : ''}`, type: "button" }, a.icon(), a.name), index$1 < actions(axios.locales.entries).length - 1 && index.h("div", { key: a.id + '_divider', class: "dropdown-divider my-0" }))))))))));
-    }))))), index.h("ir-sidebar", { sidebarStyles: {
+    }))), channels_data.connected_channels.length === 0 && index.h("p", { class: "text-center" }, (_g = axios.locales.entries) === null || _g === void 0 ? void 0 : _g.Lcz_NoChannelsAreConnected))), index.h("ir-sidebar", { sidebarStyles: {
         width: '60rem',
-      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && index.h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) })), index.h("ir-modal", { modalTitle: (_b = this.modal_cause) === null || _b === void 0 ? void 0 : _b.title, modalBody: (_c = this.modal_cause) === null || _c === void 0 ? void 0 : _c.message, ref: el => (this.irModalRef = el), onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_e = (_d = this.modal_cause) === null || _d === void 0 ? void 0 : _d.main_color) !== null && _e !== void 0 ? _e : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
+      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && index.h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) })), index.h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = axios.locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = axios.locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
   }
   get el() { return index.getElement(this); }
   static get watchers() { return {
@@ -233,17 +412,18 @@ const IrChannelEditor = class {
     index.registerInstance(this, hostRef);
     this.saveChannelFinished = index.createEvent(this, "saveChannelFinished", 7);
     this.closeSideBar = index.createEvent(this, "closeSideBar", 7);
+    var _a, _b, _c;
     this.channel_status = null;
     this.selectedTab = '';
     this.isLoading = false;
     this.headerTitles = [
       {
         id: 'general_settings',
-        name: 'General Settings',
+        name: (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_GeneralSettings,
         disabled: false,
       },
-      { id: 'mapping', name: 'Mapping', disabled: true },
-      { id: 'channel_booking', name: 'Channel Booking', disabled: true },
+      { id: 'mapping', name: (_b = axios.locales.entries) === null || _b === void 0 ? void 0 : _b.Lcz_Mapping, disabled: true },
+      { id: 'channel_booking', name: (_c = axios.locales.entries) === null || _c === void 0 ? void 0 : _c.Lcz_ChannelBooking, disabled: true },
     ];
     this.selectedRoomType = [];
   }
@@ -252,7 +432,7 @@ const IrChannelEditor = class {
       this.enableAllHeaders();
     }
     this.selectedTab = this.headerTitles[0].id;
-    channel_store.onChannelChange('isConnectedToChannel', newValue => {
+    onChannelChange('isConnectedToChannel', newValue => {
       if (!!newValue) {
         this.enableAllHeaders();
       }
@@ -284,23 +464,8 @@ const IrChannelEditor = class {
   async saveConnectedChannel() {
     try {
       this.isLoading = true;
-      const body = {
-        // id: channels_data.selectedChannel.id,
-        id: -1,
-        title: channel_store.channels_data.channel_settings.hotel_title,
-        is_active: false,
-        channel: { id: channel_store.channels_data.selectedChannel.id, name: channel_store.channels_data.selectedChannel.name },
-        property: { id: calendarData.calendar_data.id, name: calendarData.calendar_data.name },
-        map: channel_store.channels_data.mappedChannels,
-        is_remove: false,
-      };
-      const token = JSON.parse(sessionStorage.getItem('token'));
-      if (!token) {
-        throw new Error('Invalid Token');
-      }
-      const { data } = await axios.axios.post(`/Handle_Connected_Channel?Ticket=${token}`, body);
+      await new ChannelService().saveConnectedChannel(false);
       this.saveChannelFinished.emit();
-      console.log(data);
     }
     catch (error) {
       console.error(error);
@@ -310,7 +475,8 @@ const IrChannelEditor = class {
     }
   }
   render() {
-    return (index.h(index.Host, { class: " d-flex flex-column h-100" }, index.h("nav", { class: "px-1 position-sticky sticky-top py-1 top-0 bg-white" }, index.h("div", { class: "d-flex align-items-center  justify-content-between" }, index.h("h3", { class: "text-left font-medium-2  py-0 my-0" }, this.channel_status === 'create' ? 'Create Channel' : 'Edit Channel'), index.h("ir-icon", { class: 'm-0 p-0 close', onIconClickHandler: () => {
+    var _a, _b;
+    return (index.h(index.Host, { class: " d-flex flex-column h-100" }, index.h("nav", { class: "px-1 position-sticky sticky-top py-1 top-0 bg-white" }, index.h("div", { class: "d-flex align-items-center  justify-content-between" }, index.h("h3", { class: "text-left font-medium-2  py-0 my-0" }, this.channel_status === 'create' ? (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_CreateChannel : (_b = axios.locales.entries) === null || _b === void 0 ? void 0 : _b.Lcz_EditChannel), index.h("ir-icon", { class: 'm-0 p-0 close', onIconClickHandler: () => {
         this.closeSideBar.emit(null);
       } }, index.h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 384 512", height: 20, width: 20 }, index.h("path", { d: "M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z" })))), index.h("ir-channel-header", { class: "mt-1 px-0", headerTitles: this.headerTitles })), index.h("section", { class: "py-1 flex-fill tab-container px-1" }, this.renderTabScreen()), index.h("ir-button", { isLoading: this.isLoading, onClickHanlder: () => this.saveConnectedChannel(), class: "px-1 py-1 top-border", btn_styles: "w-100  justify-content-center align-items-center", text: axios.locales.entries.Lcz_Save })));
   }
@@ -327,30 +493,31 @@ const IrChannelGeneral = class {
     this.connection_status_message = '';
   }
   componentWillLoad() {
+    var _a;
     if (this.channel_status !== 'create') {
       return;
     }
-    this.connection_status_message = channel_store.channels_data.isConnectedToChannel ? 'Connected Channel' : '';
+    this.connection_status_message = channels_data.isConnectedToChannel ? (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_ConnectedChannel : '';
   }
   handleTestConnectionClicked(e) {
-    var _a;
+    var _a, _b, _c;
     e.preventDefault();
     this.buttonClicked = true;
-    if (this.channel_status !== 'create' || !((_a = channel_store.channels_data.channel_settings) === null || _a === void 0 ? void 0 : _a.hotel_id) || channel_store.channels_data.isConnectedToChannel) {
+    if (this.channel_status !== 'create' || !((_a = channels_data.channel_settings) === null || _a === void 0 ? void 0 : _a.hotel_id) || channels_data.isConnectedToChannel) {
       return;
     }
-    const status = channel_store.testConnection();
-    this.connection_status_message = status ? 'Connected Channel' : 'Incorrect Connection';
+    const status = testConnection();
+    this.connection_status_message = status ? (_b = axios.locales.entries) === null || _b === void 0 ? void 0 : _b.Lcz_ConnectedChannel : (_c = axios.locales.entries) === null || _c === void 0 ? void 0 : _c.Lcz_IncorrectConnection;
     this.buttonClicked = false;
   }
   render() {
-    var _a, _b, _c, _d;
-    return (index.h(index.Host, null, index.h("section", { class: "ml-18" }, index.h("fieldset", { class: "d-flex align-items-center" }, index.h("label", { htmlFor: "hotel_channels", class: "m-0 p-0 label-style" }, "Channel:"), index.h("ir-combobox", { input_id: "hotel_channels", disabled: channel_store.channels_data.isConnectedToChannel, class: "flex-fill", value: (_a = channel_store.channels_data.selectedChannel) === null || _a === void 0 ? void 0 : _a.name, onComboboxValueChange: (e) => {
-        channel_store.selectChannel(e.detail.data.toString());
-      }, placeholder: "Choose channel from list", data: channel_store.channels_data.channels.map(channel => ({
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+    return (index.h(index.Host, null, index.h("section", { class: "ml-18" }, index.h("fieldset", { class: "d-flex align-items-center" }, index.h("label", { htmlFor: "hotel_channels", class: "m-0 p-0 label-style" }, (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_Channel), index.h("ir-combobox", { input_id: "hotel_channels", disabled: channels_data.isConnectedToChannel, class: "flex-fill", value: (_b = channels_data.selectedChannel) === null || _b === void 0 ? void 0 : _b.name, onComboboxValueChange: (e) => {
+        selectChannel(e.detail.data.toString());
+      }, data: channels_data.channels.map(channel => ({
         id: channel.id,
         name: channel.name,
-      })) })), index.h("fieldset", { class: "d-flex align-items-center mt-1" }, index.h("label", { htmlFor: "hotel_title", class: "m-0 p-0 label-style" }, "Title:"), index.h("div", { class: "flex-fill" }, index.h("input", { id: "hotel_title", value: (_b = channel_store.channels_data.channel_settings) === null || _b === void 0 ? void 0 : _b.hotel_title, onInput: e => channel_store.updateChannelSettings('hotel_title', e.target.value), class: "form-control  flex-fill" })))), channel_store.channels_data.selectedChannel && (index.h("form", { onSubmit: this.handleTestConnectionClicked.bind(this), class: "mt-3 connection-container" }, index.h("h3", { class: "text-left font-medium-2  py-0 my-0 connection-title py-1 mb-2" }, "Connection Settings"), index.h("div", { class: "ml-18" }, index.h("fieldset", { class: "d-flex align-items-center my-1" }, index.h("label", { htmlFor: "hotel_id", class: "m-0 p-0 label-style" }, "Hotel ID:"), index.h("div", { class: "flex-fill" }, index.h("input", { id: "hotel_id", disabled: channel_store.channels_data.isConnectedToChannel, class: `form-control  flex-fill bg-white ${this.buttonClicked && !((_c = channel_store.channels_data.channel_settings) === null || _c === void 0 ? void 0 : _c.hotel_id) && 'border-danger'}`, value: (_d = channel_store.channels_data.channel_settings) === null || _d === void 0 ? void 0 : _d.hotel_id, onInput: e => channel_store.updateChannelSettings('hotel_id', e.target.value) }))), index.h("div", { class: 'connection-testing-container' }, index.h("span", null, this.connection_status_message), index.h("button", { class: "btn btn-outline-secondary btn-sm", type: "submit" }, "Test Connection")))))));
+      })) })), index.h("fieldset", { class: "d-flex align-items-center mt-1" }, index.h("label", { htmlFor: "hotel_title", class: "m-0 p-0 label-style" }, (_c = axios.locales.entries) === null || _c === void 0 ? void 0 : _c.Lcz_Title), index.h("div", { class: "flex-fill" }, index.h("input", { id: "hotel_title", value: (_d = channels_data.channel_settings) === null || _d === void 0 ? void 0 : _d.hotel_title, onInput: e => updateChannelSettings('hotel_title', e.target.value), class: "form-control  flex-fill" })))), channels_data.selectedChannel && (index.h("form", { onSubmit: this.handleTestConnectionClicked.bind(this), class: "mt-3 connection-container" }, index.h("h3", { class: "text-left font-medium-2  py-0 my-0 connection-title py-1 mb-2" }, (_e = axios.locales.entries) === null || _e === void 0 ? void 0 : _e.Lcz_ConnectionSettings), index.h("div", { class: "ml-18" }, index.h("fieldset", { class: "d-flex align-items-center my-1" }, index.h("label", { htmlFor: "hotel_id", class: "m-0 p-0 label-style" }, (_f = axios.locales.entries) === null || _f === void 0 ? void 0 : _f.Lcz_HotelID), index.h("div", { class: "flex-fill" }, index.h("input", { id: "hotel_id", disabled: channels_data.isConnectedToChannel, class: `form-control  flex-fill bg-white ${this.buttonClicked && !((_g = channels_data.channel_settings) === null || _g === void 0 ? void 0 : _g.hotel_id) && 'border-danger'}`, value: (_h = channels_data.channel_settings) === null || _h === void 0 ? void 0 : _h.hotel_id, onInput: e => updateChannelSettings('hotel_id', e.target.value) }))), index.h("div", { class: 'connection-testing-container' }, index.h("span", null, this.connection_status_message), index.h("button", { class: "btn btn-outline-secondary btn-sm", type: "submit" }, (_j = axios.locales.entries) === null || _j === void 0 ? void 0 : _j.Lcz_TestConnection)))))));
   }
 };
 IrChannelGeneral.style = irChannelGeneralCss;
@@ -404,18 +571,18 @@ IrChannelHeader.style = irChannelHeaderCss;
 
 class IrMappingService {
   removedMapping(ir_id, isRoomType) {
-    let selectedChannels = [...channel_store.channels_data.mappedChannels];
+    let selectedChannels = [...channels_data.mappedChannels];
     if (isRoomType) {
       const toBeRemovedRoomType = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === ir_id);
       selectedChannels = selectedChannels.filter(c => toBeRemovedRoomType.rateplans.find(rate_plan => rate_plan.id.toString() === c.ir_id) === undefined);
     }
-    channel_store.channels_data.mappedChannels = selectedChannels.filter(c => c.ir_id !== ir_id);
+    channels_data.mappedChannels = selectedChannels.filter(c => c.ir_id !== ir_id);
   }
   checkMappingExists(id, isRoomType, roomTypeId) {
-    const mapped_id = channel_store.channels_data.mappedChannels.find(m => m.channel_id === id);
+    const mapped_id = channels_data.mappedChannels.find(m => m.channel_id === id);
     if (!mapped_id) {
       if (!isRoomType) {
-        const matchingRoomType = channel_store.channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
+        const matchingRoomType = channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
         if (!matchingRoomType) {
           return { hide: true, result: undefined, occupancy: undefined };
         }
@@ -429,7 +596,7 @@ class IrMappingService {
     if (!roomTypeId) {
       throw new Error('Missing room type id');
     }
-    const matchingRoomType = channel_store.channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
+    const matchingRoomType = channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
     const room_type = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === matchingRoomType.ir_id);
     if (!room_type) {
       throw new Error('Invalid Room type');
@@ -438,19 +605,19 @@ class IrMappingService {
   }
   getAppropriateRooms(isRoomType, roomTypeId) {
     if (isRoomType) {
-      const filteredRoomTypes = calendarData.calendar_data.roomsInfo.filter(room => channel_store.channels_data.mappedChannels.find(m => m.ir_id.toString() === room.id.toString()) === undefined && room.is_active);
+      const filteredRoomTypes = calendarData.calendar_data.roomsInfo.filter(room => channels_data.mappedChannels.find(m => m.ir_id.toString() === room.id.toString()) === undefined && room.is_active);
       return filteredRoomTypes.map(room => ({ id: room.id.toString(), name: room.name }));
     }
     if (!roomTypeId) {
       throw new Error('Missing roomType id');
     }
-    const matchingRoomType = channel_store.channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
+    const matchingRoomType = channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
     if (!matchingRoomType) {
       throw new Error('Invalid room type id');
     }
     const selectedRoomType = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === matchingRoomType.ir_id);
     return selectedRoomType.rateplans
-      .filter(rate_plan => channel_store.channels_data.mappedChannels.find(r => rate_plan.id.toString() === r.ir_id) === undefined)
+      .filter(rate_plan => channels_data.mappedChannels.find(r => rate_plan.id.toString() === r.ir_id) === undefined)
       .map(rate_plan => ({
       id: rate_plan.id.toString(),
       name: rate_plan.name,
@@ -475,23 +642,24 @@ const IrChannelMapping = class {
     this.activeMapField = id;
   }
   renderMappingStatus(mappedField, id, isRoomType, roomTypeId) {
+    var _a;
     if (mappedField.hide) {
       return index.h("span", null);
     }
     if (mappedField.result) {
       return (index.h(index.Fragment, null, index.h("span", { class: "px-2 d-md-none text-blue d-flex align-items-center" }, index.h("span", { class: "m-0 p-0 d-flex align-items-center selected-map" }, index.h("span", { class: "selected-map-title" }, mappedField.result.name), index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { fill: 'var(--blue)', d: "M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" })), mappedField.occupancy), index.h("ir-icon", { class: "ml-1 p-0", onIconClickHandler: () => this.mappingService.removedMapping(mappedField.result.id.toString(), isRoomType) }, index.h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { fill: 'var(--blue)', d: "M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" })))), index.h("span", { class: "px-2 d-none text-blue d-md-flex align-items-center" }, index.h("span", { class: "m-0 p-0 d-flex align-items-center selected-map" }, mappedField.result.name, index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { fill: 'var(--blue)', d: "M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z" })), mappedField.occupancy), index.h("ir-icon", { class: "ml-1 p-0", onIconClickHandler: () => this.mappingService.removedMapping(mappedField.result.id.toString(), isRoomType) }, index.h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { fill: 'var(--blue)', d: "M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z" }))))));
     }
-    return (index.h("span", { class: "px-2" }, this.activeMapField === id ? (index.h("ir-combobox", { autoFocus: true, placeholder: "Not mapped", data: this.availableRooms, onComboboxValueChange: e => {
-        channel_store.addMapping(e.detail.data, this.activeMapField, isRoomType);
+    return (index.h("span", { class: "px-2" }, this.activeMapField === id ? (index.h("ir-combobox", { autoFocus: true, placeholder: (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_ConnectedChannel, data: this.availableRooms, onComboboxValueChange: e => {
+        addMapping(e.detail.data, this.activeMapField, isRoomType);
         this.activeMapField = '';
-      } })) : (index.h("span", { class: "cursor-pointer text-danger", onClick: () => this.setActiveField(id, isRoomType, roomTypeId) }, "Not mapped"))));
+      } })) : (index.h("span", { class: "cursor-pointer text-danger", onClick: () => this.setActiveField(id, isRoomType, roomTypeId) }, axios.locales.entries.Lcz_NotMapped))));
   }
   render() {
-    var _a, _b, _c, _d;
+    var _a, _b, _c, _d, _e;
     return (index.h(index.Host, null, index.h("div", { class: "d-flex w-100 justify-content-end" }, index.h("button", { onClick: () => {
-        channel_store.setMappedChannel();
-      }, class: "btn refresh-btn" }, "Refresh")), index.h("ul", { class: "m-0 p-0" }, index.h("li", { class: "map-row my-1" }, index.h("span", { class: "font-weight-bold" }, (_a = channel_store.channels_data.selectedChannel) === null || _a === void 0 ? void 0 : _a.name), index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { d: "M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" })), index.h("span", { class: "font-weight-bold px-2" }, "Igloorooms")), (_d = (_c = (_b = channel_store.channels_data.selectedChannel) === null || _b === void 0 ? void 0 : _b.property) === null || _c === void 0 ? void 0 : _c.room_types) === null || _d === void 0 ? void 0 :
-      _d.map(room_type => {
+        setMappedChannel();
+      }, class: "btn refresh-btn" }, (_a = axios.locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_Refresh)), index.h("ul", { class: "m-0 p-0" }, index.h("li", { class: "map-row my-1" }, index.h("span", { class: "font-weight-bold" }, (_b = channels_data.selectedChannel) === null || _b === void 0 ? void 0 : _b.name), index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { d: "M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" })), index.h("span", { class: "font-weight-bold px-2" }, "Igloorooms")), (_e = (_d = (_c = channels_data.selectedChannel) === null || _c === void 0 ? void 0 : _c.property) === null || _d === void 0 ? void 0 : _d.room_types) === null || _e === void 0 ? void 0 :
+      _e.map(room_type => {
         const mappedRoomType = this.mappingService.checkMappingExists(room_type.id, true);
         return (index.h("li", { key: room_type.id, class: "mb-1" }, index.h("div", { class: "map-row" }, index.h("span", null, room_type.name), index.h("svg", { xmlns: "http://www.w3.org/2000/svg", height: "14", width: "12.25", viewBox: "0 0 448 512" }, index.h("path", { d: "M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z" })), this.renderMappingStatus(mappedRoomType, room_type.id, true)), index.h("ul", { class: "m-0 p-0" }, room_type.rate_plans.map(rate_plan => {
           const mappedRatePlan = this.mappingService.checkMappingExists(rate_plan.id, false, room_type.id);

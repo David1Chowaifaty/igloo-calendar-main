@@ -6,6 +6,7 @@ const index = require('./index-002cb468.js');
 const booking_service$1 = require('./booking.service-9518a7f0.js');
 const moment = require('./moment-27049970.js');
 const axios = require('./axios-676363b1.js');
+const utils$1 = require('./utils-9ba1f062.js');
 const booking_service = require('./booking.service-9518a7f02.js');
 const utils = require('./utils-4d5a8b3d.js');
 const events_service = require('./events.service-b6bfbb8b.js');
@@ -97,10 +98,6 @@ function transformNewBooking(data) {
     });
   });
   return bookings;
-}
-
-function isBlockUnit(status_code) {
-  return ['003', '002', '004'].includes(status_code);
 }
 
 class EventsService {
@@ -299,7 +296,7 @@ const IglBookingEvent = class {
         event.detail.moveToDay = this.bookingEvent.FROM_DATE;
         event.detail.toRoomId = event.detail.fromRoomId;
         if (this.isTouchStart && this.moveDiffereneX <= 5 && this.moveDiffereneY <= 5 && !this.isStreatch) {
-          if (isBlockUnit(this.bookingEvent.STATUS_CODE)) {
+          if (utils$1.isBlockUnit(this.bookingEvent.STATUS_CODE)) {
             this.showEventInfo(true);
           }
           else if (['IN-HOUSE', 'CONFIRMED', 'PENDING-CONFIRMATION', 'CHECKED-OUT'].includes(this.bookingEvent.STATUS)) {
@@ -314,7 +311,7 @@ const IglBookingEvent = class {
       }
       else {
         if (this.isTouchStart && this.moveDiffereneX <= 5 && this.moveDiffereneY <= 5 && !this.isStreatch) {
-          if (isBlockUnit(this.bookingEvent.STATUS_CODE)) {
+          if (utils$1.isBlockUnit(this.bookingEvent.STATUS_CODE)) {
             this.showEventInfo(true);
           }
           else if (['IN-HOUSE', 'CONFIRMED', 'PENDING-CONFIRMATION', 'CHECKED-OUT'].includes(this.bookingEvent.STATUS)) {
@@ -324,7 +321,7 @@ const IglBookingEvent = class {
         else {
           const { pool, to_date, from_date, toRoomId } = event.detail;
           if (pool) {
-            if (isBlockUnit(this.bookingEvent.STATUS_CODE)) {
+            if (utils$1.isBlockUnit(this.bookingEvent.STATUS_CODE)) {
               await this.eventsService.reallocateEvent(pool, toRoomId, from_date, to_date).catch(() => {
                 this.resetBookingToInitialPosition();
               });
@@ -616,7 +613,7 @@ const IglBookingEvent = class {
         this.dragOverEventData.emit({ id: 'DRAG_OVER', data: this.dragEndPos });
       }
       else {
-        if (!this.bookingEvent.is_direct && !isBlockUnit(this.bookingEvent.STATUS_CODE)) {
+        if (!this.bookingEvent.is_direct && !utils$1.isBlockUnit(this.bookingEvent.STATUS_CODE)) {
           return;
         }
         let newWidth = this.initialWidth;
@@ -709,7 +706,7 @@ const IglBookingEvent = class {
     if (this.bookingEvent.STATUS === 'TEMP-EVENT' || this.bookingEvent.ID === 'NEW_TEMP_EVENT') {
       return '';
     }
-    if (isBlockUnit(this.bookingEvent.STATUS_CODE)) {
+    if (utils$1.isBlockUnit(this.bookingEvent.STATUS_CODE)) {
       return '';
     }
     if (!this.bookingEvent.is_direct) {
@@ -752,7 +749,7 @@ const IglBookingEvent = class {
     let noteNode = this.getNoteNode();
     let balanceNode = this.getBalanceNode();
     return (index.h(index.Host, { class: `bookingEvent ${this.isNewEvent() || this.isHighlightEventType() ? 'newEvent' : ''} ${legend.clsName} `, style: this.getPosition(), id: 'event_' + this.getBookingId() }, index.h("div", { class: `bookingEventBase ${!this.bookingEvent.is_direct &&
-        !isBlockUnit(this.bookingEvent.STATUS_CODE) &&
+        !utils$1.isBlockUnit(this.bookingEvent.STATUS_CODE) &&
         this.bookingEvent.STATUS !== 'TEMP-EVENT' &&
         this.bookingEvent.ID !== 'NEW_TEMP_EVENT' &&
         'border border-dark'}  ${this.isSplitBooking() ? 'splitBooking' : ''}`, style: { backgroundColor: legend.color }, onTouchStart: event => this.startDragging(event, 'move'), onMouseDown: event => this.startDragging(event, 'move') }), noteNode ? index.h("div", { class: "legend_circle noteIcon", style: { backgroundColor: noteNode.color } }) : null, balanceNode ? index.h("div", { class: "legend_circle balanceIcon", style: { backgroundColor: balanceNode.color } }) : null, index.h("div", { class: "bookingEventTitle", onTouchStart: event => this.startDragging(event, 'move'), onMouseDown: event => this.startDragging(event, 'move') }, this.getBookedBy(), this.renderEventBookingNumber()), index.h(index.Fragment, null, index.h("div", { class: "bookingEventDragHandle leftSide", onTouchStart: event => this.startDragging(event, 'leftSide'), onMouseDown: event => this.startDragging(event, 'leftSide') }), index.h("div", { class: "bookingEventDragHandle rightSide", onTouchStart: event => this.startDragging(event, 'rightSide'), onMouseDown: event => this.startDragging(event, 'rightSide') })), this.showInfoPopup ? (index.h("igl-booking-event-hover", { is_vacation_rental: this.is_vacation_rental, countryNodeList: this.countryNodeList, currency: this.currency, class: "top", bookingEvent: this.bookingEvent, bubbleInfoTop: this.bubbleInfoTopSide })) : null));
