@@ -3,17 +3,16 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const unassigned_dates_store = require('./unassigned_dates.store-6fa42214.js');
-const axios = require('./axios-676363b1.js');
-const toBeAssigned_service = require('./toBeAssigned.service-25ba43d2.js');
+const unassigned_dates_store = require('./unassigned_dates.store-a5427acd.js');
+const axios = require('./axios-145201a7.js');
+const toBeAssigned_service = require('./toBeAssigned.service-f5fa275e.js');
 const utils = require('./utils-4d5a8b3d.js');
 const moment = require('./moment-27049970.js');
 const functions = require('./functions-378ebfbf.js');
-const booking_service = require('./booking.service-9518a7f02.js');
-const calendarData = require('./calendar-data-f96d5e48.js');
+const booking_service = require('./booking.service-a35ed5242.js');
 const utils$1 = require('./utils-9ba1f062.js');
 const v4 = require('./v4-1c35741f.js');
-require('./booking-c3ed455b.js');
+require('./booking-5959ff87.js');
 
 const iglCalBodyCss = ".sc-igl-cal-body-h{display:block}.bodyContainer.sc-igl-cal-body{position:relative}.roomRow.sc-igl-cal-body{width:max-content}.roomRow.sc-igl-cal-body:first-child{margin-top:80px}.categoryName.sc-igl-cal-body{font-weight:bold;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}.cellData.sc-igl-cal-body{width:70px;height:30px;display:inline-grid;border-top:1px solid #e0e0e0;border-left:1px solid #e0e0e0;vertical-align:top}.cellData.sc-igl-cal-body:nth-child(2){border-left:0px}.cellData.sc-igl-cal-body:last-child{border-right:1px solid #e0e0e0}.roomHeaderCell.sc-igl-cal-body{position:-webkit-sticky;position:sticky;left:0;background:#fff;border-right:1px solid #ccc;width:170px;z-index:1}.currentDay.sc-igl-cal-body{background-color:#e3f3fa}.dragOverHighlight.sc-igl-cal-body{background-color:#f5f5dc !important}.selectedDay.sc-igl-cal-body{background-color:#f9f9c9 !important}.categoryTitle.sc-igl-cal-body{grid-template-columns:1fr 20px;padding-left:10px;cursor:pointer;height:40px;font-size:0.9em}.categoryTitle.sc-igl-cal-body>.sc-igl-cal-body:nth-child(1){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.roomTitle.sc-igl-cal-body{padding-left:20px;font-size:0.9em;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}.roomTitle.sc-igl-cal-body>.sc-igl-cal-body:nth-child(1){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.roomTitle.pl10.sc-igl-cal-body{padding-left:10px}.categoryPriceColumn.sc-igl-cal-body{align-items:center;height:40px;-webkit-user-select:none;user-select:none}.bookingEventsContainer.sc-igl-cal-body{position:absolute;top:0;left:0}";
 
@@ -315,6 +314,7 @@ const IglCalHeader = class {
     this.unassignedRoomsNumber = {};
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(axios.calendar_data.token);
     try {
       this.initializeRoomsList();
       if (!this.calendarData.is_vacation_rental && Object.keys(this.unassignedDates).length > 0) {
@@ -508,6 +508,7 @@ const IglToBeAssigned = class {
     this.orderedDatesList = [];
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(axios.calendar_data.token);
     this.reArrangeData();
     this.loadingMessage = axios.locales.entries.Lcz_FetchingUnAssignedUnits;
   }
@@ -737,11 +738,16 @@ const IrBookingDetails = class {
       axios.axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      axios.calendar_data.token = this.ticket;
+      this.bookingService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
       this.initializeApp();
     }
   }
   async ticketChanged() {
-    sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    axios.calendar_data.token = this.ticket;
+    this.bookingService.setToken(this.ticket);
+    this.roomService.setToken(this.ticket);
     this.initializeApp();
   }
   setRoomsData(roomServiceResp) {
@@ -942,7 +948,7 @@ const IrBookingDetails = class {
           // add separator if not last item with marginHorizontal and alignCenter
           index$1 !== this.bookingData.rooms.length - 1 && index.h("hr", { class: "mr-2 ml-2 my-0 p-0" }),
         ];
-      })), calendarData.calendar_data.pickup_service.is_enabled && this.bookingData.is_direct && (index.h("div", { class: "mb-1" }, index.h("div", { class: 'd-flex w-100 mb-1 align-items-center justify-content-between' }, index.h("p", { class: 'font-size-large p-0 m-0 ' }, axios.locales.entries.Lcz_Pickup), index.h("ir-icon", { class: "pointer ", id: "pickup" }, index.h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", height: "20", width: "20", viewBox: "0 0 512 512" }, index.h("path", { fill: "#6b6f82", d: "M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" })))), this.bookingData.pickup_info && (index.h("div", { class: 'card' }, index.h("div", { class: 'p-1' }, index.h("div", { class: 'd-flex align-items-center py-0 my-0 pickup-margin' }, index.h("p", { class: 'font-weight-bold mr-1 py-0 my-0' }, axios.locales.entries.Lcz_Date, ": ", index.h("span", { class: 'font-weight-normal' }, moment.hooks(this.bookingData.pickup_info.date, 'YYYY-MM-DD').format('ddd, DD MM YYYY'))), index.h("p", { class: 'font-weight-bold flex-fill py-0 my-0' }, axios.locales.entries.Lcz_Time, ":", index.h("span", { class: 'font-weight-normal' }, " ", `${utils$1.renderTime(this.bookingData.pickup_info.hour)}:${utils$1.renderTime(this.bookingData.pickup_info.minute)}`)), index.h("p", { class: 'font-weight-bold py-0 my-0' }, axios.locales.entries.Lcz_DueUponBooking, ":", ' ', index.h("span", { class: 'font-weight-normal' }, this.bookingData.pickup_info.currency.symbol, this.bookingData.pickup_info.total))), index.h("p", { class: 'font-weight-bold py-0 my-0' }, axios.locales.entries.Lcz_FlightDetails, ":", index.h("span", { class: 'font-weight-normal' }, " ", `${this.bookingData.pickup_info.details}`)), index.h("p", { class: 'py-0 my-0 pickup-margin' }, `${this.bookingData.pickup_info.selected_option.vehicle.description}`), index.h("p", { class: 'font-weight-bold py-0 my-0 pickup-margin' }, axios.locales.entries.Lcz_NbrOfVehicles, ":", index.h("span", { class: 'font-weight-normal' }, " ", `${this.bookingData.pickup_info.nbr_of_units}`)), index.h("p", { class: 'small py-0 my-0 pickup-margin' }, calendarData.calendar_data.pickup_service.pickup_instruction.description, calendarData.calendar_data.pickup_service.pickup_cancelation_prepayment.description))))))), index.h("div", { class: "col-12 p-0 m-0 pl-lg-1 col-lg-6" }, index.h("ir-payment-details", { defaultTexts: this.defaultTexts, bookingDetails: this.bookingData })))),
+      })), axios.calendar_data.pickup_service.is_enabled && this.bookingData.is_direct && (index.h("div", { class: "mb-1" }, index.h("div", { class: 'd-flex w-100 mb-1 align-items-center justify-content-between' }, index.h("p", { class: 'font-size-large p-0 m-0 ' }, axios.locales.entries.Lcz_Pickup), index.h("ir-icon", { class: "pointer ", id: "pickup" }, index.h("svg", { slot: "icon", xmlns: "http://www.w3.org/2000/svg", height: "20", width: "20", viewBox: "0 0 512 512" }, index.h("path", { fill: "#6b6f82", d: "M471.6 21.7c-21.9-21.9-57.3-21.9-79.2 0L362.3 51.7l97.9 97.9 30.1-30.1c21.9-21.9 21.9-57.3 0-79.2L471.6 21.7zm-299.2 220c-6.1 6.1-10.8 13.6-13.5 21.9l-29.6 88.8c-2.9 8.6-.6 18.1 5.8 24.6s15.9 8.7 24.6 5.8l88.8-29.6c8.2-2.7 15.7-7.4 21.9-13.5L437.7 172.3 339.7 74.3 172.4 241.7zM96 64C43 64 0 107 0 160V416c0 53 43 96 96 96H352c53 0 96-43 96-96V320c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V160c0-17.7 14.3-32 32-32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H96z" })))), this.bookingData.pickup_info && (index.h("div", { class: 'card' }, index.h("div", { class: 'p-1' }, index.h("div", { class: 'd-flex align-items-center py-0 my-0 pickup-margin' }, index.h("p", { class: 'font-weight-bold mr-1 py-0 my-0' }, axios.locales.entries.Lcz_Date, ": ", index.h("span", { class: 'font-weight-normal' }, moment.hooks(this.bookingData.pickup_info.date, 'YYYY-MM-DD').format('ddd, DD MM YYYY'))), index.h("p", { class: 'font-weight-bold flex-fill py-0 my-0' }, axios.locales.entries.Lcz_Time, ":", index.h("span", { class: 'font-weight-normal' }, " ", `${utils$1.renderTime(this.bookingData.pickup_info.hour)}:${utils$1.renderTime(this.bookingData.pickup_info.minute)}`)), index.h("p", { class: 'font-weight-bold py-0 my-0' }, axios.locales.entries.Lcz_DueUponBooking, ":", ' ', index.h("span", { class: 'font-weight-normal' }, this.bookingData.pickup_info.currency.symbol, this.bookingData.pickup_info.total))), index.h("p", { class: 'font-weight-bold py-0 my-0' }, axios.locales.entries.Lcz_FlightDetails, ":", index.h("span", { class: 'font-weight-normal' }, " ", `${this.bookingData.pickup_info.details}`)), index.h("p", { class: 'py-0 my-0 pickup-margin' }, `${this.bookingData.pickup_info.selected_option.vehicle.description}`), index.h("p", { class: 'font-weight-bold py-0 my-0 pickup-margin' }, axios.locales.entries.Lcz_NbrOfVehicles, ":", index.h("span", { class: 'font-weight-normal' }, " ", `${this.bookingData.pickup_info.nbr_of_units}`)), index.h("p", { class: 'small py-0 my-0 pickup-margin' }, axios.calendar_data.pickup_service.pickup_instruction.description, axios.calendar_data.pickup_service.pickup_cancelation_prepayment.description))))))), index.h("div", { class: "col-12 p-0 m-0 pl-lg-1 col-lg-6" }, index.h("ir-payment-details", { defaultTexts: this.defaultTexts, bookingDetails: this.bookingData })))),
       index.h("ir-sidebar", { open: this.sidebarState !== null, side: 'right', id: "editGuestInfo", onIrSidebarToggle: e => {
           e.stopImmediatePropagation();
           e.stopPropagation();
@@ -985,6 +991,7 @@ const IrRoomNights = class {
     this.isInputFocused = -1;
   }
   componentWillLoad() {
+    this.bookingService.setToken(axios.calendar_data.token);
     if (this.baseUrl) {
       axios.axios.defaults.baseURL = this.baseUrl;
     }

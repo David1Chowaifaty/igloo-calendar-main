@@ -4,6 +4,7 @@ import { B as BookingService } from './booking.service.js';
 import { o as getDaysArray, g as getCurrencySymbol, p as convertDatePrice, f as formatDate } from './utils.js';
 import { h as hooks } from './moment.js';
 import { l as locales } from './locales.store.js';
+import { c as calendar_data } from './calendar-data.js';
 import { d as defineCustomElement$2 } from './ir-button2.js';
 import { d as defineCustomElement$1 } from './ir-icon2.js';
 import { v as v4 } from './v4.js';
@@ -36,6 +37,7 @@ const IrRoomNights = /*@__PURE__*/ proxyCustomElement(class IrRoomNights extends
     this.isInputFocused = -1;
   }
   componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
     if (this.baseUrl) {
       axios.defaults.baseURL = this.baseUrl;
     }

@@ -3,12 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const booking_service = require('./booking.service-9518a7f02.js');
-const axios = require('./axios-676363b1.js');
+const booking_service = require('./booking.service-a35ed5242.js');
+const axios = require('./axios-145201a7.js');
 const v4 = require('./v4-1c35741f.js');
 require('./utils-4d5a8b3d.js');
 require('./moment-27049970.js');
-require('./booking-c3ed455b.js');
+require('./booking-5959ff87.js');
 
 const irAutocompleteCss = ".sc-ir-autocomplete-h{display:block;position:relative}.selected.sc-ir-autocomplete{color:#fff;text-decoration:none;background-color:#666ee8}input.sc-ir-autocomplete{width:100%;position:relative}.combobox.sc-ir-autocomplete{margin:0;top:30px;min-width:100%;width:max-content;display:block;z-index:10000;padding:1px;background:white;box-shadow:0px 8px 16px 0px rgba(0, 0, 0, 0.2);padding:5px 0;max-height:250px;overflow-y:auto}.dropdown-item.sc-ir-autocomplete{cursor:pointer}button.sc-ir-autocomplete{all:unset;right:4px}.combobox.sc-ir-autocomplete p.sc-ir-autocomplete,span.sc-ir-autocomplete,loader-container.sc-ir-autocomplete{padding:5px 16px;margin:0px;margin-top:2px;width:100%}.combobox.sc-ir-autocomplete p.sc-ir-autocomplete{cursor:pointer}.combobox.sc-ir-autocomplete p.sc-ir-autocomplete:hover{background:#f4f5fa}.combobox.sc-ir-autocomplete p[data-selected].sc-ir-autocomplete,.combobox.sc-ir-autocomplete p[data-selected].sc-ir-autocomplete:hover{color:#fff;text-decoration:none;background-color:#666ee8}.loader.sc-ir-autocomplete{width:14px;height:14px;border:2px solid #0f0f0f;border-bottom-color:transparent;border-radius:50%;display:inline-block;box-sizing:border-box;animation:rotation 1s linear infinite}@keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}";
 
@@ -41,6 +41,7 @@ const IrAutocomplete = class {
     this.isItemSelected = undefined;
   }
   componentWillLoad() {
+    this.bookingService.setToken(axios.calendar_data.token);
     this.no_result_found = axios.locales.entries.Lcz_NoResultsFound;
   }
   handleKeyDown(event) {

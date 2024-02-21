@@ -3,13 +3,12 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const booking_service = require('./booking.service-9518a7f0.js');
-const room_service = require('./room.service-d3af0aee.js');
-const axios = require('./axios-676363b1.js');
+const booking_service = require('./booking.service-a35ed524.js');
+const room_service = require('./room.service-4cdf7f97.js');
+const axios = require('./axios-145201a7.js');
 require('./utils-4d5a8b3d.js');
 require('./moment-27049970.js');
-require('./booking-c3ed455b.js');
-require('./calendar-data-f96d5e48.js');
+require('./booking-5959ff87.js');
 
 const iglBookPropertyContainerCss = ".sc-igl-book-property-container-h{display:block;margin:0;padding:0}.book-container.sc-igl-book-property-container{width:min-content;margin:0;padding:0}";
 
@@ -69,11 +68,14 @@ const IglBookPropertyContainer = class {
       axios.axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      this.bookingService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
       this.initializeApp();
     }
   }
   async ticketChanged() {
-    sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    this.bookingService.setToken(this.ticket);
+    this.roomService.setToken(this.ticket);
     this.initializeApp();
   }
   handleCloseBookingWindow() {

@@ -3,15 +3,14 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const unassigned_dates_store = require('./unassigned_dates.store-6fa42214.js');
-const booking_service = require('./booking.service-9518a7f02.js');
+const unassigned_dates_store = require('./unassigned_dates.store-a5427acd.js');
+const booking_service = require('./booking.service-a35ed5242.js');
 const utils = require('./utils-4d5a8b3d.js');
-const axios = require('./axios-676363b1.js');
-const events_service = require('./events.service-b6bfbb8b.js');
+const axios = require('./axios-145201a7.js');
+const events_service = require('./events.service-3950fd03.js');
 const moment = require('./moment-27049970.js');
-const toBeAssigned_service = require('./toBeAssigned.service-25ba43d2.js');
-const booking = require('./booking-c3ed455b.js');
-const calendarData = require('./calendar-data-f96d5e48.js');
+const toBeAssigned_service = require('./toBeAssigned.service-f5fa275e.js');
+const booking = require('./booking-5959ff87.js');
 
 const PACKET_TYPES = Object.create(null); // no Map = no polyfill
 PACKET_TYPES["open"] = "0";
@@ -3926,7 +3925,11 @@ const IglooCalendar = class {
     this.totalAvailabilityQueue = [];
   }
   ticketChanged() {
-    sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    axios.calendar_data.token = this.ticket;
+    this.bookingService.setToken(this.ticket);
+    this.roomService.setToken(this.ticket);
+    this.eventsService.setToken(this.ticket);
+    this.toBeAssignedService.setToken(this.ticket);
     this.initializeApp();
   }
   componentWillLoad() {
@@ -3934,6 +3937,11 @@ const IglooCalendar = class {
       axios.axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      axios.calendar_data.token = this.ticket;
+      this.bookingService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
+      this.eventsService.setToken(this.ticket);
+      this.toBeAssignedService.setToken(this.ticket);
       this.initializeApp();
     }
   }
@@ -4166,7 +4174,7 @@ const IglooCalendar = class {
         roomCategory.expanded = true;
       });
     }
-    calendarData.calendar_data.roomsInfo = roomsData;
+    axios.calendar_data.roomsInfo = roomsData;
     this.calendarData.roomsInfo = roomsData;
   }
   getLegendData(aData) {

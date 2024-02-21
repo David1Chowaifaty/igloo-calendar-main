@@ -4,6 +4,7 @@ import { d as dateToFormattedString } from './utils.js';
 import { h as hooks } from './moment.js';
 import { l as locales } from './locales.store.js';
 import { c as createStore } from './index2.js';
+import { c as calendar_data } from './calendar-data.js';
 import { d as defineCustomElement$3 } from './igl-tba-booking-view2.js';
 import { d as defineCustomElement$2 } from './igl-tba-category-view2.js';
 import { d as defineCustomElement$1 } from './ir-icon2.js';
@@ -12,6 +13,28 @@ const initialState = {};
 let { state: unassigned_dates } = createStore(initialState);
 function addUnassingedDates(data) {
   unassigned_dates = Object.assign(Object.assign({}, unassigned_dates), data);
+  /*
+   try {
+      //console.log("called")
+      let categorisedRooms = {};
+      const result = await this.toBeAssignedService.getUnassignedRooms(
+        this.propertyid,
+        dateToFormattedString(new Date(+key)),
+        calendarData.roomsInfo,
+        calendarData.formattedLegendData,
+      );
+      result.forEach(room => {
+        if (!categorisedRooms.hasOwnProperty(room.RT_ID)) {
+          categorisedRooms[room.RT_ID] = [room];
+        } else {
+          categorisedRooms[room.RT_ID].push(room);
+        }
+      });
+      this.unassignedDates[key].categories = categorisedRooms;
+    } catch (error) {
+      //  toastr.error(error);
+    }
+  */
 }
 function getUnassignedDates() {
   return unassigned_dates;
@@ -61,6 +84,7 @@ const IglToBeAssigned = /*@__PURE__*/ proxyCustomElement(class IglToBeAssigned e
     this.orderedDatesList = [];
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(calendar_data.token);
     this.reArrangeData();
     this.loadingMessage = locales.entries.Lcz_FetchingUnAssignedUnits;
   }

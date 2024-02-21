@@ -3,8 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const toBeAssigned_service = require('./toBeAssigned.service-25ba43d2.js');
-const axios = require('./axios-676363b1.js');
+const toBeAssigned_service = require('./toBeAssigned.service-f5fa275e.js');
+const axios = require('./axios-145201a7.js');
 const v4 = require('./v4-1c35741f.js');
 require('./utils-4d5a8b3d.js');
 require('./moment-27049970.js');
@@ -54,6 +54,7 @@ const IglTbaBookingView = class {
     return true;
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(axios.calendar_data.token);
     if (this.categoryIndex === 0 && this.eventIndex === 0) {
       setTimeout(() => {
         this.handleHighlightAvailability();

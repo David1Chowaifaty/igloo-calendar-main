@@ -9,8 +9,8 @@ export declare class IrChannel {
   channel_status: 'create' | 'edit' | null;
   modal_cause: IModalCause | null;
   private roomService;
-  private irModalRef;
   private channelService;
+  private irModalRef;
   componentWillLoad(): void;
   handleConfirmClicked(e: CustomEvent): Promise<void>;
   openModal(): void;

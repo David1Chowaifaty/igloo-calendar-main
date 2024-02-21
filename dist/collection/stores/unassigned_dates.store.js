@@ -3,6 +3,28 @@ const initialState = {};
 let { state: unassigned_dates } = createStore(initialState);
 export function addUnassingedDates(data) {
   unassigned_dates = Object.assign(Object.assign({}, unassigned_dates), data);
+  /*
+   try {
+      //console.log("called")
+      let categorisedRooms = {};
+      const result = await this.toBeAssignedService.getUnassignedRooms(
+        this.propertyid,
+        dateToFormattedString(new Date(+key)),
+        calendarData.roomsInfo,
+        calendarData.formattedLegendData,
+      );
+      result.forEach(room => {
+        if (!categorisedRooms.hasOwnProperty(room.RT_ID)) {
+          categorisedRooms[room.RT_ID] = [room];
+        } else {
+          categorisedRooms[room.RT_ID].push(room);
+        }
+      });
+      this.unassignedDates[key].categories = categorisedRooms;
+    } catch (error) {
+      //  toastr.error(error);
+    }
+  */
 }
 export function getUnassignedDates() {
   return unassigned_dates;

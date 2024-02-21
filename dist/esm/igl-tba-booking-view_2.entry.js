@@ -1,6 +1,6 @@
 import { r as registerInstance, c as createEvent, h, H as Host } from './index-a3d7c849.js';
-import { T as ToBeAssignedService } from './toBeAssigned.service-24a16651.js';
-import { l as locales } from './axios-e2d8c656.js';
+import { T as ToBeAssignedService } from './toBeAssigned.service-1dd9cc22.js';
+import { b as calendar_data, l as locales } from './axios-dc3a4843.js';
 import { v as v4 } from './v4-7b82dc75.js';
 import './utils-9e497cec.js';
 import './moment-5e85be7a.js';
@@ -50,6 +50,7 @@ const IglTbaBookingView = class {
     return true;
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(calendar_data.token);
     if (this.categoryIndex === 0 && this.eventIndex === 0) {
       setTimeout(() => {
         this.handleHighlightAvailability();

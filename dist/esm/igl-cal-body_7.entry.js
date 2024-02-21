@@ -1,15 +1,14 @@
 import { r as registerInstance, c as createEvent, h, H as Host, F as Fragment, g as getElement } from './index-a3d7c849.js';
-import { c as calendar_dates, g as getUnassignedDates, R as RoomService } from './unassigned_dates.store-1648685f.js';
-import { l as locales, a as axios } from './axios-e2d8c656.js';
-import { T as ToBeAssignedService } from './toBeAssigned.service-24a16651.js';
+import { c as calendar_dates, g as getUnassignedDates, R as RoomService } from './unassigned_dates.store-1670ad97.js';
+import { l as locales, b as calendar_data, a as axios } from './axios-dc3a4843.js';
+import { T as ToBeAssignedService } from './toBeAssigned.service-1dd9cc22.js';
 import { d as dateToFormattedString, l as getDaysArray, m as getCurrencySymbol, n as convertDatePrice, o as formatDate } from './utils-9e497cec.js';
 import { h as hooks } from './moment-5e85be7a.js';
 import { _ as _formatDate, a as _formatTime } from './functions-d0f70e87.js';
-import { B as BookingService } from './booking.service-1b0ad0012.js';
-import { c as calendar_data } from './calendar-data-847011fc.js';
+import { B as BookingService } from './booking.service-2a56bccc2.js';
 import { r as renderTime } from './utils-3a2a9b4d.js';
 import { v as v4 } from './v4-7b82dc75.js';
-import './booking-d8e1ecef.js';
+import './booking-56b37a53.js';
 
 const iglCalBodyCss = ".sc-igl-cal-body-h{display:block}.bodyContainer.sc-igl-cal-body{position:relative}.roomRow.sc-igl-cal-body{width:max-content}.roomRow.sc-igl-cal-body:first-child{margin-top:80px}.categoryName.sc-igl-cal-body{font-weight:bold;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}.cellData.sc-igl-cal-body{width:70px;height:30px;display:inline-grid;border-top:1px solid #e0e0e0;border-left:1px solid #e0e0e0;vertical-align:top}.cellData.sc-igl-cal-body:nth-child(2){border-left:0px}.cellData.sc-igl-cal-body:last-child{border-right:1px solid #e0e0e0}.roomHeaderCell.sc-igl-cal-body{position:-webkit-sticky;position:sticky;left:0;background:#fff;border-right:1px solid #ccc;width:170px;z-index:1}.currentDay.sc-igl-cal-body{background-color:#e3f3fa}.dragOverHighlight.sc-igl-cal-body{background-color:#f5f5dc !important}.selectedDay.sc-igl-cal-body{background-color:#f9f9c9 !important}.categoryTitle.sc-igl-cal-body{grid-template-columns:1fr 20px;padding-left:10px;cursor:pointer;height:40px;font-size:0.9em}.categoryTitle.sc-igl-cal-body>.sc-igl-cal-body:nth-child(1){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.roomTitle.sc-igl-cal-body{padding-left:20px;font-size:0.9em;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}.roomTitle.sc-igl-cal-body>.sc-igl-cal-body:nth-child(1){white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.roomTitle.pl10.sc-igl-cal-body{padding-left:10px}.categoryPriceColumn.sc-igl-cal-body{align-items:center;height:40px;-webkit-user-select:none;user-select:none}.bookingEventsContainer.sc-igl-cal-body{position:absolute;top:0;left:0}";
 
@@ -311,6 +310,7 @@ const IglCalHeader = class {
     this.unassignedRoomsNumber = {};
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(calendar_data.token);
     try {
       this.initializeRoomsList();
       if (!this.calendarData.is_vacation_rental && Object.keys(this.unassignedDates).length > 0) {
@@ -504,6 +504,7 @@ const IglToBeAssigned = class {
     this.orderedDatesList = [];
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(calendar_data.token);
     this.reArrangeData();
     this.loadingMessage = locales.entries.Lcz_FetchingUnAssignedUnits;
   }
@@ -733,11 +734,16 @@ const IrBookingDetails = class {
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      calendar_data.token = this.ticket;
+      this.bookingService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
       this.initializeApp();
     }
   }
   async ticketChanged() {
-    sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    calendar_data.token = this.ticket;
+    this.bookingService.setToken(this.ticket);
+    this.roomService.setToken(this.ticket);
     this.initializeApp();
   }
   setRoomsData(roomServiceResp) {
@@ -981,6 +987,7 @@ const IrRoomNights = class {
     this.isInputFocused = -1;
   }
   componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
     if (this.baseUrl) {
       axios.defaults.baseURL = this.baseUrl;
     }

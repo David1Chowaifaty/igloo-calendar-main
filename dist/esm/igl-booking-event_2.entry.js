@@ -1,12 +1,12 @@
 import { r as registerInstance, c as createEvent, h, F as Fragment, H as Host, g as getElement } from './index-a3d7c849.js';
-import { B as BookingService$1 } from './booking.service-1b0ad001.js';
+import { B as BookingService$1 } from './booking.service-2a56bccc.js';
 import { h as hooks } from './moment-5e85be7a.js';
-import { a as axios, l as locales } from './axios-e2d8c656.js';
+import { T as Token, a as axios, b as calendar_data, l as locales } from './axios-dc3a4843.js';
 import { i as isBlockUnit } from './utils-3a2a9b4d.js';
-import { B as BookingService } from './booking.service-1b0ad0012.js';
+import { B as BookingService } from './booking.service-2a56bccc2.js';
 import { k as getReleaseHoursString, p as findCountry, o as formatDate, m as getCurrencySymbol } from './utils-9e497cec.js';
-import { E as EventsService$1 } from './events.service-4aa75ec2.js';
-import './booking-d8e1ecef.js';
+import { E as EventsService$1 } from './events.service-4228a2be.js';
+import './booking-56b37a53.js';
 
 const bookingStatus = {
   '000': 'IN-HOUSE',
@@ -96,13 +96,14 @@ function transformNewBooking(data) {
   return bookings;
 }
 
-class EventsService {
+class EventsService extends Token {
   constructor() {
+    super(...arguments);
     this.bookingService = new BookingService();
   }
   async reallocateEvent(pool, destination_pr_id, from_date, to_date) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token) {
         console.log(pool, destination_pr_id, from_date, to_date);
         const { data } = await axios.post(`/ReAllocate_Exposed_Room?Ticket=${token}`, { pool, destination_pr_id, from_date, to_date });
@@ -123,7 +124,7 @@ class EventsService {
   }
   async deleteEvent(POOL) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token) {
         const { data } = await axios.post(`/UnBlock_Exposed_Unit?Ticket=${token}`, {
           POOL,
@@ -144,7 +145,7 @@ class EventsService {
   }
   async updateBlockedEvent(bookingEvent) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token) {
         const releaseData = getReleaseHoursString(+bookingEvent.RELEASE_AFTER_HOURS);
         await this.deleteEvent(bookingEvent.POOL);
@@ -217,6 +218,8 @@ const IglBookingEvent = class {
     this.isShrinking = null;
   }
   componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
+    this.eventsService.setToken(calendar_data.token);
     window.addEventListener('click', this.handleClickOutsideBind);
   }
   async fetchAndAssignBookingData() {

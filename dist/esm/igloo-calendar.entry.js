@@ -1,13 +1,12 @@
 import { r as registerInstance, c as createEvent, h, H as Host, g as getElement } from './index-a3d7c849.js';
-import { R as RoomService, c as calendar_dates, a as addUnassingedDates, r as removeUnassignedDates } from './unassigned_dates.store-1648685f.js';
-import { B as BookingService } from './booking.service-1b0ad0012.js';
+import { R as RoomService, c as calendar_dates, a as addUnassingedDates, r as removeUnassignedDates } from './unassigned_dates.store-1670ad97.js';
+import { B as BookingService } from './booking.service-2a56bccc2.js';
 import { f as formatLegendColors, d as dateToFormattedString, i as isBlockUnit, g as getNextDay, e as addTwoMonthToDate, h as convertDMYToISO, j as computeEndDate } from './utils-9e497cec.js';
-import { a as axios, l as locales } from './axios-e2d8c656.js';
-import { E as EventsService } from './events.service-4aa75ec2.js';
+import { b as calendar_data, a as axios, l as locales } from './axios-dc3a4843.js';
+import { E as EventsService } from './events.service-4228a2be.js';
 import { h as hooks } from './moment-5e85be7a.js';
-import { T as ToBeAssignedService } from './toBeAssigned.service-24a16651.js';
-import { t as transformNewBLockedRooms, a as transformNewBooking, b as bookingStatus, c as calculateDaysBetweenDates } from './booking-d8e1ecef.js';
-import { c as calendar_data } from './calendar-data-847011fc.js';
+import { T as ToBeAssignedService } from './toBeAssigned.service-1dd9cc22.js';
+import { t as transformNewBLockedRooms, a as transformNewBooking, b as bookingStatus, c as calculateDaysBetweenDates } from './booking-56b37a53.js';
 
 const PACKET_TYPES = Object.create(null); // no Map = no polyfill
 PACKET_TYPES["open"] = "0";
@@ -3922,7 +3921,11 @@ const IglooCalendar = class {
     this.totalAvailabilityQueue = [];
   }
   ticketChanged() {
-    sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    calendar_data.token = this.ticket;
+    this.bookingService.setToken(this.ticket);
+    this.roomService.setToken(this.ticket);
+    this.eventsService.setToken(this.ticket);
+    this.toBeAssignedService.setToken(this.ticket);
     this.initializeApp();
   }
   componentWillLoad() {
@@ -3930,6 +3933,11 @@ const IglooCalendar = class {
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      calendar_data.token = this.ticket;
+      this.bookingService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
+      this.eventsService.setToken(this.ticket);
+      this.toBeAssignedService.setToken(this.ticket);
       this.initializeApp();
     }
   }

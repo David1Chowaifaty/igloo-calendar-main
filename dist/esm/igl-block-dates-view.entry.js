@@ -1,8 +1,8 @@
 import { r as registerInstance, c as createEvent, h, H as Host } from './index-a3d7c849.js';
-import { B as BookingService } from './booking.service-1b0ad0012.js';
+import { B as BookingService } from './booking.service-2a56bccc2.js';
 import { o as formatDate } from './utils-9e497cec.js';
-import { l as locales } from './axios-e2d8c656.js';
-import './booking-d8e1ecef.js';
+import { b as calendar_data, l as locales } from './axios-dc3a4843.js';
+import './booking-56b37a53.js';
 import './moment-5e85be7a.js';
 
 const iglBlockDatesViewCss = ".sc-igl-block-dates-view-h{display:block}.sc-igl-block-dates-view-h .controlContainer.sc-igl-block-dates-view{width:24px}.sc-igl-block-dates-view-h .checkBoxContainer.sc-igl-block-dates-view input.sc-igl-block-dates-view{height:1.2rem !important;width:30px}.releaseTime.sc-igl-block-dates-view{padding-left:5px}.out-of-service-label.sc-igl-block-dates-view{margin-left:5px !important}";
@@ -29,6 +29,7 @@ const IglBlockDatesView = class {
   }
   async componentWillLoad() {
     try {
+      this.bookingService.setToken(calendar_data.token);
       this.releaseList = await this.bookingService.getBlockedInfo();
       if (this.defaultData) {
         this.blockDatesData = Object.assign({}, this.defaultData);

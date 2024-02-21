@@ -1,12 +1,11 @@
 import { r as registerInstance, c as createEvent, h, H as Host, F as Fragment } from './index-a3d7c849.js';
 import { m as getCurrencySymbol, o as formatDate } from './utils-9e497cec.js';
-import { l as locales } from './axios-e2d8c656.js';
-import { c as calendar_data } from './calendar-data-847011fc.js';
+import { l as locales, b as calendar_data } from './axios-dc3a4843.js';
 import { v as v4 } from './v4-7b82dc75.js';
 import { h as hooks } from './moment-5e85be7a.js';
-import { i as interceptor_requests } from './ir-interceptor.store-73cf2583.js';
-import { B as BookingService } from './booking.service-1b0ad0012.js';
-import './booking-d8e1ecef.js';
+import { i as interceptor_requests } from './ir-interceptor.store-a2b07a7f.js';
+import { B as BookingService } from './booking.service-2a56bccc2.js';
+import './booking-56b37a53.js';
 
 const iglApplicationInfoCss = ".sc-igl-application-info-h{display:block}@media only screen and (min-width: 908px){.aplicationInfoContainer.sc-igl-application-info{max-width:80%}.guest-info-container.sc-igl-application-info{max-width:300px}.preference-select-container.sc-igl-application-info{max-width:250px}}";
 
@@ -868,6 +867,7 @@ const IglPropertyBookedBy = class {
     };
   }
   async componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
     this.assignCountryCode();
     this.initializeExpiryYears();
     this.initializeDateData();

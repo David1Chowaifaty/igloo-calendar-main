@@ -1,7 +1,6 @@
 import { r as registerInstance, c as createEvent, h, F as Fragment, H as Host, g as getElement } from './index-a3d7c849.js';
-import { R as RoomService } from './room.service-d99e4ae1.js';
-import { c as createStore, a as axios, l as locales } from './axios-e2d8c656.js';
-import { c as calendar_data } from './calendar-data-847011fc.js';
+import { R as RoomService } from './room.service-77214f40.js';
+import { c as createStore, T as Token, a as axios, b as calendar_data, l as locales } from './axios-dc3a4843.js';
 
 const irButtonCss = ".loader{width:11px;height:11px;border:2px solid #fff;border-bottom-color:transparent;border-radius:50%;margin:0;padding:0;display:inline-flex;box-sizing:border-box;animation:rotation 1s linear infinite}.button-icon{padding:0;margin-top:0}.button-icon[data-state='loading']{display:none}.button-text{padding:0 5px}@keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}";
 
@@ -109,10 +108,10 @@ function testConnection() {
   return true;
 }
 
-class ChannelService {
+class ChannelService extends Token {
   async getExposedChannels() {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token !== null) {
         const { data } = await axios.post(`/Get_Exposed_Channels?Ticket=${token}`, {});
         if (data.ExceptionMsg !== '') {
@@ -130,7 +129,7 @@ class ChannelService {
   }
   async getExposedConnectedChannels(property_id) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token !== null) {
         const { data } = await axios.post(`/Get_Exposed_Connected_Channels?Ticket=${token}`, { property_id });
         if (data.ExceptionMsg !== '') {
@@ -155,7 +154,7 @@ class ChannelService {
         map: channels_data.mappedChannels,
         is_remove,
       };
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (!token) {
         throw new Error('Invalid Token');
       }
@@ -277,6 +276,8 @@ const IrChannel = class {
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      this.channelService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
       this.initializeApp();
     }
   }
@@ -288,6 +289,7 @@ const IrChannel = class {
     }
     await this.modal_cause.action();
     if (this.modal_cause.cause === 'remove') {
+      resetStore();
       await this.refreshChannels();
     }
     this.modal_cause = null;
@@ -319,6 +321,8 @@ const IrChannel = class {
   }
   async ticketChanged() {
     sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    this.roomService.setToken(this.ticket);
+    this.channelService.setToken(this.ticket);
     this.initializeApp();
   }
   handleCancelModal(e) {
@@ -392,7 +396,7 @@ const IrChannel = class {
         }, key: a.id + '_item', class: `dropdown-item my-0 ${a.id === 'remove' ? 'danger' : ''}`, type: "button" }, a.icon(), a.name), index < actions(locales.entries).length - 1 && h("div", { key: a.id + '_divider', class: "dropdown-divider my-0" }))))))))));
     }))), channels_data.connected_channels.length === 0 && h("p", { class: "text-center" }, (_g = locales.entries) === null || _g === void 0 ? void 0 : _g.Lcz_NoChannelsAreConnected))), h("ir-sidebar", { sidebarStyles: {
         width: '60rem',
-      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) })), h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
+      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && (h("ir-channel-editor", { ticket: this.ticket, class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) }))), h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
   }
   get el() { return getElement(this); }
   static get watchers() { return {
@@ -409,7 +413,9 @@ const IrChannelEditor = class {
     this.saveChannelFinished = createEvent(this, "saveChannelFinished", 7);
     this.closeSideBar = createEvent(this, "closeSideBar", 7);
     var _a, _b, _c;
+    this.channelService = new ChannelService();
     this.channel_status = null;
+    this.ticket = undefined;
     this.selectedTab = '';
     this.isLoading = false;
     this.headerTitles = [
@@ -424,6 +430,9 @@ const IrChannelEditor = class {
     this.selectedRoomType = [];
   }
   componentWillLoad() {
+    if (this.ticket) {
+      this.channelService.setToken(this.ticket);
+    }
     if (this.channel_status === 'edit') {
       this.enableAllHeaders();
     }
@@ -460,7 +469,7 @@ const IrChannelEditor = class {
   async saveConnectedChannel() {
     try {
       this.isLoading = true;
-      await new ChannelService().saveConnectedChannel(false);
+      await this.channelService.saveConnectedChannel(false);
       this.saveChannelFinished.emit();
     }
     catch (error) {

@@ -23,9 +23,7 @@
     <!-- <igloo-calendar currency-name="USD" propertyid="42" from_date="2023-10-11" to_date="2024-3-31" language="en"
         baseurl="https://gateway.igloorooms.com/IR"></igloo-calendar> -->
     <ir-common></ir-common>
-    <ir-channel propertyid="42"
-        ticket="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDkyODgwMzYsIkNMQUlNLTAxIjoicktLMi9DY1dQQnM9IiwiQ0xBSU0tMDIiOiI5UStMQm93VTl6az0iLCJDTEFJTS0wMyI6Ilp3Tys5azJoTzUwPSIsIkNMQUlNLTA0IjoiRThLMEFsdS9NdkdsTGxBVmgzSkFXQT09In0._JKYBQDYVBCZPDBo6XxHOehzpI0NO3JJDwE25dJg5Bg"
-        language="en" baseurl="https://gateway.igloorooms.com/IR"></ir-channel>
+    <ir-channel propertyid="42" language="en" baseurl="https://gateway.igloorooms.com/IR"></ir-channel>
     <!-- <script>
         const calendar = document.querySelector("igloo-calendar");
         var today = new Date();
@@ -45,7 +43,15 @@
 
         }, 300)
     </script> -->
-
+    <script>
+        const irchannel = document.querySelector('ir-channel')
+        setTimeout(() => {
+            sessionStorage.removeItem('token');
+            const ticket = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MDkyODgwMzYsIkNMQUlNLTAxIjoicktLMi9DY1dQQnM9IiwiQ0xBSU0tMDIiOiI5UStMQm93VTl6az0iLCJDTEFJTS0wMyI6Ilp3Tys5azJoTzUwPSIsIkNMQUlNLTA0IjoiRThLMEFsdS9NdkdsTGxBVmgzSkFXQT09In0._JKYBQDYVBCZPDBo6XxHOehzpI0NO3JJDwE25dJg5Bg";
+            irchannel.propertyid = "42";
+            irchannel.ticket = ticket
+        }, 300)
+    </script>
 </body>
 
 </html>

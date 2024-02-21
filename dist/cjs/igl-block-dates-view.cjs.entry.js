@@ -3,10 +3,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const booking_service = require('./booking.service-9518a7f02.js');
+const booking_service = require('./booking.service-a35ed5242.js');
 const utils = require('./utils-4d5a8b3d.js');
-const axios = require('./axios-676363b1.js');
-require('./booking-c3ed455b.js');
+const axios = require('./axios-145201a7.js');
+require('./booking-5959ff87.js');
 require('./moment-27049970.js');
 
 const iglBlockDatesViewCss = ".sc-igl-block-dates-view-h{display:block}.sc-igl-block-dates-view-h .controlContainer.sc-igl-block-dates-view{width:24px}.sc-igl-block-dates-view-h .checkBoxContainer.sc-igl-block-dates-view input.sc-igl-block-dates-view{height:1.2rem !important;width:30px}.releaseTime.sc-igl-block-dates-view{padding-left:5px}.out-of-service-label.sc-igl-block-dates-view{margin-left:5px !important}";
@@ -33,6 +33,7 @@ const IglBlockDatesView = class {
   }
   async componentWillLoad() {
     try {
+      this.bookingService.setToken(axios.calendar_data.token);
       this.releaseList = await this.bookingService.getBlockedInfo();
       if (this.defaultData) {
         this.blockDatesData = Object.assign({}, this.defaultData);

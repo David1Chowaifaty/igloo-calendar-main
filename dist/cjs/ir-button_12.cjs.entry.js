@@ -3,9 +3,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const room_service = require('./room.service-d3af0aee.js');
-const axios = require('./axios-676363b1.js');
-const calendarData = require('./calendar-data-f96d5e48.js');
+const room_service = require('./room.service-4cdf7f97.js');
+const axios = require('./axios-145201a7.js');
 
 const irButtonCss = ".loader{width:11px;height:11px;border:2px solid #fff;border-bottom-color:transparent;border-radius:50%;margin:0;padding:0;display:inline-flex;box-sizing:border-box;animation:rotation 1s linear infinite}.button-icon{padding:0;margin-top:0}.button-icon[data-state='loading']{display:none}.button-text{padding:0 5px}@keyframes rotation{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}";
 
@@ -113,10 +112,10 @@ function testConnection() {
   return true;
 }
 
-class ChannelService {
+class ChannelService extends axios.Token {
   async getExposedChannels() {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token !== null) {
         const { data } = await axios.axios.post(`/Get_Exposed_Channels?Ticket=${token}`, {});
         if (data.ExceptionMsg !== '') {
@@ -134,7 +133,7 @@ class ChannelService {
   }
   async getExposedConnectedChannels(property_id) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token !== null) {
         const { data } = await axios.axios.post(`/Get_Exposed_Connected_Channels?Ticket=${token}`, { property_id });
         if (data.ExceptionMsg !== '') {
@@ -155,11 +154,11 @@ class ChannelService {
         title: channels_data.channel_settings.hotel_title,
         is_active: channels_data.is_active,
         channel: { id: channels_data.selectedChannel.id, name: channels_data.selectedChannel.name },
-        property: { id: calendarData.calendar_data.id, name: calendarData.calendar_data.name },
+        property: { id: axios.calendar_data.id, name: axios.calendar_data.name },
         map: channels_data.mappedChannels,
         is_remove,
       };
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (!token) {
         throw new Error('Invalid Token');
       }
@@ -281,6 +280,8 @@ const IrChannel = class {
       axios.axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      this.channelService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
       this.initializeApp();
     }
   }
@@ -292,6 +293,7 @@ const IrChannel = class {
     }
     await this.modal_cause.action();
     if (this.modal_cause.cause === 'remove') {
+      resetStore();
       await this.refreshChannels();
     }
     this.modal_cause = null;
@@ -323,6 +325,8 @@ const IrChannel = class {
   }
   async ticketChanged() {
     sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    this.roomService.setToken(this.ticket);
+    this.channelService.setToken(this.ticket);
     this.initializeApp();
   }
   handleCancelModal(e) {
@@ -396,7 +400,7 @@ const IrChannel = class {
         }, key: a.id + '_item', class: `dropdown-item my-0 ${a.id === 'remove' ? 'danger' : ''}`, type: "button" }, a.icon(), a.name), index$1 < actions(axios.locales.entries).length - 1 && index.h("div", { key: a.id + '_divider', class: "dropdown-divider my-0" }))))))))));
     }))), channels_data.connected_channels.length === 0 && index.h("p", { class: "text-center" }, (_g = axios.locales.entries) === null || _g === void 0 ? void 0 : _g.Lcz_NoChannelsAreConnected))), index.h("ir-sidebar", { sidebarStyles: {
         width: '60rem',
-      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && index.h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) })), index.h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = axios.locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = axios.locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
+      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && (index.h("ir-channel-editor", { ticket: this.ticket, class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) }))), index.h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = axios.locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = axios.locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
   }
   get el() { return index.getElement(this); }
   static get watchers() { return {
@@ -413,7 +417,9 @@ const IrChannelEditor = class {
     this.saveChannelFinished = index.createEvent(this, "saveChannelFinished", 7);
     this.closeSideBar = index.createEvent(this, "closeSideBar", 7);
     var _a, _b, _c;
+    this.channelService = new ChannelService();
     this.channel_status = null;
+    this.ticket = undefined;
     this.selectedTab = '';
     this.isLoading = false;
     this.headerTitles = [
@@ -428,6 +434,9 @@ const IrChannelEditor = class {
     this.selectedRoomType = [];
   }
   componentWillLoad() {
+    if (this.ticket) {
+      this.channelService.setToken(this.ticket);
+    }
     if (this.channel_status === 'edit') {
       this.enableAllHeaders();
     }
@@ -464,7 +473,7 @@ const IrChannelEditor = class {
   async saveConnectedChannel() {
     try {
       this.isLoading = true;
-      await new ChannelService().saveConnectedChannel(false);
+      await this.channelService.saveConnectedChannel(false);
       this.saveChannelFinished.emit();
     }
     catch (error) {
@@ -573,7 +582,7 @@ class IrMappingService {
   removedMapping(ir_id, isRoomType) {
     let selectedChannels = [...channels_data.mappedChannels];
     if (isRoomType) {
-      const toBeRemovedRoomType = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === ir_id);
+      const toBeRemovedRoomType = axios.calendar_data.roomsInfo.find(room => room.id.toString() === ir_id);
       selectedChannels = selectedChannels.filter(c => toBeRemovedRoomType.rateplans.find(rate_plan => rate_plan.id.toString() === c.ir_id) === undefined);
     }
     channels_data.mappedChannels = selectedChannels.filter(c => c.ir_id !== ir_id);
@@ -590,14 +599,14 @@ class IrMappingService {
       return { hide: false, result: undefined, occupancy: undefined };
     }
     if (isRoomType) {
-      const room_type = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === mapped_id.ir_id);
+      const room_type = axios.calendar_data.roomsInfo.find(room => room.id.toString() === mapped_id.ir_id);
       return { hide: false, occupancy: room_type.occupancy_default.adult_nbr, result: room_type };
     }
     if (!roomTypeId) {
       throw new Error('Missing room type id');
     }
     const matchingRoomType = channels_data.mappedChannels.find(m => m.channel_id.toString() === roomTypeId);
-    const room_type = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === matchingRoomType.ir_id);
+    const room_type = axios.calendar_data.roomsInfo.find(room => room.id.toString() === matchingRoomType.ir_id);
     if (!room_type) {
       throw new Error('Invalid Room type');
     }
@@ -605,7 +614,7 @@ class IrMappingService {
   }
   getAppropriateRooms(isRoomType, roomTypeId) {
     if (isRoomType) {
-      const filteredRoomTypes = calendarData.calendar_data.roomsInfo.filter(room => channels_data.mappedChannels.find(m => m.ir_id.toString() === room.id.toString()) === undefined && room.is_active);
+      const filteredRoomTypes = axios.calendar_data.roomsInfo.filter(room => channels_data.mappedChannels.find(m => m.ir_id.toString() === room.id.toString()) === undefined && room.is_active);
       return filteredRoomTypes.map(room => ({ id: room.id.toString(), name: room.name }));
     }
     if (!roomTypeId) {
@@ -615,7 +624,7 @@ class IrMappingService {
     if (!matchingRoomType) {
       throw new Error('Invalid room type id');
     }
-    const selectedRoomType = calendarData.calendar_data.roomsInfo.find(room => room.id.toString() === matchingRoomType.ir_id);
+    const selectedRoomType = axios.calendar_data.roomsInfo.find(room => room.id.toString() === matchingRoomType.ir_id);
     return selectedRoomType.rateplans
       .filter(rate_plan => channels_data.mappedChannels.find(r => rate_plan.id.toString() === r.ir_id) === undefined)
       .map(rate_plan => ({

@@ -3,14 +3,14 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 
 const index = require('./index-002cb468.js');
-const booking_service$1 = require('./booking.service-9518a7f0.js');
+const booking_service$1 = require('./booking.service-a35ed524.js');
 const moment = require('./moment-27049970.js');
-const axios = require('./axios-676363b1.js');
+const axios = require('./axios-145201a7.js');
 const utils$1 = require('./utils-9ba1f062.js');
-const booking_service = require('./booking.service-9518a7f02.js');
+const booking_service = require('./booking.service-a35ed5242.js');
 const utils = require('./utils-4d5a8b3d.js');
-const events_service = require('./events.service-b6bfbb8b.js');
-require('./booking-c3ed455b.js');
+const events_service = require('./events.service-3950fd03.js');
+require('./booking-5959ff87.js');
 
 const bookingStatus = {
   '000': 'IN-HOUSE',
@@ -100,13 +100,14 @@ function transformNewBooking(data) {
   return bookings;
 }
 
-class EventsService {
+class EventsService extends axios.Token {
   constructor() {
+    super(...arguments);
     this.bookingService = new booking_service.BookingService();
   }
   async reallocateEvent(pool, destination_pr_id, from_date, to_date) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token) {
         console.log(pool, destination_pr_id, from_date, to_date);
         const { data } = await axios.axios.post(`/ReAllocate_Exposed_Room?Ticket=${token}`, { pool, destination_pr_id, from_date, to_date });
@@ -127,7 +128,7 @@ class EventsService {
   }
   async deleteEvent(POOL) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token) {
         const { data } = await axios.axios.post(`/UnBlock_Exposed_Unit?Ticket=${token}`, {
           POOL,
@@ -148,7 +149,7 @@ class EventsService {
   }
   async updateBlockedEvent(bookingEvent) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token) {
         const releaseData = utils.getReleaseHoursString(+bookingEvent.RELEASE_AFTER_HOURS);
         await this.deleteEvent(bookingEvent.POOL);
@@ -221,6 +222,8 @@ const IglBookingEvent = class {
     this.isShrinking = null;
   }
   componentWillLoad() {
+    this.bookingService.setToken(axios.calendar_data.token);
+    this.eventsService.setToken(axios.calendar_data.token);
     window.addEventListener('click', this.handleClickOutsideBind);
   }
   async fetchAndAssignBookingData() {

@@ -3,6 +3,7 @@ import { ToBeAssignedService } from "../../../services/toBeAssigned.service";
 import { dateToFormattedString } from "../../../utils/utils";
 import moment from "moment";
 import locales from "../../../../../src/stores/locales.store";
+import calendar_data from "../../../../../src/stores/calendar-data";
 export class IglCalHeader {
   constructor() {
     this.searchValue = '';
@@ -18,6 +19,7 @@ export class IglCalHeader {
     this.unassignedRoomsNumber = {};
   }
   componentWillLoad() {
+    this.toBeAssignedService.setToken(calendar_data.token);
     try {
       this.initializeRoomsList();
       if (!this.calendarData.is_vacation_rental && Object.keys(this.unassignedDates).length > 0) {

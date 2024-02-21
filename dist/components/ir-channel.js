@@ -1,6 +1,6 @@
 import { h, proxyCustomElement, HTMLElement, Host, Fragment } from '@stencil/core/internal/client';
 import { R as RoomService } from './room.service.js';
-import { s as setChannelIdAndActiveState, u as updateChannelSettings, a as selectChannel, t as testConnection, c as channels_data, r as resetStore } from './channel.store.js';
+import { s as setChannelIdAndActiveState, u as updateChannelSettings, a as selectChannel, t as testConnection, r as resetStore, c as channels_data } from './channel.store.js';
 import { l as locales } from './locales.store.js';
 import { a as axios } from './axios.js';
 import { C as ChannelService, d as defineCustomElement$a } from './ir-channel-editor2.js';
@@ -124,6 +124,8 @@ const IrChannel$1 = /*@__PURE__*/ proxyCustomElement(class IrChannel extends HTM
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      this.channelService.setToken(this.ticket);
+      this.roomService.setToken(this.ticket);
       this.initializeApp();
     }
   }
@@ -135,6 +137,7 @@ const IrChannel$1 = /*@__PURE__*/ proxyCustomElement(class IrChannel extends HTM
     }
     await this.modal_cause.action();
     if (this.modal_cause.cause === 'remove') {
+      resetStore();
       await this.refreshChannels();
     }
     this.modal_cause = null;
@@ -166,6 +169,8 @@ const IrChannel$1 = /*@__PURE__*/ proxyCustomElement(class IrChannel extends HTM
   }
   async ticketChanged() {
     sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    this.roomService.setToken(this.ticket);
+    this.channelService.setToken(this.ticket);
     this.initializeApp();
   }
   handleCancelModal(e) {
@@ -239,7 +244,7 @@ const IrChannel$1 = /*@__PURE__*/ proxyCustomElement(class IrChannel extends HTM
         }, key: a.id + '_item', class: `dropdown-item my-0 ${a.id === 'remove' ? 'danger' : ''}`, type: "button" }, a.icon(), a.name), index < actions(locales.entries).length - 1 && h("div", { key: a.id + '_divider', class: "dropdown-divider my-0" }))))))))));
     }))), channels_data.connected_channels.length === 0 && h("p", { class: "text-center" }, (_g = locales.entries) === null || _g === void 0 ? void 0 : _g.Lcz_NoChannelsAreConnected))), h("ir-sidebar", { sidebarStyles: {
         width: '60rem',
-      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && h("ir-channel-editor", { class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) })), h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
+      }, showCloseButton: false, onIrSidebarToggle: this.handleSidebarClose.bind(this), open: this.channel_status !== null }, this.channel_status && (h("ir-channel-editor", { ticket: this.ticket, class: "p-1", channel_status: this.channel_status, onCloseSideBar: this.handleSidebarClose.bind(this) }))), h("ir-modal", { modalTitle: (_h = this.modal_cause) === null || _h === void 0 ? void 0 : _h.title, modalBody: (_j = this.modal_cause) === null || _j === void 0 ? void 0 : _j.message, ref: el => (this.irModalRef = el), rightBtnText: (_k = locales.entries) === null || _k === void 0 ? void 0 : _k.Lcz_Confirm, leftBtnText: (_l = locales.entries) === null || _l === void 0 ? void 0 : _l.Lcz_Cancel, onCancelModal: this.handleCancelModal.bind(this), rightBtnColor: (_o = (_m = this.modal_cause) === null || _m === void 0 ? void 0 : _m.main_color) !== null && _o !== void 0 ? _o : 'primary', onConfirmModal: this.handleConfirmClicked.bind(this) })));
   }
   get el() { return this; }
   static get watchers() { return {

@@ -1,14 +1,13 @@
 import { r as registerInstance, c as createEvent, h, F as Fragment, H as Host, g as getElement } from './index-a3d7c849.js';
-import { B as BookingService } from './booking.service-1b0ad0012.js';
+import { B as BookingService } from './booking.service-2a56bccc2.js';
 import { d as dateToFormattedString, k as getReleaseHoursString } from './utils-9e497cec.js';
-import { t as transformNewBLockedRooms, f as formatName } from './booking-d8e1ecef.js';
-import { E as EventsService } from './events.service-4aa75ec2.js';
-import { l as locales, a as axios } from './axios-e2d8c656.js';
-import { B as BookingService$1 } from './booking.service-1b0ad001.js';
-import { i as interceptor_requests } from './ir-interceptor.store-73cf2583.js';
+import { t as transformNewBLockedRooms, f as formatName } from './booking-56b37a53.js';
+import { E as EventsService } from './events.service-4228a2be.js';
+import { b as calendar_data, l as locales, a as axios, T as Token } from './axios-dc3a4843.js';
+import { B as BookingService$1 } from './booking.service-2a56bccc.js';
+import { i as interceptor_requests } from './ir-interceptor.store-a2b07a7f.js';
 import { _ as _formatDate, b as _formatAmount, c as _getDay } from './functions-d0f70e87.js';
 import { h as hooks } from './moment-5e85be7a.js';
-import { c as calendar_data } from './calendar-data-847011fc.js';
 import { r as renderTime } from './utils-3a2a9b4d.js';
 
 //import { BookingService } from '../../../services/booking.service';
@@ -272,6 +271,8 @@ const IglBookProperty = class {
     }
   }
   async componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
+    this.eventsService.setToken(calendar_data.token);
     this.defaultDateRange = { from_date: this.bookingData.FROM_DATE, to_date: this.bookingData.TO_DATE };
     this.handleKeyDown = this.handleKeyDown.bind(this);
     if (!this.bookingData.defaultDateRange) {
@@ -379,7 +380,7 @@ const IglBookProperty = class {
     }
   }
   setOtherProperties(res) {
-    this.ratePricingMode = res.ratePricingMode;
+    this.ratePricingMode = res === null || res === void 0 ? void 0 : res.ratePricingMode;
     this.bookedByInfoData.arrivalTime = res.arrivalTime;
     this.bedPreferenceType = res.bedPreferenceType;
   }
@@ -626,6 +627,7 @@ const GuestInfo = class {
     this.isLoading = false;
   }
   async componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
     await this.init();
   }
   async init() {
@@ -781,10 +783,10 @@ const IrLabel = class {
 };
 IrLabel.style = irLabelCss;
 
-class PaymentService {
+class PaymentService extends Token {
   async AddPayment(payment, book_nbr) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token !== null) {
         const { data } = await axios.post(`/Do_Payment?Ticket=${token}`, { payment: Object.assign(Object.assign({}, payment), { book_nbr }) });
         if (data.ExceptionMsg !== '') {
@@ -800,7 +802,7 @@ class PaymentService {
   }
   async CancelPayment(id) {
     try {
-      const token = JSON.parse(sessionStorage.getItem('token'));
+      const token = this.getToken();
       if (token !== null) {
         const { data } = await axios.post(`/Cancel_Payment?Ticket=${token}`, { id });
         if (data.ExceptionMsg !== '') {
@@ -837,6 +839,7 @@ const IrPaymentDetails = class {
   }
   async componentWillLoad() {
     try {
+      this.paymentService.setToken(calendar_data.token);
       this.initializeItemToBeAdded();
     }
     catch (error) {
@@ -980,13 +983,10 @@ const IrPaymentDetails = class {
 IrPaymentDetails.style = irPaymentDetailsCss;
 
 class PickupService {
-  constructor() {
-    this.token = JSON.parse(sessionStorage.getItem('token'));
-  }
   async savePickup(params, booking_nbr, is_remove) {
     try {
       const splitTime = params.arrival_time.split(':');
-      await axios.post(`/Do_Pickup?Ticket=${this.token}`, {
+      await axios.post(`/Do_Pickup?Ticket=${calendar_data.token}`, {
         booking_nbr,
         is_remove,
         currency: params.currency,

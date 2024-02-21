@@ -5,6 +5,7 @@ import { convertDatePrice, formatDate, getCurrencySymbol, getDaysArray } from ".
 import { v4 } from "uuid";
 import moment from "moment";
 import locales from "../../../../src/stores/locales.store";
+import calendar_data from "../../../../src/stores/calendar-data";
 export class IrRoomNights {
   constructor() {
     this.bookingService = new BookingService();
@@ -28,6 +29,7 @@ export class IrRoomNights {
     this.isInputFocused = -1;
   }
   componentWillLoad() {
+    this.bookingService.setToken(calendar_data.token);
     if (this.baseUrl) {
       axios.defaults.baseURL = this.baseUrl;
     }
