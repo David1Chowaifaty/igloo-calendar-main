@@ -1,4 +1,4 @@
-import { r as registerInstance, c as createEvent, h, F as Fragment, H as Host, g as getElement } from './index-a3d7c849.js';
+import { r as registerInstance, c as createEvent, h, H as Host, F as Fragment, g as getElement } from './index-a3d7c849.js';
 import { R as RoomService } from './room.service-77214f40.js';
 import { c as createStore, T as Token, a as axios, b as calendar_data, l as locales } from './axios-dc3a4843.js';
 
@@ -247,7 +247,9 @@ const actions = (entries) => [
       return {
         cause: 'remove',
         action: async () => {
-          await new ChannelService().saveConnectedChannel(true);
+          const channel_service = new ChannelService();
+          channel_service.setToken(calendar_data.token);
+          await channel_service.saveConnectedChannel(true);
         },
         title: '',
         message: entries === null || entries === void 0 ? void 0 : entries.Lcz_ThisActionWillDelete,
@@ -257,7 +259,7 @@ const actions = (entries) => [
   },
 ];
 
-const irChannelCss = ".sc-ir-channel-h{display:block}.dropdown-toggle.sc-ir-channel{color:var(--blue)}.dropdown-toggle.sc-ir-channel::after{content:none;display:none}.dropdown-toggle.sc-ir-channel .caret-icon.sc-ir-channel{transition:transform 0.15s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,\n    -webkit-box-shadow 0.15s ease-in-out}.btn.sc-ir-channel:hover .caret-icon.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.show.sc-ir-channel .caret-icon.sc-ir-channel{transform:rotate(-180deg)}.dropdown-divider.sc-ir-channel{border-color:#e4e5ec}.dropdown-item.sc-ir-channel{padding:10px;display:flex;align-items:center;gap:10px;color:#6b6f82}.dropdown-item.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.danger.sc-ir-channel{color:var(--red)}.danger.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:var(--red)}.table.sc-ir-channel thead.sc-ir-channel tr.sc-ir-channel{height:50px !important}.table-container.sc-ir-channel{border-radius:30px}.table.sc-ir-channel thead.sc-ir-channel{background:#fafafa;border-top-width:0}.actions-theader.sc-ir-channel{width:35% !important;text-align:end}";
+const irChannelCss = ".sc-ir-channel-h{display:block}.dropdown-toggle.sc-ir-channel{color:var(--blue)}.dropdown-toggle.sc-ir-channel::after{content:none;display:none}.dropdown-toggle.sc-ir-channel .caret-icon.sc-ir-channel{transition:transform 0.15s ease-in-out, color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out,\r\n    -webkit-box-shadow 0.15s ease-in-out}.btn.sc-ir-channel:hover .caret-icon.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.show.sc-ir-channel .caret-icon.sc-ir-channel{transform:rotate(-180deg)}.dropdown-divider.sc-ir-channel{border-color:#e4e5ec}.dropdown-item.sc-ir-channel{padding:10px;display:flex;align-items:center;gap:10px;color:#6b6f82}.dropdown-item.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:#6b6f82}.danger.sc-ir-channel{color:var(--red)}.danger.sc-ir-channel svg.sc-ir-channel path.sc-ir-channel{fill:var(--red)}.table.sc-ir-channel thead.sc-ir-channel tr.sc-ir-channel{height:50px !important}.table-container.sc-ir-channel{border-radius:30px}.table.sc-ir-channel thead.sc-ir-channel{background:#fafafa;border-top-width:0}.actions-theader.sc-ir-channel{width:35% !important;text-align:end}.dots.sc-ir-channel{display:flex;align-items:center;justify-content:center;margin:0 3px;padding:0}.dot.sc-ir-channel{width:8px;height:8px;margin:0px 4px;background-color:#6b6f82;border-radius:50%;animation:dotFlashing 1s infinite linear alternate}.dot.sc-ir-channel:nth-child(2){animation-delay:0.2s}.dot.sc-ir-channel:nth-child(3){animation-delay:0.4s}@keyframes dotFlashing{0%{opacity:0}50%,100%{opacity:1}}";
 
 const IrChannel = class {
   constructor(hostRef) {
@@ -270,12 +272,14 @@ const IrChannel = class {
     this.baseurl = undefined;
     this.channel_status = null;
     this.modal_cause = null;
+    this.isLoading = false;
   }
   componentWillLoad() {
     if (this.baseurl) {
       axios.defaults.baseURL = this.baseurl;
     }
     if (this.ticket !== '') {
+      calendar_data.token = this.ticket;
       this.channelService.setToken(this.ticket);
       this.roomService.setToken(this.ticket);
       this.initializeApp();
@@ -302,13 +306,13 @@ const IrChannel = class {
   }
   async initializeApp() {
     try {
+      this.isLoading = true;
       const [, , , languageTexts] = await Promise.all([
         this.roomService.fetchData(this.propertyid, this.language),
         this.channelService.getExposedChannels(),
         this.channelService.getExposedConnectedChannels(this.propertyid),
         this.roomService.fetchLanguage(this.language, ['_CHANNEL_FRONT']),
       ]);
-      console.log(languageTexts);
       channels_data.property_id = this.propertyid;
       if (!locales.entries) {
         locales.entries = languageTexts.entries;
@@ -318,9 +322,12 @@ const IrChannel = class {
     catch (error) {
       console.error(error);
     }
+    finally {
+      this.isLoading = false;
+    }
   }
   async ticketChanged() {
-    sessionStorage.setItem('token', JSON.stringify(this.ticket));
+    calendar_data.token = this.ticket;
     this.roomService.setToken(this.ticket);
     this.channelService.setToken(this.ticket);
     this.initializeApp();
@@ -376,6 +383,9 @@ const IrChannel = class {
   }
   render() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
+    if (this.isLoading) {
+      return (h(Host, { class: "h-100 d-flex align-items-center justify-content-center" }, h("div", { class: "dots" }, h("div", { class: "dot" }), h("div", { class: "dot" }), h("div", { class: "dot" }))));
+    }
     return (h(Host, { class: "h-100 " }, h("section", { class: "p-2 px-lg-5 py-0 h-100 d-flex flex-column" }, h("div", { class: "d-flex w-100 justify-content-between mb-2 align-items-center" }, h("h3", { class: "font-weight-bold m-0 p-0" }, (_a = locales.entries) === null || _a === void 0 ? void 0 : _a.Lcz_iSWITCH), h("ir-button", { text: (_b = locales.entries) === null || _b === void 0 ? void 0 : _b.Lcz_CreateChannel, size: "sm", onClickHanlder: () => (this.channel_status = 'create') }, h("svg", { slot: "icon", "stroke-width": 3, width: "15", height: "15", viewBox: "0 0 15 15", fill: "none", xmlns: "http://www.w3.org/2000/svg" }, h("path", { d: "M7.49991 0.876892C3.84222 0.876892 0.877075 3.84204 0.877075 7.49972C0.877075 11.1574 3.84222 14.1226 7.49991 14.1226C11.1576 14.1226 14.1227 11.1574 14.1227 7.49972C14.1227 3.84204 11.1576 0.876892 7.49991 0.876892ZM1.82707 7.49972C1.82707 4.36671 4.36689 1.82689 7.49991 1.82689C10.6329 1.82689 13.1727 4.36671 13.1727 7.49972C13.1727 10.6327 10.6329 13.1726 7.49991 13.1726C4.36689 13.1726 1.82707 10.6327 1.82707 7.49972ZM7.50003 4C7.77617 4 8.00003 4.22386 8.00003 4.5V7H10.5C10.7762 7 11 7.22386 11 7.5C11 7.77614 10.7762 8 10.5 8H8.00003V10.5C8.00003 10.7761 7.77617 11 7.50003 11C7.22389 11 7.00003 10.7761 7.00003 10.5V8H4.50003C4.22389 8 4.00003 7.77614 4.00003 7.5C4.00003 7.22386 4.22389 7 4.50003 7H7.00003V4.5C7.00003 4.22386 7.22389 4 7.50003 4Z", fill: "currentColor", "fill-rule": "evenodd", "clip-rule": "evenodd" })))), h("div", { class: "card p-1 flex-fill m-0" }, h("table", { class: "table table-striped table-bordered no-footer dataTable" }, h("thead", null, h("tr", null, h("th", { scope: "col", class: "text-left" }, (_c = locales.entries) === null || _c === void 0 ? void 0 : _c.Lcz_Channel), h("th", { scope: "col" }, (_d = locales.entries) === null || _d === void 0 ? void 0 : _d.Lcz_Status), h("th", { scope: "col", class: "actions-theader" }, (_e = locales.entries) === null || _e === void 0 ? void 0 : _e.Lcz_Actions))), h("tbody", { class: "" }, (_f = channels_data.connected_channels) === null || _f === void 0 ? void 0 : _f.map(channel => {
       var _a, _b;
       return (h("tr", { key: channel.channel.id }, h("th", { scope: "row", class: "text-left" }, channel.channel.name, " ", (_a = channel === null || channel === void 0 ? void 0 : channel.title) !== null && _a !== void 0 ? _a : ''), h("td", null, h("ir-switch", { checked: channel.is_active, onCheckChange: e => this.handleCheckChange(e.detail, channel) })), h("th", null, h("div", { class: "d-flex justify-content-end" }, h("div", { class: "btn-group" }, h("button", { type: "button", class: "btn  dropdown-toggle", "data-toggle": "dropdown", "aria-haspopup": "true", "aria-expanded": "false" }, h("span", { class: "mr-1" }, " ", (_b = locales.entries) === null || _b === void 0 ? void 0 :

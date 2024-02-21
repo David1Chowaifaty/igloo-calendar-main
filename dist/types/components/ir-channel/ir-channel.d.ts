@@ -8,6 +8,7 @@ export declare class IrChannel {
   baseurl: string;
   channel_status: 'create' | 'edit' | null;
   modal_cause: IModalCause | null;
+  isLoading: boolean;
   private roomService;
   private channelService;
   private irModalRef;
